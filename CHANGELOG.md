@@ -42,6 +42,8 @@
 
 ### Animation updates for the following Pokémon
 - Vikavolt
+- Magby
+- Magmar
 
 ### Changes
 - Changed the Misc icon in the Campfire Pot Recipe Book to Health Candy
