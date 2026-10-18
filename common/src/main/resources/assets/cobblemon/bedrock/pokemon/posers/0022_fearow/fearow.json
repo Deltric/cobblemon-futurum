@@ -11,7 +11,7 @@
       "isBattle": false,
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
+        "q.look('head_ai')",
         "q.bedrock('fearow', 'ground_idle')"
       ],
       "transformedParts": [
@@ -37,9 +37,8 @@
       "poseTypes": ["WALK", "SWIM"],
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('fearow', 'ground_idle')",
-        "q.biped_walk(1, 1, 'leg_left', 'leg_right')"
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'ground_walk')"
       ],
       "transformedParts": [
         {
@@ -64,9 +63,8 @@
       "poseTypes": ["HOVER"],
       "animations": [
         "q.pitch_tilt('body')",
-        "q.sine_wing_flap(0.9, 0.9, 25, 'z', 'wing_open_left', 'wing_open_right')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
+        "q.look('head_ai')",
         "q.bedrock('fearow', 'air_idle')"
       ],
       "transformedParts": [
@@ -92,10 +90,9 @@
       "poseTypes": ["FLY"],
       "animations": [
         "q.pitch_tilt('body')",
-        "q.sine_wing_flap(0.9, 0.9, 25, 'z', 'wing_open_left', 'wing_open_right')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('fearow', 'air_idle')"
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'air_fly')"
       ],
       "transformedParts": [
         {
@@ -115,6 +112,11 @@
           "isVisible": false
         }
       ]
+    },
+    "sleep": {
+      "poseTypes": ["SLEEP"],
+      "animations": ["q.bedrock('fearow', 'sleep')"],
+      "namedAnimations": {"cry": "q.bedrock_stateful('dummy', 'cry')"}
     }
   }
 }
