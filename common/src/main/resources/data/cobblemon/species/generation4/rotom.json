@@ -308,19 +308,6 @@
       "lightingData": {
         "lightLevel": 8,
         "liquidGlowMode": "BOTH"
-      },
-      "drops": {
-        "amount": 4,
-        "entries": [
-          {
-            "item": "minecraft:charcoal",
-            "quantityRange": "1-3"
-          },
-          {
-            "item": "cobblemon:cell_battery",
-            "percentage": 10.0
-          }
-        ]
       }
     },
     {
@@ -476,18 +463,6 @@
       "lightingData": {
         "lightLevel": 8,
         "liquidGlowMode": "BOTH"
-      },
-      "drops": {
-        "amount": 2,
-        "entries": [
-          {
-            "item": "minecraft:water_bucket"
-          },
-          {
-            "item": "cobblemon:cell_battery",
-            "percentage": 10.0
-          }
-        ]
       }
     },
     {
@@ -643,19 +618,6 @@
       "lightingData": {
         "lightLevel": 8,
         "liquidGlowMode": "BOTH"
-      },
-      "drops": {
-        "amount": 4,
-        "entries": [
-          {
-            "item": "minecraft:ice",
-            "quantityRange": "1-3"
-          },
-          {
-            "item": "cobblemon:cell_battery",
-            "percentage": 10.0
-          }
-        ]
       }
     },
     {
@@ -811,18 +773,6 @@
       "lightingData": {
         "lightLevel": 8,
         "liquidGlowMode": "BOTH"
-      },
-      "drops": {
-        "amount": 2,
-        "entries": [
-          {
-            "item": "minecraft:wind_charge"
-          },
-          {
-            "item": "cobblemon:cell_battery",
-            "percentage": 10.0
-          }
-        ]
       }
     },
     {
@@ -978,19 +928,6 @@
       "lightingData": {
         "lightLevel": 8,
         "liquidGlowMode": "BOTH"
-      },
-      "drops": {
-        "amount": 4,
-        "entries": [
-          {
-            "item": "minecraft:short_grass",
-            "quantityRange": "1-3"
-          },
-          {
-            "item": "cobblemon:cell_battery",
-            "percentage": 10.0
-          }
-        ]
       }
     }
   ],

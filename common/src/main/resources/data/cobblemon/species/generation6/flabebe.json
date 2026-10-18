@@ -261,23 +261,7 @@
           ]
         }
       ],
-      "battleOnly": false,
-      "drops": {
-        "amount": 3,
-        "entries": [
-          {
-            "item": "minecraft:dandelion"
-          },
-          {
-            "item": "cobblemon:misty_seed",
-            "percentage": 2.5
-          },
-          {
-            "item": "cobblemon:kebia_berry",
-            "percentage": 2.5
-          }
-        ]
-      }
+      "battleOnly": false
     },
     {
       "name": "Orange",
@@ -309,23 +293,7 @@
           ]
         }
       ],
-      "battleOnly": false,
-      "drops": {
-        "amount": 3,
-        "entries": [
-          {
-            "item": "minecraft:orange_tulip"
-          },
-          {
-            "item": "cobblemon:misty_seed",
-            "percentage": 2.5
-          },
-          {
-            "item": "cobblemon:kebia_berry",
-            "percentage": 2.5
-          }
-        ]
-      }
+      "battleOnly": false
     },
     {
       "name": "Blue",
@@ -357,23 +325,7 @@
           ]
         }
       ],
-      "battleOnly": false,
-      "drops": {
-        "amount": 3,
-        "entries": [
-          {
-            "item": "minecraft:cornflower"
-          },
-          {
-            "item": "cobblemon:misty_seed",
-            "percentage": 2.5
-          },
-          {
-            "item": "cobblemon:kebia_berry",
-            "percentage": 2.5
-          }
-        ]
-      }
+      "battleOnly": false
     },
     {
       "name": "White",
@@ -405,23 +357,7 @@
           ]
         }
       ],
-      "battleOnly": false,
-      "drops": {
-        "amount": 3,
-        "entries": [
-          {
-            "item": "minecraft:oxeye_daisy"
-          },
-          {
-            "item": "cobblemon:misty_seed",
-            "percentage": 2.5
-          },
-          {
-            "item": "cobblemon:kebia_berry",
-            "percentage": 2.5
-          }
-        ]
-      }
+      "battleOnly": false
     }
   ]
 }

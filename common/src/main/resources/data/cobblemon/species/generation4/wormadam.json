@@ -297,24 +297,7 @@
       ],
       "preEvolution": "burmy",
       "evolutions": [],
-      "battleOnly": false,
-      "drops": {
-        "amount": 4,
-        "entries": [
-          {
-            "item": "minecraft:string",
-            "quantityRange": "0-2"
-          },
-          {
-            "item": "cobblemon:shed_shell",
-            "percentage": 5.0
-          },
-          {
-            "item": "cobblemon:occa_berry",
-            "percentage": 5.0
-          }
-        ]
-      }
+      "battleOnly": false
     },
     {
       "name": "Trash",
@@ -450,24 +433,7 @@
       ],
       "preEvolution": "burmy",
       "evolutions": [],
-      "battleOnly": false,
-      "drops": {
-        "amount": 4,
-        "entries": [
-          {
-            "item": "minecraft:string",
-            "quantityRange": "0-2"
-          },
-          {
-            "item": "cobblemon:shed_shell",
-            "percentage": 5.0
-          },
-          {
-            "item": "cobblemon:occa_berry",
-            "percentage": 5.0
-          }
-        ]
-      }
+      "battleOnly": false
     }
   ],
   "behaviour": {

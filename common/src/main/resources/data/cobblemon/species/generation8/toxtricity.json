@@ -327,19 +327,6 @@
       "lightingData": {
         "lightLevel": 8,
         "liquidGlowMode": "BOTH"
-      },
-      "drops": {
-        "amount": 2,
-        "entries": [
-          {
-            "item": "cobblemon:shed_shell",
-            "percentage": 5.0
-          },
-          {
-            "item": "cobblemon:shuca_berry",
-            "percentage": 5.0
-          }
-        ]
       }
     },
     {
