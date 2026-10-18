@@ -1,0 +1,48 @@
+{
+  "timeline": [
+    {
+      "type": "add_holds",
+      "holds": ["effects"]
+    },
+    {
+      "type": "animation",
+      "animation": ["throw", "punch", "special"]
+    },
+    {
+      "type": "pause",
+      "pause": 1.25
+    },
+    {
+      "type": "entity_particles",
+      "effect": "cobblemon:watershuriken_actoralt",
+      "locators": ["hand_primary", "special", "target"],
+      "targetLocators": ["target"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.5
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == false && q.missed(q.entity.uuid) == false",
+      "animation": ["recoil"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.25
+    },
+    {
+      "type": "remove_holds",
+      "holds": ["effects"]
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == false && q.missed(q.entity.uuid) == false",
+      "animation": ["recoil"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.5
+    }
+  ]
+}

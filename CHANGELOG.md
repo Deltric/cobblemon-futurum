@@ -3,6 +3,10 @@
 
 ### Additions
 
+### Particles
+## New Move Animations
+- Water Shuriken
+
 ### Cries added/updated for the following Pokémon
 - Hoppip
 - Skiploom

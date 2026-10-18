@@ -1,0 +1,147 @@
+{
+  "timeline": [
+    {
+      "type": "add_holds",
+      "holds": ["effects"]
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == true && q.hit_count <= 2",
+      "animation": ["watershuriken_2hit", "special"]
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == true && q.hit_count == 3",
+      "animation": ["watershuriken_3hit", "special"]
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == true && q.hit_count == 4",
+      "animation": ["watershuriken_4hit", "special"]
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == true && q.hit_count == 5",
+      "animation": ["watershuriken_5hit", "special"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.17
+    },
+    {
+      "type": "entity_particles",
+      "entityCondition": "q.entity.is_user == true",
+      "effect": "cobblemon:watershuriken_actorhor",
+      "locators": ["hand_primary", "target"],
+      "targetLocators": ["target"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.14
+    },
+    {
+      "type": "entity_particles",
+      "entityCondition": "q.entity.is_user == true",
+      "effect": "cobblemon:watershuriken_actorhor",
+      "locators": ["hand_secondary", "target"],
+      "targetLocators": ["target"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.16
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == false && q.missed(q.entity.uuid) == false && q.hit_count >= 1",
+      "animation": ["recoil"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.1
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count >= 2",
+      "pause": 0.14
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count >= 4",
+      "pause": 0.05
+    },
+    {
+      "type": "entity_particles",
+      "entityCondition": "q.entity.is_user == true && q.hit_count >= 3",
+      "effect": "cobblemon:watershuriken_actor",
+      "locators": ["hand_primary", "target"],
+      "targetLocators": ["target"]
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count >= 3",
+      "pause": 0.25
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == false && q.missed(q.entity.uuid) == false && q.hit_count >= 4",
+      "animation": ["recoil"]
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count >= 4",
+      "pause": 0.41
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count == 5",
+      "pause": 0.03
+    },
+    {
+      "type": "entity_particles",
+      "entityCondition": "q.entity.is_user == true && q.hit_count >= 4",
+      "effect": "cobblemon:watershuriken_actorvert",
+      "locators": ["hand_primary", "target"],
+      "targetLocators": ["target"]
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count >= 4",
+      "pause": 0.28
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == false && q.missed(q.entity.uuid) == false && q.hit_count == 5",
+      "animation": ["recoil"]
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count == 5",
+      "pause": 0.76
+    },
+    {
+      "type": "entity_particles",
+      "entityCondition": "q.entity.is_user == true && q.hit_count == 5",
+      "effect": "cobblemon:watershuriken_actorhor",
+      "locators": ["hand_primary", "target"],
+      "targetLocators": ["target"]
+    },
+    {
+      "type": "pause",
+      "condition": "q.hit_count == 5",
+      "pause": 0.3
+    },
+    {
+      "type": "remove_holds",
+      "holds": ["effects"]
+    },
+    {
+      "type": "animation",
+      "entityCondition": "q.entity.is_user == false && q.missed(q.entity.uuid) == false",
+      "animation": ["recoil"]
+    },
+    {
+      "type": "pause",
+      "pause": 0.5
+    }
+  ]
+}
