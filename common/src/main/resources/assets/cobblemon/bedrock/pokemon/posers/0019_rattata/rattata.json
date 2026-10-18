@@ -2,7 +2,7 @@
    "portraitScale": 2.2,
    "portraitTranslation": [ -0.2, -1.4, 0 ],
    "profileScale": 0.85,
-   "profileTranslation": [ 0.0, 0.4, 0 ],
+   "profileTranslation": [ 0.0, 0.45, 0 ],
    "rootBone": "rattata",
    "animations": {
       "faint": "q.bedrock_primary('rattata', 'faint')",

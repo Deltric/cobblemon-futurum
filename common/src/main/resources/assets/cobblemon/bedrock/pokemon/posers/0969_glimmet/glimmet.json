@@ -1,8 +1,8 @@
 {
   "portraitScale": 2,
   "portraitTranslation": [-0.45,1.3,0],
-  "profileScale": 0.7,
-  "profileTranslation": [0,0.8,0],
+  "profileScale": 0.55,
+  "profileTranslation": [0,1.0,0],
   "rootBone": "glimmet",
   "animations": {
     "faint": "q.bedrock_primary('glimmet', 'faint', q.curve('one'))",

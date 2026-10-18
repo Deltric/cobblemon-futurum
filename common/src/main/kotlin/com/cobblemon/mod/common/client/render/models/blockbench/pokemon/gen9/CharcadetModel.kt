@@ -36,8 +36,8 @@ class CharcadetModel(root: ModelPart) : PokemonPosableModel(root), HeadedFrame, 
     override var portraitScale = 1.7F
     override var portraitTranslation = Vec3(-0.15, 0.08, 0.0)
 
-    override var profileScale = 0.8F
-    override var profileTranslation = Vec3(0.0, 0.6, 0.0)
+    override var profileScale = 0.58F
+    override var profileTranslation = Vec3(0.0, 0.91, 0.0)
 
     lateinit var standing: CobblemonPose
     lateinit var walking: CobblemonPose

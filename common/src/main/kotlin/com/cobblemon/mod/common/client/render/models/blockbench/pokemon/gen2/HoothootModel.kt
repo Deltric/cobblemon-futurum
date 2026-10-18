@@ -21,8 +21,8 @@ class HoothootModel (root: ModelPart) : PokemonPosableModel(root) {
 
     override var portraitScale = 2.2F
     override var portraitTranslation = Vec3(-0.25, -0.9, 0.0)
-    override var profileScale = 1.0F
-    override var profileTranslation = Vec3(0.0, 0.3, 0.0)
+    override var profileScale = 0.82F
+    override var profileTranslation = Vec3(0.0, 0.53, 0.0)
 
     lateinit var standing: Pose
     lateinit var walk: Pose
