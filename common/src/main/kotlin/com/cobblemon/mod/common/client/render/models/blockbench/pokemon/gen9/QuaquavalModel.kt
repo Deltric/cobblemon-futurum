@@ -35,8 +35,8 @@ class QuaquavalModel (root: ModelPart) : PokemonPosableModel(root), HeadedFrame,
     override var portraitScale = 2.3F
     override var portraitTranslation = Vec3(-0.42, 3.7, 0.0)
 
-    override var profileScale = 0.32F
-    override var profileTranslation = Vec3(0.0, 1.24, 0.0)
+    override var profileScale = 0.36F
+    override var profileTranslation = Vec3(0.0, 1.19, 0.0)
 
     lateinit var standing: CobblemonPose
     lateinit var standing2: CobblemonPose

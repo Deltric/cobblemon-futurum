@@ -23,7 +23,7 @@ class CarbinkModel (root: ModelPart) : PokemonPosableModel(root) {
     override var portraitScale = 1.8F
     override var portraitTranslation = Vec3(0.0, 0.2, 0.0)
 
-    override var profileScale = 0.85F
+    override var profileScale = 0.68F
     override var profileTranslation = Vec3(0.0, 0.7, 0.0)
 
     lateinit var standing: CobblemonPose

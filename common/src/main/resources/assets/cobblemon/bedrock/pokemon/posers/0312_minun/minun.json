@@ -1,8 +1,8 @@
 {
   "portraitScale": 2.11,
   "portraitTranslation": [-0.21, -0.6, 0],
-  "profileScale": 0.8,
-  "profileTranslation": [0.0, 0.56, 0.0],
+  "profileScale": 0.65,
+  "profileTranslation": [0.0, 0.75, 0.0],
   "rootBone": "minun",
     "animations": {
       "faint": "q.bedrock_primary('minun', 'faint', q.curve('one'))",
