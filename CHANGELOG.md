@@ -3,6 +3,9 @@
 
 ### Additions
 
+### New Rideable Pokémon
+- Vikavolt
+
 ### Particles
 ## New Move Animations
 - Water Shuriken
