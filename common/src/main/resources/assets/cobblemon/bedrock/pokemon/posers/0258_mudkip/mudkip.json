@@ -13,7 +13,7 @@
       "poseTypes": ["STAND"],
       "animations": [
         "q.look('head')",
-        "q.bedrock('mdukip', 'battle_idle')"
+        "q.bedrock('mudkip', 'battle_idle')"
       ],
       "quirks": ["q.bedrock_quirk('mudkip', 'blink')"]
     },
