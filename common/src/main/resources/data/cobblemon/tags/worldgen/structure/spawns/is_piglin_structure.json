@@ -1,6 +1,6 @@
 {
   "values": [
-	"mincraft:bastion_remnant",
+	"minecraft:bastion_remnant",
     {
       "id": "#nova_structures:piglin_structures",
       "required": false
