@@ -9,6 +9,7 @@
 package com.cobblemon.mod.common.api.ai.config.task
 
 import com.bedrockk.molang.Expression
+import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.ai.BehaviourConfigurationContext
 import com.cobblemon.mod.common.api.ai.ExpressionOrEntityVariable
 import com.cobblemon.mod.common.api.molang.MoLangFunctions.asMostSpecificMoLangValue
@@ -17,6 +18,7 @@ import com.cobblemon.mod.common.util.asExpression
 import com.cobblemon.mod.common.util.mainThreadRuntime
 import com.cobblemon.mod.common.util.resolveBoolean
 import com.cobblemon.mod.common.util.withQueryValue
+import com.cobblemon.mod.common.world.gamerules.CobblemonGameRules
 import com.mojang.datafixers.util.Either
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.behavior.BehaviorControl
@@ -34,6 +36,8 @@ import net.minecraft.world.entity.ai.sensing.SensorType
 class HateEntityTaskConfig : SingleTaskConfig {
     val entityCondition: Expression = "true".asExpression()
     val range: ExpressionOrEntityVariable = Either.left("24".asExpression())
+    val chance: Float = Cobblemon.config.predationChance
+    private val coercedChance = chance.coerceIn(0f, 1f)
 
     override fun getVariables(entity: LivingEntity, behaviourConfigurationContext: BehaviourConfigurationContext) = emptyList<MoLangConfigVariable>()
     override fun createTask(
@@ -43,24 +47,44 @@ class HateEntityTaskConfig : SingleTaskConfig {
         val range = range.resolveFloat(behaviourConfigurationContext.runtime)
         behaviourConfigurationContext.addMemories(
             MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES,
-            MemoryModuleType.ANGRY_AT
+            MemoryModuleType.ANGRY_AT,
+            MemoryModuleType.ATTACK_TARGET
         )
         behaviourConfigurationContext.addSensors(SensorType.NEAREST_LIVING_ENTITIES)
         return BehaviorBuilder.create { instance ->
             instance.group(
                 instance.present(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES),
-                instance.registered(MemoryModuleType.ANGRY_AT)
-            ).apply(instance) { entities, angryAt ->
+                instance.registered(MemoryModuleType.ANGRY_AT),
+                instance.registered(MemoryModuleType.ATTACK_TARGET),
+            ).apply(instance) { entities, angryAt, attackTarget ->
                 Trigger { world, entity, _ ->
-                    val target = instance.get(entities).findClosest {
-                        mainThreadRuntime.withQueryValue("entity", entity.asMostSpecificMoLangValue())
+                    // bail if gamerule is disabled
+                    if (!world.gameRules.getBoolean(CobblemonGameRules.DO_POKEMON_PREDATION)) return@Trigger false
+                    val target = instance.get(entities).findClosest { hated ->
+                        mainThreadRuntime.withQueryValue("entity", hated.asMostSpecificMoLangValue())
                         return@findClosest mainThreadRuntime.resolveBoolean(entityCondition)
                     }.orElse(null)
 
+                    var shouldTrigger = false
                     if (target != null && target.distanceTo(entity) <= range) {
-                        angryAt.set(target.uuid)
+                        shouldTrigger = when {
+                            // set always attacking if activity chance is equal to 1.0
+                            coercedChance == 1f -> {
+                                angryAt.set(target.uuid)
+                                attackTarget.set(target)
+                                true
+                            }
+                            // roll the dice in other way
+                            coercedChance != 1f && world.random.nextFloat() < coercedChance -> {
+                                angryAt.set(target.uuid)
+                                attackTarget.set(target)
+                                true
+                            }
+                            // fallback to peaceful behavior in unattended cases
+                            else -> false
+                        }
                     }
-                    return@Trigger true
+                    return@Trigger shouldTrigger
                 }
             }
         }

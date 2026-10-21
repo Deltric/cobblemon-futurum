@@ -169,7 +169,7 @@
         "q.look('neck', 1, 1, 25, -20, 20, -20)",
         "q.look('head', 1, 1, 22.5, -10, 15, -15)",
         "q.bedrock('aerodactyl', 'air_glide')",
-        "q.bedrock('aerodactyl', 'air_dive')",
+        "q.bedrock('aerodactyl', 'ride_dive')",
         {
           "condition": "q.is_ridden",
           "animation": "q.bedrock('aerodactyl', 'ride_air_glide')"

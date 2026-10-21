@@ -16,9 +16,6 @@
         "q.look('head_ai', 1, 1, 6, -18, 10, -10)",
         "q.bedrock('gloom', 'battle_idle')"
       ],
-      "namedAnimations": {
-          "cry": "q.bedrock_stateful('gloom', 'battle_cry')"
-        },
       "quirks": ["q.bedrock_quirk('gloom', 'blink')"]
     },
     "standing": {

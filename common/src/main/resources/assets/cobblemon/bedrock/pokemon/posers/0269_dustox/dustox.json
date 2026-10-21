@@ -4,6 +4,9 @@
   "profileScale": 0.63,
   "profileTranslation": [0, 0.64, 0],
   "rootBone": "dustox",
+  "animations": {
+    "cry": "q.bedrock_stateful('dustox', 'cry')"
+  },
   "poses": {
 	"battle-standing": {
      "poseTypes": ["STAND"],

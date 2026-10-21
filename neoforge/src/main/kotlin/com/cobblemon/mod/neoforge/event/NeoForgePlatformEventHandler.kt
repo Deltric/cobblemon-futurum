@@ -24,7 +24,7 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent
 import net.neoforged.neoforge.event.server.ServerStartedEvent
 import net.neoforged.neoforge.event.server.ServerStoppedEvent
 import net.neoforged.neoforge.event.server.ServerStoppingEvent
-import net.neoforged.neoforge.event.tick.PlayerTickEvent
+import net.neoforged.neoforge.event.tick.EntityTickEvent
 
 object NeoForgePlatformEventHandler {
 
@@ -53,14 +53,14 @@ object NeoForgePlatformEventHandler {
     }
 
     @SubscribeEvent
-    fun prePlayerTick(e: PlayerTickEvent.Pre) {
+    fun prePlayerTick(e: EntityTickEvent.Pre) {
         if (e.entity is ServerPlayer) {
             PlatformEvents.SERVER_PLAYER_TICK_PRE.post(ServerPlayerTickEvent.Pre(e.entity as ServerPlayer))
         }
     }
 
     @SubscribeEvent
-    fun postPlayerTick(e: PlayerTickEvent.Post) {
+    fun postPlayerTick(e: EntityTickEvent.Post) {
         if (e.entity is ServerPlayer) {
             PlatformEvents.SERVER_PLAYER_TICK_POST.post(ServerPlayerTickEvent.Post(e.entity as ServerPlayer))
         }
@@ -96,6 +96,12 @@ object NeoForgePlatformEventHandler {
             ifSucceeded = {},
             ifCanceled = { e.isCanceled = true }
         )
+    }
+
+    @SubscribeEvent
+    fun onRespawn(e: PlayerEvent.PlayerRespawnEvent) {
+        val player = e.entity as? ServerPlayer ?: return
+        PlatformEvents.PLAYER_RESPAWN.post(ServerPlayerEvent.Respawn(player))
     }
 
     @SubscribeEvent

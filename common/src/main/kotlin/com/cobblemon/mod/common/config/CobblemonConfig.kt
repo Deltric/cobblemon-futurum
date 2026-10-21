@@ -164,6 +164,9 @@ class CobblemonConfig {
     @CobblemonConfigField(Category.Pokemon, lang = "experience_multiplier", SERVER)
     var experienceMultiplier = 2F
 
+    @CobblemonConfigField(Category.Pokemon, lang = "predation_chance", SERVER)
+    var predationChance = 0.05F
+
     @CobblemonConfigField(Category.Spawning, lang = "pokemon_per_chunk", SERVER)
     var pokemonPerChunk = 1F
 

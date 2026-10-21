@@ -4,7 +4,9 @@
   "profileScale": 0.5,
   "profileTranslation": [0,1,0],
   "rootBone": "heliolisk",
-  "animations": {},
+  "animations": {
+    "cry": "q.bedrock_stateful('heliolisk', 'cry')"
+  },
   "poses": {
     "standing": {
       "poseTypes": [

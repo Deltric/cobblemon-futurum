@@ -5,8 +5,7 @@
   "profileTranslation": [0, 0.84, -10],
   "rootBone": "feraligatr",
   "animations": {
-    "cry": "q.bedrock_stateful('feraligatr', 'cry')",
-    "recoil": "q.bedrock_stateful('feraligatr', 'recoil')"
+    "cry": "q.bedrock_stateful('feraligatr', 'cry')"
   },
   "poses": {
     "standing": {

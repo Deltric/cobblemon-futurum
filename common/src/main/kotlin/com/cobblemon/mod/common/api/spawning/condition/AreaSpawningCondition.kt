@@ -42,8 +42,8 @@ abstract class AreaTypeSpawningCondition<T : AreaSpawnablePosition> : SpawningCo
     override fun copyFrom(other: SpawningCondition<*>, merger: Merger) {
         super.copyFrom(other, merger)
         if (other is AreaTypeSpawningCondition) {
-            merger.mergeSingle(minHeight, other.minHeight)
-            merger.mergeSingle(maxHeight, other.maxHeight)
+            minHeight = merger.mergeSingle(minHeight, other.minHeight)
+            maxHeight = merger.mergeSingle(maxHeight, other.maxHeight)
             neededNearbyBlocks = merger.merge(neededNearbyBlocks, other.neededNearbyBlocks)?.toMutableList()
         }
     }

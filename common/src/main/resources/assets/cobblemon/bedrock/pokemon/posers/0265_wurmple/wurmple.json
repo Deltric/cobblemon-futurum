@@ -4,6 +4,9 @@
   "profileScale": 0.98,
   "profileTranslation": [0.00, 0.24, 0],
   "rootBone": "wurmple",
+  "animations": {
+    "cry": "q.bedrock_stateful('wurmple', 'cry')"
+  },
   "poses": {
 	"battle-standing": {
      "poseTypes": ["STAND"],

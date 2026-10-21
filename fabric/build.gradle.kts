@@ -85,6 +85,9 @@ dependencies {
 
     minecraftServerLibraries(libs.icu4j)
 
+    // AppleSkin stores api under `api` classifier in their coordinates
+    // Because of that, we cannot just add it to integrations bundle
+    modCompileOnly(variantOf(libs.appleskin.api.fabric) { classifier("api") })
 }
 
 publishing {

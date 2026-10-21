@@ -149,6 +149,14 @@
 					"rotation": [0, 0, 22.5]
 				}
 			}
+		},
+		"animation.surskit.cry": {
+			"animation_length": 1.25,
+			"sound_effects": {
+				"0.0": {
+					"effect": "pokemon.surskit.cry"
+				}
+			}
 		}
 	},
 	"geckolib_format_version": 2

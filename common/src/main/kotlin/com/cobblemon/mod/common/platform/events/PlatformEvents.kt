@@ -55,6 +55,8 @@ object PlatformEvents {
     @JvmField
     val CLIENT_PLAYER_LOGOUT = EventObservable<ClientPlayerEvent.Logout>()
     @JvmField
+    val PLAYER_RESPAWN = EventObservable<ServerPlayerEvent.Respawn>()
+    @JvmField
     val PLAYER_DEATH = CancelableObservable<ServerPlayerEvent.Death>()
     @JvmField
     val RIGHT_CLICK_BLOCK = CancelableObservable<ServerPlayerEvent.RightClickBlock>()

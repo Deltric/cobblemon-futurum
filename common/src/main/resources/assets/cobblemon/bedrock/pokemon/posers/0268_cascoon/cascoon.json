@@ -4,6 +4,9 @@
   "profileScale": 0.74,
   "profileTranslation": [0.00, 0.57, 0],
   "rootBone": "cascoon",
+  "animations": {
+    "cry": "q.bedrock_stateful('cascoon', 'cry')"
+  },
   "poses": {
 	"battle-standing": {
      "poseTypes": ["STAND"],

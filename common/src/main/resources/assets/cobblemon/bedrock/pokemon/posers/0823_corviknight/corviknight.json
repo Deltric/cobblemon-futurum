@@ -21,8 +21,7 @@
     "seat_2_reverse": [0, 1, 0.5]
   },
   "animations": {
-    "cry": "q.bedrock_stateful('corviknight', 'cry')",
-    "recoil": "q.bedrock_stateful('corviknight', 'recoil')"
+    "cry": "q.bedrock_stateful('corviknight', 'cry')"
   },
   "poses": {
     "standing": {

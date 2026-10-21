@@ -4,7 +4,9 @@
   "profileScale": 0.5,
   "profileTranslation": [-0.05,1,0],
   "rootBone": "helioptile",
-  "animations": { },
+  "animations": {
+    "cry": "q.bedrock_stateful('helioptile', 'cry')"
+  },
   "poses": {
     "standing": {
       "poseTypes": [

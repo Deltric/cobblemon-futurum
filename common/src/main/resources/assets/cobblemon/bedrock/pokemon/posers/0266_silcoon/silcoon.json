@@ -4,6 +4,9 @@
   "profileScale": 0.80,
   "profileTranslation": [0.00, 0.48, 0],
   "rootBone": "silcoon",
+  "animations": {
+    "cry": "q.bedrock_stateful('silcoon', 'cry')"
+  },
   "poses": {
 	"battle-standing": {
      "poseTypes": ["STAND"],

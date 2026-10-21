@@ -14,30 +14,12 @@
             "heightmap": "WORLD_SURFACE_WG"
         },
         {
-            "type": "minecraft:environment_scan",
-            "allowed_search_condition": {
-                "type": "minecraft:matching_blocks",
-                "blocks": [
-                    "minecraft:grass_block"
-                ],
-                "offset": [
-                    0,
-                    0,
-                    0
-                ]
-            },
-            "direction_of_search": "up",
-            "max_steps": 3,
-            "target_condition": {
-                "type": "minecraft:matching_blocks",
-                "blocks": [
-                    "minecraft:air"
-                ],
-                "offset": [
-                    0,
-                    1,
-                    0
-                ]
+            "type": "minecraft:block_predicate_filter",
+            "predicate": {
+                "type": "minecraft:would_survive",
+                "state": {
+                    "Name": "minecraft:oak_sapling"
+                }
             }
         },
         {

@@ -39,10 +39,7 @@
       ],
       "quirks": [
         "q.bedrock_quirk('archeops', 'blink')"
-      ],
-      "namedAnimations": {
-        "cry": "q.bedrock_primary('archeops', 'battle_cry', q.curve('symmetrical_wide'))"
-      }
+      ]
     },
     "battle-flying": {
       "poseTypes": ["HOVER"],
@@ -214,7 +211,6 @@
         "q.bedrock('archeops', 'sleep')"
       ],
       "quirks": [
-        "q.bedrock_quirk('archeops', 'sleep_quirk')"
       ]
     }
   }

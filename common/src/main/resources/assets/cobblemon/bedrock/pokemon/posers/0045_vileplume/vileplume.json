@@ -16,9 +16,6 @@
         "q.look('head_ai', 1, 1, 6, -18, 10, -10)",
         "q.bedrock('vileplume', 'battle_idle')"
       ],
-      "namedAnimations": {
-          "cry": "q.bedrock_stateful('vileplume', 'battle_cry')"
-        },
       "quirks": [
         "q.bedrock_quirk('vileplume', 'blink')",
         "q.bedrock_primary_quirk('vileplume', 'quirk', 20, 40, 1, q.curve('symmetrical_wide'))"

@@ -5,9 +5,9 @@
   "profileTranslation": [0.0, 0.3, 0],
   "rootBone": "diglett_alolan",
   "animations": {
+    "faint": "q.bedrock_primary('diglett_alolan', 'faint', q.curve('one'))",
     "cry": "q.bedrock_stateful('diglett_alolan', 'cry')",
-    "recoil": "q.bedrock_stateful('diglett_alolan', 'recoil')",
-    "physical": "q.bedrock_primary('diglett_alolan', 'physical', q.curve('symmetrical'))"
+    "physical": "q.bedrock_primary('diglett_alolan', 'physical', q.curve('symmetrical_wide'))"
   },
   "poses": {
     "standing": {

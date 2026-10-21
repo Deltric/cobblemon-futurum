@@ -1294,16 +1294,7 @@ open class PokemonEntity(
     }
 
     private fun showInteractionWheel(player: ServerPlayer, itemStack: ItemStack) {
-         val canRide = ifRidingAvailableSupply(false) { behaviour, settings, state ->
-            if (platform != PlatformType.NONE) return@ifRidingAvailableSupply false
-            if (tethering != null) return@ifRidingAvailableSupply false;
-            if (seats.isEmpty()) return@ifRidingAvailableSupply false;
-            if ((owner as? ServerPlayer)?.isInBattle() == true) return@ifRidingAvailableSupply false;
-            if (this.owner != player && this.passengers.isEmpty()) return@ifRidingAvailableSupply false;
-            if(pokemon.effectiveScale < Cobblemon.config.minimumRidingScale) return@ifRidingAvailableSupply false;
-            if(beamMode == 3) return@ifRidingAvailableSupply false;
-            return@ifRidingAvailableSupply behaviour.isActive(settings, state, this);
-        }
+        val canRide = isRideableFor(player)
         if (pokemon.getOwnerPlayer() == player) {
             val cosmeticItemDefinition = CobblemonCosmeticItems.findValidCosmeticForPokemonAndItem(
                 player.level().registryAccess(),
@@ -1323,6 +1314,18 @@ open class PokemonEntity(
             player.isShiftKeyDown = false
             tryRidingPokemon(player)
         }
+    }
+
+    fun isRideableFor(player: ServerPlayer): Boolean = ifRidingAvailableSupply(false) canRide@{ behaviour, settings, state ->
+        if (!player.canInteractWithEntity(this, player.entityInteractionRange())) return@canRide false
+        if (platform != PlatformType.NONE) return@canRide false
+        if (tethering != null) return@canRide false
+        if (seats.isEmpty()) return@canRide false
+        if ((owner as? ServerPlayer)?.isInBattle() == true) return@canRide false
+        if (this.owner != player && this.passengers.isEmpty()) return@canRide false
+        if (pokemon.effectiveScale < Cobblemon.config.minimumRidingScale) return@canRide false
+        if (beamMode == 3) return@canRide false
+        return@canRide behaviour.isActive(settings, state, this)
     }
 
     override fun getDimensions(pose: Pose): EntityDimensions {
@@ -1606,9 +1609,8 @@ open class PokemonEntity(
                 || stack.`is`(CobblemonItemTags.WHITELISTED_ITEMS_TO_HOLD)
 
     fun tryRidingPokemon(player: ServerPlayer): Boolean {
-        if (pokemon.effectiveScale < Cobblemon.config.minimumRidingScale) {
-            return false
-        }
+        if (!isRideableFor(player)) return false
+
         val event = RidePokemonEvent.Pre(player, this)
         CobblemonEvents.RIDE_EVENT_PRE.post(event)
         if (!event.isCanceled) {

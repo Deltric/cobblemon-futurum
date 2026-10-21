@@ -120,13 +120,6 @@
         }
       ],
       "quirks": ["q.bedrock_quirk('tauros_paldean_aqua', 'blink')"]
-    },
-    "sleep": {
-      "poseTypes": ["SLEEP"],
-      "namedAnimations": {
-        "cry": "q.bedrock_stateful('dummy', 'cry')"
-      },
-      "animations": ["q.bedrock('tauros_paldean_aqua', 'sleep')"]
     }
   }
 }

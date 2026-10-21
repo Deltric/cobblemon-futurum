@@ -12,21 +12,21 @@
       "poseName": "battle-standing",
       "poseTypes": ["STAND"],
       "isBattle": true,
-      "animations": ["q.look('head')", "q.bedrock('braixen', 'battle_idle')"],
+      "animations": ["q.look('head_ai')", "q.bedrock('braixen', 'battle_idle')"],
       "quirks": ["q.bedrock_quirk('braixen', 'blink')"]
     },
     "standing": {
       "poseName": "standing",
       "poseTypes": ["STAND", "NONE", "PORTRAIT", "PROFILE", "FLOAT"],
       "isBattle": false,
-      "animations": ["q.look('head')", "q.bedrock('braixen', 'ground_idle')"],
+      "animations": ["q.look('head_ai')", "q.bedrock('braixen', 'ground_idle')"],
       "quirks": ["q.bedrock_quirk('braixen', 'blink')"]
     },
     "walking": {
       "poseName": "walking",
       "poseTypes": ["WALK", "SWIM"],
       "animations": [
-        "q.look('head')",
+        "q.look('head_ai')",
         "q.bedrock('braixen', 'ground_walk')"
       ],
       "quirks": ["q.bedrock_quirk('braixen', 'blink')"],

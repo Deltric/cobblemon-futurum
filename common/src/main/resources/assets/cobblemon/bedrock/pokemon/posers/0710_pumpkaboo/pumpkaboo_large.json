@@ -5,9 +5,7 @@
   "profileTranslation": [0.0, 0.15, 0.0],
   "rootBone": "pumpkaboo",
   "animations": {
-    "faint": "q.bedrock_primary('pumpkaboo', 'faint', q.curve('one'))",
-    "cry": "q.bedrock_stateful('pumpkaboo', 'cry')",
-    "recoil": "q.bedrock_stateful('pumpkaboo', 'recoil')"
+    "cry": "q.bedrock_stateful('pumpkaboo', 'cry')"
   },
   "poses": {
     "battle-standing": {

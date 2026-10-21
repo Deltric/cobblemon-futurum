@@ -37,6 +37,9 @@ repositories {
     //JEI
     maven("https://maven.blamejared.com/")
     maven("https://maven.parchmentmc.org")
+
+    // AppleSkin
+    maven("https://maven.ryanliptak.com/")
 }
 
 license {

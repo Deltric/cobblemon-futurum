@@ -85,6 +85,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
             if (HidePartyBinding.shouldHide) {
                 return false
             }
+
             return true
         }
     }

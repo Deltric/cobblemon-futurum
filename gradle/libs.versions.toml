@@ -16,6 +16,7 @@ moddev = "1.0.11"
 # Common
 molang = "1.1.20"
 jei-api = "19.22.1.316"
+appleskin-api = "mc1.21-3.0.5"
 
 # Graal
 graal = "22.3.0"
@@ -85,6 +86,7 @@ jei-fabric = { group = "mezz.jei", name = "jei-1.21.1-fabric", version.ref = "je
 fabric-debugutils = { group = "maven.modrinth", name = "debugutils", version.ref = "debugutils-fabric"}
 mod-menu = { group = "com.terraformersmc", name = "modmenu", version.ref = "mod-menu" }
 c2me-fabric = { group = "maven.modrinth", name = "c2me-fabric", version.ref = "c2me-fabric" }
+appleskin-api-fabric = { group = "squeek.appleskin", name = "appleskin-fabric", version.ref = "appleskin-api" }
 
 # NeoForge
 neoforge-api = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
@@ -92,6 +94,7 @@ neo-kotlin-forge = { group = "thedarkcolour", name = "kotlinforforge-neoforge", 
 neoforge-debugutils = { group = "maven.modrinth", name = "debugutils", version.ref = "debugutils-forge"}
 jei-neoforge = { group = "mezz.jei", name = "jei-1.21.1-neoforge", version.ref = "jei-api"}
 c2me-neoforge = { group = "maven.modrinth", name = "c2me-neoforge", version.ref = "c2me-neoforge" }
+appleskin-api-neoforge = { group = "squeek.appleskin", name = "appleskin-neoforge", version.ref = "appleskin-api" }
 
 # Data Storage
 mongo-driver-core = { group = "org.mongodb", name = "mongodb-driver-core", version.ref = "mongo" }

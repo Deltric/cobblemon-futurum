@@ -75,13 +75,6 @@
         }
       ],
       "quirks": ["q.bedrock_quirk('tauros', 'blink')"]
-    },
-    "sleep": {
-      "poseTypes": ["SLEEP"],
-      "namedAnimations": {
-        "cry": "q.bedrock_stateful('dummy', 'cry')"
-      },
-      "animations": ["q.bedrock('tauros', 'sleep')"]
     }
   }
 }

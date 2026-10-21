@@ -26,6 +26,7 @@ import com.cobblemon.mod.common.item.PokedexItem
 import com.cobblemon.mod.common.particle.CobblemonParticles
 import com.cobblemon.mod.common.particle.SnowstormParticleType
 import com.cobblemon.mod.common.util.isUsingPokedex
+import com.cobblemon.mod.neoforge.client.integration.appleskin.AppleSkinClientEventHandler
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
 import net.minecraft.client.Minecraft
@@ -92,7 +93,9 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
         event.enqueueWork {
             CobblemonClient.initialize(this)
             CobblemonModelPredicateRegistry.registerPredicates()
+            this.attemptClientModCompat()
         }
+
         NeoForgeClientPlatformEventHandler.register()
 
         val modContainer = ModList.get().getModContainerById(Cobblemon.MODID).get()
@@ -231,6 +234,12 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
                 val keyAttack = client.options.keyAttack
                 pokedexUsageContext.attackKeyHeld(keyAttack.isDown)
             }
+        }
+    }
+
+    private fun attemptClientModCompat() {
+        if (Cobblemon.implementation.isModInstalled("appleskin")) {
+            AppleSkinClientEventHandler.register()
         }
     }
 }

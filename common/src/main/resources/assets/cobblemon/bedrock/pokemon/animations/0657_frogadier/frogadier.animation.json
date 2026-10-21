@@ -589,7 +589,7 @@
 		"animation.frogadier.battle_idle": {
 			"loop": true,
 			"bones": {
-				"frogadier": {
+				"body": {
 					"position": [0, -8, 0]
 				},
 				"torso": {

@@ -88,7 +88,7 @@ fun getToolTipHeaderIcon(tradeEvolution: TradeEvolution): CobblemonDexEvolutionR
         lang("ui.pokedex.evolution.trade.tooltip.with_any_species")
     } else {
         PokemonSpecies.getByIdentifier(species.asIdentifierDefaultingNamespace())
-            ?.let { lang("ui.pokedex.evolution.trade.tooltip.with_species", it.translatedName.green()) }
+            ?.let { lang("ui.pokedex.evolution.trade.tooltip.with_species", it.translatedName.plainCopy().green()) }
             ?: lang("ui.pokedex.evolution.trade.tooltip.with_any_species")
     }
     return CobblemonDexEvolutionRequirementDisplay(CobblemonItems.LINK_CABLE, tooltip)
@@ -282,7 +282,7 @@ fun buildLevelRequirement(levelRequirement: LevelRequirement): DexEvolutionRequi
 
 fun buildMoonPhaseRequirement(moonPhaseRequirement: MoonPhaseRequirement): DexEvolutionRequirementDisplay {
     val icon = Items.CLOCK
-    val moonPhaseComponent = moonPhaseRequirement.moonPhase.displayName().green()
+    val moonPhaseComponent = moonPhaseRequirement.moonPhase.displayName().plainCopy().green()
     val tooltip = lang("ui.pokedex.requirement.moon_phase.tooltip", moonPhaseComponent)
 
     return CobblemonDexEvolutionRequirementDisplay(icon, tooltip)
@@ -290,7 +290,7 @@ fun buildMoonPhaseRequirement(moonPhaseRequirement: MoonPhaseRequirement): DexEv
 
 fun buildMoveSetRequirement(moveSetRequirement: MoveSetRequirement): DexEvolutionRequirementDisplay {
     val icon = CobblemonItems.TECHNICAL_MACHINE
-    val tooltip = lang("ui.pokedex.requirement.has_move.tooltip", moveSetRequirement.move.displayName.green())
+    val tooltip = lang("ui.pokedex.requirement.has_move.tooltip", moveSetRequirement.move.displayName.plainCopy().green())
 
     return CobblemonDexEvolutionRequirementDisplay(icon, tooltip)
 }
@@ -319,7 +319,7 @@ fun buildMoveTypeRequirement(moveTypeRequirement: MoveTypeRequirement): DexEvolu
         else -> CobblemonItems.NORMAL_GEM
     }
 
-    val tooltip = lang("ui.pokedex.requirement.has_move_type.tooltip", moveTypeRequirement.type.displayName.green())
+    val tooltip = lang("ui.pokedex.requirement.has_move_type.tooltip", moveTypeRequirement.type.displayName.plainCopy().green())
 
     return CobblemonDexEvolutionRequirementDisplay(icon, tooltip)
 }
@@ -437,7 +437,7 @@ fun buildStructureRequirement(structureRequirement: StructureRequirement, negate
 
 fun buildTimeRangeRequirement(timeRangeRequirement: TimeRangeRequirement): DexEvolutionRequirementDisplay? {
     val icon = Items.CLOCK
-    val timeRangeComponent = timeRangeRequirement.range.displayName() ?: return null
+    val timeRangeComponent = timeRangeRequirement.range.displayName()?.plainCopy() ?: return null
     val tooltip = lang("ui.pokedex.requirement.time_range.tooltip", timeRangeComponent.green())
 
     return CobblemonDexEvolutionRequirementDisplay(icon, tooltip)
@@ -445,7 +445,7 @@ fun buildTimeRangeRequirement(timeRangeRequirement: TimeRangeRequirement): DexEv
 
 fun buildUseMoveRequirement(useMoveRequirement: UseMoveRequirement): DexEvolutionRequirementDisplay {
     val icon = CobblemonItems.CHOICE_BAND
-    val tooltip = lang("ui.pokedex.requirement.use_move.tooltip", useMoveRequirement.move.displayName.green())
+    val tooltip = lang("ui.pokedex.requirement.use_move.tooltip", useMoveRequirement.move.displayName.plainCopy().green())
 
     return CobblemonDexEvolutionRequirementDisplay(icon, tooltip)
 }

@@ -85,8 +85,16 @@
         "7": [
           {
             "type": "cobblemon:hate_entity",
-            "entityCondition": "q.entity.is_pokemon && q.entity.species.identifier == 'cobblemon:seviper'"
+            "entityCondition": "q.entity.is_pokemon && q.entity.species.identifier == 'cobblemon:seviper'",
+            "chance": 1.0
           }
+        ],
+        "8": [
+          "stop_attacking_if_target_invalid",
+          "move_to_attack_target"
+        ],
+        "9": [
+          "melee_attack"
         ]
       }
     }

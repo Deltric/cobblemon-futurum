@@ -5,7 +5,6 @@
   "profileTranslation": [0, -0.02, 0],
   "rootBone": "omanyte",
   "animations": {
-    "faint": "q.bedrock_primary('omanyte', 'faint', q.curve('one'))",
     "cry": "q.bedrock_stateful('omanyte', 'cry')"
   },
   "poses": {

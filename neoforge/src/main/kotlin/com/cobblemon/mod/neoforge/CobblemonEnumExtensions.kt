@@ -34,5 +34,5 @@ object CobblemonEnumExtensions {
         Supplier<List<ItemStack>> { listOf(ItemStack(CobblemonItems.APRIJUICE_RED)) as List<ItemStack> })
     @JvmField
     val COOKING_POT_MISC = EnumProxy(RecipeBookCategories::class.java,
-        Supplier<List<ItemStack>> { listOf(ItemStack(CobblemonItems.PROTEIN)) as List<ItemStack> })
+        Supplier<List<ItemStack>> { listOf(ItemStack(CobblemonItems.HEALTH_CANDY)) as List<ItemStack> })
 }

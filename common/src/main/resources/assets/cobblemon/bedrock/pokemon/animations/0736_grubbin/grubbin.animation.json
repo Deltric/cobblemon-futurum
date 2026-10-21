@@ -125,6 +125,11 @@
 						"0.5417": {"pre": [0, 0, -0.1], "post": [0, 0, 0]}
 					}
 				}
+			},
+			"sound_effects": {
+				"0.0417": {
+					"effect": "pokemon.grubbin.cry"
+				}
 			}
 		},
 		"animation.grubbin.physical": {

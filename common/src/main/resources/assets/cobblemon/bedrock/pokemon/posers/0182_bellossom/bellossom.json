@@ -16,9 +16,6 @@
         "q.look('head_ai')",
         "q.bedrock('bellossom', 'battle_idle')"
       ],
-      "namedAnimations": {
-          "cry": "q.bedrock_stateful('bellossom', 'battle_cry')"
-        },
       "quirks": [
         "q.bedrock_quirk('bellossom', 'blink')"
       ]

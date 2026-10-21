@@ -6,8 +6,7 @@
   "rootBone": "golem",
   "animations": {
     "cry": "q.bedrock_stateful('golem_alolan', 'cry')",
-    "recoil": "q.bedrock_stateful('golem_alolan', 'recoil')",
-    "status": "q.bedrock_stateful('golem_alolan', 'status', q.curve('symmetrical_wide'))"
+    "recoil": "q.bedrock_stateful('golem_alolan', 'recoil')"
   },
   "poses": {
     "battle-standing": {

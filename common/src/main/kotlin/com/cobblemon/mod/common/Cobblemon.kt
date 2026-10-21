@@ -260,6 +260,9 @@ object Cobblemon {
             RequestManager.onLogoff(it.player)
             serverPlayerStructs.remove(it.player.uuid)
         }
+        PlatformEvents.PLAYER_RESPAWN.subscribe {
+            serverPlayerStructs.remove(it.player.uuid)
+        }
         PlatformEvents.PLAYER_DEATH.subscribe {
             PCLinkManager.removeLink(it.player.uuid)
             battleRegistry.getBattleByParticipatingPlayer(it.player)?.stop()

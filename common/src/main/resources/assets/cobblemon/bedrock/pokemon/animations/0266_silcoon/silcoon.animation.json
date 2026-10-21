@@ -212,6 +212,14 @@
 					"position": [0, 0, -0.1]
 				}
 			}
+		},
+		"animation.silcoon.cry": {
+			"animation_length": 1.25,
+			"sound_effects": {
+				"0.0": {
+					"effect": "pokemon.silcoon.cry"
+				}
+			}
 		}
 	}
 }

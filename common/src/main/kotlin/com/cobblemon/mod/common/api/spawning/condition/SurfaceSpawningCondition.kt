@@ -39,7 +39,7 @@ abstract class SurfaceTypeSpawningCondition<T : SurfaceSpawnablePosition> : Area
         super.copyFrom(other, merger)
         if (other is SurfaceTypeSpawningCondition) {
             minDepth = merger.mergeSingle(minDepth, other.minDepth)
-            maxDepth = merger.mergeSingle(minDepth, other.minDepth)
+            maxDepth = merger.mergeSingle(maxDepth, other.maxDepth)
             fluid = merger.mergeSingle(fluid, other.fluid)
         }
     }
