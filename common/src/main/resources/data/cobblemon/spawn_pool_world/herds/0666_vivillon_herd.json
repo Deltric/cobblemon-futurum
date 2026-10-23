@@ -525,7 +525,7 @@
         "timeRange": "day",
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [

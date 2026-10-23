@@ -72,6 +72,60 @@
         "canSeeSky": false,
         "biomes": [
           "#cobblemon:is_overworld"
+        ]
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "claydol held_item=cobblemon:psychic_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "baltoy",
+          "weight": 80.0,
+          "levelRange": "8-27",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "claydol",
+          "weight": 120.0,
+          "levelRange": "38-46",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "claydol-alpha-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "34-100",
+      "weight": 100.0,
+      "condition": {
+        "canSeeSky": false,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
         ],
         "minY": 48
       },
@@ -105,7 +159,7 @@
       ]
     },
     {
-      "id": "claydol-alpha-3",
+      "id": "claydol-alpha-4",
       "type": "pokemon-herd",
       "bucket": "boss",
       "spawnablePositionType": "grounded",

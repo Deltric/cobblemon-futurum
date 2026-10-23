@@ -28,7 +28,7 @@
             },
             "anticondition": {
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -36,8 +36,7 @@
             "id": "overqwil-2",
             "pokemon": "overqwil",
             "presets": [
-                "water",
-                "ocean_monument"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -55,7 +54,11 @@
                 "biomes": [
                     "#cobblemon:is_cold_ocean",
                     "#cobblemon:is_frozen_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_monument"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -75,7 +78,7 @@
             "anticondition": {
                 "minLureLevel": 1,
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -103,7 +106,7 @@
             },
             "anticondition": {
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -129,7 +132,7 @@
                     "#cobblemon:is_frozen_ocean"
                 ],
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -160,7 +163,7 @@
             },
             "anticondition": {
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -168,8 +171,7 @@
             "id": "overqwil-7",
             "pokemon": "overqwil",
             "presets": [
-                "water",
-                "ocean_monument"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -189,7 +191,11 @@
                 "biomes": [
                     "#cobblemon:is_cold_ocean",
                     "#cobblemon:is_frozen_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_monument"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -211,7 +217,7 @@
             "anticondition": {
                 "minLureLevel": 1,
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -241,7 +247,7 @@
             },
             "anticondition": {
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },
@@ -269,7 +275,7 @@
                     "#cobblemon:is_frozen_ocean"
                 ],
                 "structures": [
-                    "minecraft:monument"
+                    "#cobblemon:spawns/is_ocean_monument"
                 ]
             }
         },

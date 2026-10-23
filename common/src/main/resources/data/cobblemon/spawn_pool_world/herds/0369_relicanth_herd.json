@@ -34,8 +34,7 @@
     {
       "id": "relicanth-herd-2",
       "presets": [
-        "water",
-        "ocean_ruins"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -47,7 +46,11 @@
         "canSeeSky": true,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_ruins"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {
@@ -102,8 +105,7 @@
     {
       "id": "relicanth-herd-4",
       "presets": [
-        "water",
-        "ocean_ruins"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -117,7 +119,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_ruins"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {

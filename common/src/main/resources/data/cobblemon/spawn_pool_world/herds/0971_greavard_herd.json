@@ -22,6 +22,11 @@
         ],
         "timeRange": "night"
       },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ]
+      },
       "herdablePokemon": [
         {
           "pokemon": "greavard",
@@ -46,8 +51,7 @@
     {
       "id": "greavard-herd-2",
       "presets": [
-        "natural",
-        "mansion"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -55,13 +59,22 @@
       "maxHerdSize": 4,
       "levelRange": "4-49",
       "weight": 20.0,
+      "weightMultiplier": {
+        "multiplier": 0.25,
+        "condition": {
+          "timeRange": "day"
+        }
+      },
       "condition": {
         "minSkyLight": 8,
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
         ],
-        "timeRange": "night"
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {
@@ -86,6 +99,50 @@
     },
     {
       "id": "greavard-herd-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "4-49",
+      "weight": 20.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "minecraft:mansion"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "greavard",
+          "weight": 80.0,
+          "levelRange": "38-50",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "houndstone",
+          "weight": 20.0,
+          "levelRange": "6-25",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "greavard-herd-4",
       "presets": [
         "natural"
       ],
@@ -122,7 +179,7 @@
       ]
     },
     {
-      "id": "greavard-herd-4",
+      "id": "greavard-herd-5",
       "presets": [
         "natural",
         "nether_fossil"

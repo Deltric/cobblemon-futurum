@@ -5,8 +5,7 @@
     {
       "id": "charcadet-herd-1",
       "presets": [
-        "natural",
-        "nether_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "uncommon",
@@ -17,6 +16,9 @@
       "condition": {
         "biomes": [
           "#minecraft:is_nether"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_nether_structure"
         ]
       },
       "herdablePokemon": [

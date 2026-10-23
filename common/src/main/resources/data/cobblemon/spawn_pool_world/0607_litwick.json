@@ -30,6 +30,37 @@
             "id": "litwick-2",
             "pokemon": "litwick",
             "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "3-28",
+            "weight": 27.0,
+            "weightMultiplier": {
+                "multiplier": 2.0,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure",
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "litwick-3",
+            "pokemon": "litwick",
+            "presets": [
                 "mansion"
             ],
             "type": "pokemon",

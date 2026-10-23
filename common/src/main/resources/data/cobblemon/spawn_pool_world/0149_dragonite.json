@@ -135,8 +135,7 @@
             "id": "dragonite-7",
             "pokemon": "dragonite",
             "presets": [
-                "water",
-                "ocean_ruins"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -147,7 +146,11 @@
                 "canSeeSky": true,
                 "biomes": [
                     "#cobblemon:is_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_ruins"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -195,8 +198,7 @@
             "id": "dragonite-10",
             "pokemon": "dragonite",
             "presets": [
-                "water",
-                "ocean_ruins"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -209,7 +211,11 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_ruins"
+                ],
+                "maxY": 62
             }
         },
         {

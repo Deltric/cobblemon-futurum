@@ -191,8 +191,7 @@
     {
       "id": "dratini-herd-5",
       "presets": [
-        "water",
-        "ocean_ruins"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "uncommon",
@@ -204,7 +203,11 @@
         "canSeeSky": true,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_ruins"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {
@@ -230,8 +233,7 @@
     {
       "id": "dratini-herd-6",
       "presets": [
-        "water",
-        "ocean_ruins"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "uncommon",
@@ -245,7 +247,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_ruins"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {

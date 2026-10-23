@@ -68,7 +68,7 @@
           "#cobblemon:is_overworld"
         ],
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [
@@ -103,8 +103,7 @@
     {
       "id": "mabosstiff-alpha-3",
       "presets": [
-        "natural",
-        "pillager_outpost"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -117,7 +116,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_illager_outpost"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {
@@ -151,8 +154,7 @@
     {
       "id": "mabosstiff-alpha-4",
       "presets": [
-        "natural",
-        "mansion"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -165,7 +167,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
-        ]
+        ],
+        "structures": [
+          "minecraft:mansion"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

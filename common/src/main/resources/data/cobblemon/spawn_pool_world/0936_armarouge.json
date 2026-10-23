@@ -7,8 +7,7 @@
             "id": "armarouge-1",
             "pokemon": "armarouge",
             "presets": [
-                "natural",
-                "nether_structures"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -24,6 +23,9 @@
             "condition": {
                 "biomes": [
                     "#minecraft:is_nether"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_nether_structure"
                 ]
             },
             "drops": {

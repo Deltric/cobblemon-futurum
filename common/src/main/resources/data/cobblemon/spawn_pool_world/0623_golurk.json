@@ -52,7 +52,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ]
             }
         },
@@ -103,10 +103,42 @@
                 "biomes": [
                     "#cobblemon:is_desert"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
+                ]
             }
         },
         {
             "id": "golurk-5",
+            "pokemon": "golurk",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "43-48",
+            "weight": 16.0,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_desert"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
+                ],
+                "minY": 48
+            }
+        },
+        {
+            "id": "golurk-6",
             "pokemon": "golurk",
             "presets": [
                 "natural",
@@ -127,10 +159,42 @@
                 "biomes": [
                     "#cobblemon:is_jungle"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ]
             }
         },
         {
-            "id": "golurk-6",
+            "id": "golurk-7",
+            "pokemon": "golurk",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "43-48",
+            "weight": 16.0,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_jungle"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ],
+                "minY": 48
+            }
+        },
+        {
+            "id": "golurk-8",
             "pokemon": "golurk",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

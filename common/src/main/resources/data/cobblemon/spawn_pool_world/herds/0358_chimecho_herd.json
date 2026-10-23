@@ -25,6 +25,9 @@
         "timeRange": "night"
       },
       "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ],
         "biomes": [
           "#cobblemon:is_volcanic"
         ]
@@ -69,6 +72,11 @@
         ],
         "timeRange": "night"
       },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ]
+      },
       "herdablePokemon": [
         {
           "pokemon": "chimecho",
@@ -92,6 +100,55 @@
     },
     {
       "id": "chimecho-herd-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "uncommon",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 3,
+      "levelRange": "4-46",
+      "weight": 50.0,
+      "weightMultiplier": {
+        "multiplier": 0.25,
+        "condition": {
+          "timeRange": "day"
+        }
+      },
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "chimecho",
+          "weight": 70.0,
+          "levelRange": "27-43",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "chingling",
+          "weight": 30.0,
+          "levelRange": "8-27",
+          "levelRangeOffset": "-4-2",
+          "maxTimes": 3,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "chimecho-herd-4",
       "type": "pokemon-herd",
       "bucket": "uncommon",
       "spawnablePositionType": "grounded",

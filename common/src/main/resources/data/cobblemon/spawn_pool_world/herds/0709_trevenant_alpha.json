@@ -23,6 +23,11 @@
         ],
         "timeRange": "night"
       },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ]
+      },
       "herdablePokemon": [
         {
           "pokemon": "trevenant held_item=cobblemon:ghost_gem alpha=true",
@@ -71,6 +76,63 @@
           "#cobblemon:is_spooky"
         ],
         "timeRange": "night"
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "trevenant held_item=cobblemon:ghost_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "phantump",
+          "weight": 90.0,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "trevenant",
+          "weight": 135.0,
+          "levelRange": "28-43",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "trevenant-alpha-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 7,
+      "levelRange": "24-100",
+      "weight": 100.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

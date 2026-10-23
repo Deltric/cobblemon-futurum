@@ -24,6 +24,31 @@
             "id": "chandelure-2",
             "pokemon": "chandelure",
             "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "41-52",
+            "weight": 0.3,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure",
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "chandelure-3",
+            "pokemon": "chandelure",
+            "presets": [
                 "mansion"
             ],
             "type": "pokemon",

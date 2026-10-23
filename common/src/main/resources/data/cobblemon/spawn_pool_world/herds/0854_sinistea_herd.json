@@ -24,7 +24,7 @@
         ],
         "timeRange": "day",
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ],
         "minY": 62
       },
@@ -101,7 +101,7 @@
         ],
         "timeRange": "night",
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ],
         "minY": 62
       },
@@ -159,6 +159,121 @@
     },
     {
       "id": "sinistea-herd-3",
+      "type": "pokemon-herd",
+      "bucket": "uncommon",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "6-51",
+      "weight": 20.0,
+      "condition": {
+        "canSeeSky": false,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "day",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "sinistea tea_authenticity=phony",
+          "weight": 79.2,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "sinistea tea_authenticity=antique",
+          "weight": 0.8,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=phony",
+          "weight": 9.9,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=antique",
+          "weight": 0.1,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "sinistea-herd-4",
+      "type": "pokemon-herd",
+      "bucket": "uncommon",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "6-51",
+      "weight": 20.0,
+      "condition": {
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "sinistea tea_authenticity=phony",
+          "weight": 79.2,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "sinistea tea_authenticity=antique",
+          "weight": 0.8,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=phony",
+          "weight": 9.9,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=antique",
+          "weight": 0.1,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "sinistea-herd-5",
       "presets": [
         "mansion_dining"
       ],

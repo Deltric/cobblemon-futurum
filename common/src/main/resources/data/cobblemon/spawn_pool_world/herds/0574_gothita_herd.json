@@ -51,9 +51,6 @@
     },
     {
       "id": "gothita-herd-2",
-      "presets": [
-        "end_city"
-      ],
       "type": "pokemon-herd",
       "bucket": "uncommon",
       "spawnablePositionType": "grounded",
@@ -63,6 +60,9 @@
       "condition": {
         "biomes": [
           "#cobblemon:is_end"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_end_structure"
         ]
       },
       "herdablePokemon": [

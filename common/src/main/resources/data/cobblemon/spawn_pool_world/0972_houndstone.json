@@ -14,6 +14,12 @@
             "bucket": "common",
             "level": "30-49",
             "weight": 1.6,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
             "condition": {
                 "minSkyLight": 8,
                 "maxSkyLight": 15,
@@ -22,27 +28,48 @@
                     "#cobblemon:is_taiga"
                 ],
                 "timeRange": "night"
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ]
             }
         },
         {
             "id": "houndstone-2",
             "pokemon": "houndstone",
             "presets": [
-                "natural",
-                "mansion"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",
             "level": "30-49",
             "weight": 8.0,
+            "weightMultipliers": [
+                {
+                    "multiplier": 0.25,
+                    "condition": {
+                        "timeRange": "day"
+                    }
+                },
+                {
+                    "multiplier": 1.25,
+                    "condition": {
+                        "isPokeSnack": true
+                    }
+                }
+            ],
             "condition": {
                 "minSkyLight": 8,
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ],
-                "timeRange": "night"
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
             }
         },
         {
@@ -55,7 +82,43 @@
             "spawnablePositionType": "grounded",
             "bucket": "common",
             "level": "30-49",
+            "weight": 8.0,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "minecraft:mansion"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "houndstone-4",
+            "pokemon": "houndstone",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "30-49",
             "weight": 1.6,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
             "condition": {
                 "biomes": [
                     "#cobblemon:nether/is_soul_sand"
@@ -63,7 +126,7 @@
             }
         },
         {
-            "id": "houndstone-4",
+            "id": "houndstone-5",
             "pokemon": "houndstone",
             "presets": [
                 "natural",
@@ -74,6 +137,12 @@
             "bucket": "common",
             "level": "30-49",
             "weight": 8.0,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
             "condition": {
                 "biomes": [
                     "#minecraft:is_nether"

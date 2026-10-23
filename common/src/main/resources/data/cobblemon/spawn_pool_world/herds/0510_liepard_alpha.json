@@ -198,7 +198,7 @@
         ],
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {
@@ -315,7 +315,7 @@
           "#cobblemon:is_savanna"
         ],
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [
@@ -418,8 +418,9 @@
         ],
         "isRaining": false,
         "structures": [
-          "minecraft:swamp_hut"
-        ]
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

@@ -41,7 +41,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ]
             }
         },
@@ -49,8 +49,7 @@
             "id": "maschiff-3",
             "pokemon": "maschiff",
             "presets": [
-                "natural",
-                "pillager_outpost"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -62,15 +61,18 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_overworld"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_illager_outpost"
+                ],
+                "minY": 62
             }
         },
         {
             "id": "maschiff-4",
             "pokemon": "maschiff",
             "presets": [
-                "natural",
-                "mansion"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -82,7 +84,11 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_overworld"
-                ]
+                ],
+                "structures": [
+                    "minecraft:mansion"
+                ],
+                "minY": 62
             }
         }
     ]

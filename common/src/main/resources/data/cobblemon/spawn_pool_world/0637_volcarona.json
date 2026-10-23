@@ -19,12 +19,38 @@
                 "canSeeSky": false,
                 "biomes": [
                     "#cobblemon:is_desert"
+                ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
+                ]
+            }
+        },
+        {
+            "id": "volcarona-2",
+            "pokemon": "volcarona",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "59-64",
+            "weight": 160.0,
+            "condition": {
+                "canSeeSky": false,
+                "biomes": [
+                    "#cobblemon:is_desert"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
                 ],
                 "minY": 48
             }
         },
         {
-            "id": "volcarona-2",
+            "id": "volcarona-3",
             "pokemon": "volcarona",
             "presets": [
                 "natural",
@@ -39,12 +65,38 @@
                 "canSeeSky": false,
                 "biomes": [
                     "#cobblemon:is_jungle"
+                ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ]
+            }
+        },
+        {
+            "id": "volcarona-4",
+            "pokemon": "volcarona",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "59-64",
+            "weight": 160.0,
+            "condition": {
+                "canSeeSky": false,
+                "biomes": [
+                    "#cobblemon:is_jungle"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
                 ],
                 "minY": 48
             }
         },
         {
-            "id": "volcarona-3",
+            "id": "volcarona-5",
             "pokemon": "volcarona",
             "presets": [
                 "natural",
@@ -80,7 +132,7 @@
             }
         },
         {
-            "id": "volcarona-4",
+            "id": "volcarona-6",
             "pokemon": "volcarona",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

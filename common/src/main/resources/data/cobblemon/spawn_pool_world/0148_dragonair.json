@@ -186,8 +186,7 @@
             "id": "dragonair-7",
             "pokemon": "dragonair",
             "presets": [
-                "water",
-                "ocean_ruins"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -204,7 +203,11 @@
                 "canSeeSky": true,
                 "biomes": [
                     "#cobblemon:is_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_ruins"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -252,8 +255,7 @@
             "id": "dragonair-10",
             "pokemon": "dragonair",
             "presets": [
-                "water",
-                "ocean_ruins"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -272,7 +274,11 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_ruins"
+                ],
+                "maxY": 62
             }
         },
         {

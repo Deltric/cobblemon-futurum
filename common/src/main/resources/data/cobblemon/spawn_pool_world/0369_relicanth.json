@@ -31,8 +31,7 @@
             "id": "relicanth-2",
             "pokemon": "relicanth",
             "presets": [
-                "water",
-                "ocean_ruins"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -49,7 +48,11 @@
                 "canSeeSky": true,
                 "biomes": [
                     "#cobblemon:is_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_ruins"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -203,8 +206,7 @@
             "id": "relicanth-9",
             "pokemon": "relicanth",
             "presets": [
-                "water",
-                "ocean_ruins"
+                "water"
             ],
             "type": "pokemon",
             "spawnablePositionType": "submerged",
@@ -223,7 +225,11 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_ocean"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_ocean_ruins"
+                ],
+                "maxY": 62
             }
         },
         {

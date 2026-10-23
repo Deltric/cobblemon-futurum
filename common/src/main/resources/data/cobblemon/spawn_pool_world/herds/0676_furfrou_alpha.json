@@ -59,7 +59,7 @@
           "#cobblemon:is_overworld"
         ],
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [
@@ -85,8 +85,7 @@
     {
       "id": "furfrou-alpha-3",
       "presets": [
-        "natural",
-        "mansion"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -99,7 +98,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
-        ]
+        ],
+        "structures": [
+          "minecraft:mansion"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

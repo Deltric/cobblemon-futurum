@@ -19,8 +19,9 @@
           "#cobblemon:is_ocean"
         ],
         "structures": [
-          "#minecraft:shipwreck"
-        ]
+          "#cobblemon:spawns/is_shipwreck"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {
@@ -61,8 +62,9 @@
           "#cobblemon:is_ocean"
         ],
         "structures": [
-          "#minecraft:shipwreck"
-        ]
+          "#cobblemon:spawns/is_shipwreck"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {

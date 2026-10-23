@@ -209,23 +209,23 @@
         "fixed": false
       },
       "drops": {
-        "amount": 6,
+        "amount": 8,
         "entries": [
           {
             "item": "minecraft:slime_ball",
-            "quantityRange": "0-2"
-          },
-          {
-            "item": "cobblemon:shed_shell",
-            "percentage": 5.0
+            "quantityRange": "0-3"
           },
           {
             "item": "minecraft:iron_ingot",
-            "quantityRange": "0-2"
+            "quantityRange": "0-3"
+          },
+          {
+            "item": "cobblemon:shed_shell",
+            "percentage": 10.0
           },
           {
             "item": "cobblemon:bluk_berry",
-            "percentage": 5.0
+            "percentage": 10.0
           }
         ]
       },

@@ -28,6 +28,9 @@
         {
             "id": "hatterene-2",
             "pokemon": "hatterene",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",
@@ -40,8 +43,9 @@
                     "#cobblemon:is_swamp"
                 ],
                 "structures": [
-                    "minecraft:swamp_hut"
-                ]
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62
             }
         },
         {

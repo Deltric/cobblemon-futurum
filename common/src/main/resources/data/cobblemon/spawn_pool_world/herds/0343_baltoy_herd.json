@@ -64,6 +64,52 @@
         "canSeeSky": false,
         "biomes": [
           "#cobblemon:is_overworld"
+        ]
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "baltoy",
+          "weight": 80.0,
+          "levelRange": "8-27",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "claydol",
+          "weight": 20.0,
+          "levelRange": "38-46",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "baltoy-herd-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "5-50",
+      "weight": 12.0,
+      "condition": {
+        "canSeeSky": false,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
         ],
         "minY": 48
       },
@@ -89,7 +135,7 @@
       ]
     },
     {
-      "id": "baltoy-herd-3",
+      "id": "baltoy-herd-4",
       "type": "pokemon-herd",
       "bucket": "common",
       "spawnablePositionType": "grounded",

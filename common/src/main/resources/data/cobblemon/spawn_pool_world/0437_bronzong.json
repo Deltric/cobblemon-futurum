@@ -44,12 +44,37 @@
             "condition": {
                 "biomes": [
                     "#cobblemon:is_overworld"
+                ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ]
+            }
+        },
+        {
+            "id": "bronzong-3",
+            "pokemon": "bronzong",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "33-50",
+            "weight": 76.8,
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
                 ],
                 "minY": 48
             }
         },
         {
-            "id": "bronzong-3",
+            "id": "bronzong-4",
             "pokemon": "bronzong",
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -61,14 +86,14 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ],
                 "minY": -37,
                 "maxY": 10
             }
         },
         {
-            "id": "bronzong-4",
+            "id": "bronzong-5",
             "pokemon": "bronzong",
             "presets": [
                 "trail_ruins"
@@ -86,7 +111,7 @@
             }
         },
         {
-            "id": "bronzong-5",
+            "id": "bronzong-6",
             "pokemon": "bronzong",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

@@ -26,6 +26,10 @@
         "isRaining": false
       },
       "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure",
+          "#cobblemon:spawns/is_graveyard"
+        ],
         "biomes": [
           "#cobblemon:is_freezing"
         ]
@@ -181,6 +185,57 @@
     {
       "id": "spinarak-herd-5",
       "presets": [
+        "natural",
+        "treetop"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 5,
+      "levelRange": "1-40",
+      "weight": 1.2,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "isRaining": false,
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure",
+          "#cobblemon:spawns/is_graveyard"
+        ],
+        "minY": 62
+      },
+      "anticondition": {
+        "biomes": [
+          "#cobblemon:is_freezing"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "spinarak",
+          "weight": 80.0,
+          "levelRange": "4-22",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "ariados",
+          "weight": 20.0,
+          "levelRange": "24-36",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "spinarak-herd-6",
+      "presets": [
         "mansion"
       ],
       "type": "pokemon-herd",
@@ -196,11 +251,6 @@
         ],
         "neededNearbyBlocks": [
           "minecraft:cobweb"
-        ]
-      },
-      "anticondition": {
-        "biomes": [
-          "minecraft:sulfur_caves"
         ]
       },
       "herdablePokemon": [

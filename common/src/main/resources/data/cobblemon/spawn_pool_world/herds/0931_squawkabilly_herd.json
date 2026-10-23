@@ -97,7 +97,7 @@
         "timeRange": "day",
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {
@@ -245,7 +245,7 @@
         "timeRange": "day",
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {
@@ -393,7 +393,7 @@
         "timeRange": "day",
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {
@@ -541,7 +541,7 @@
         "timeRange": "day",
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {

@@ -6,6 +6,9 @@
         {
             "id": "palpitoad-1",
             "pokemon": "palpitoad",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",
@@ -28,6 +31,9 @@
         {
             "id": "palpitoad-2",
             "pokemon": "palpitoad",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",
@@ -51,6 +57,9 @@
         {
             "id": "palpitoad-3",
             "pokemon": "palpitoad",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",

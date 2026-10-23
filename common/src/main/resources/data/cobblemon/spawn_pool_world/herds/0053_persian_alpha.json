@@ -26,7 +26,7 @@
           "#cobblemon:is_arid"
         ],
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [
@@ -61,8 +61,7 @@
     {
       "id": "persian-alola-alpha-2",
       "presets": [
-        "natural",
-        "illager_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -82,7 +81,11 @@
         "biomes": [
           "#cobblemon:is_overworld"
         ],
-        "isRaining": false
+        "isRaining": false,
+        "structures": [
+          "#cobblemon:spawns/is_illager_structure"
+        ],
+        "minY": 62
       },
       "anticondition": {
         "biomes": [
@@ -122,8 +125,7 @@
     {
       "id": "persian-alola-alpha-3",
       "presets": [
-        "natural",
-        "illager_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -143,7 +145,11 @@
         "biomes": [
           "#cobblemon:is_arid",
           "#cobblemon:is_freezing"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_illager_structure"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {
@@ -177,7 +183,7 @@
     {
       "id": "persian-alola-alpha-4",
       "presets": [
-        "illager_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -189,6 +195,9 @@
         "canSeeSky": false,
         "biomes": [
           "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_illager_structure"
         ],
         "minY": 62
       },
@@ -308,7 +317,7 @@
         ],
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {
