@@ -5,6 +5,7 @@
 
 ### New Rideable Pokémon
 - Vikavolt
+- Fearow
 
 ### Particles
 ## New Move Animations
@@ -55,6 +56,7 @@
 - Added `doPokemonPredation` gamerule, which controls aggressiveness of Pokémon with `hate_entity` brain task defined
 - Added `predation_chance` server config value, which controls the possibility of attacking the hated entity found by `hate_entity` brain task 
 - Prehistoric Eroded Pillar generates slightly more frequently
+- Togekiss was changed from jet style mount to bird
 
 ### Fixes
 - Fixed datapacks with item interaction evolutions that don't specify an item crashing the world on load.
