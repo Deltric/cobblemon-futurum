@@ -53,7 +53,7 @@
   "riding": {
     "behaviours": {
       "AIR": {
-        "key": "cobblemon:air/jet",
+        "key": "cobblemon:air/bird",
         "rideSounds": [
           {
             "muffleEnabled": true,
@@ -73,11 +73,11 @@
           }
         ],
         "stats": {
-          "ACCELERATION": "20-30",
-          "JUMP": "10-20",
-          "SKILL": "45-65",
-          "SPEED": "20-30",
-          "STAMINA": "70-100"
+          "ACCELERATION": "30-40",
+          "JUMP": "20-30",
+          "SKILL": "55-70",
+          "SPEED": "55-80",
+          "STAMINA": "50-70"
         }
       },
       "LAND": {
