@@ -7,7 +7,15 @@
       "poser": "cobblemon:vikavolt",
       "model": "cobblemon:vikavolt.geo",
       "texture": "cobblemon:textures/pokemon/0738_vikavolt/vikavolt.png",
-      "layers": []
+      "layers": [
+        {
+          "name": "transparency",
+          "emissive": false,
+          "texture": "cobblemon:textures/pokemon/0738_vikavolt/vikavolt_transparency.png",
+          "translucent": true,
+          "translucent_cull": true
+        }
+      ]
     },
     {
       "aspects": [

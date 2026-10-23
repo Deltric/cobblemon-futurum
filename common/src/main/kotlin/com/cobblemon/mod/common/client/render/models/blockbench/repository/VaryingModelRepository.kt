@@ -397,7 +397,6 @@ object VaryingModelRepository {
         inbuilt("bunnelby", ::BunnelbyModel)
         inbuilt("arrokuda", ::ArrokudaModel)
         inbuilt("barraskewda", ::BarraskewdaModel)
-        inbuilt("squawkabilly", ::SquawkabillyModel)
         inbuilt("ponyta_galarian", ::PonytaGalarianModel)
         inbuilt("rapidash_galarian", ::RapidashGalarianModel)
         inbuilt("volbeat", ::VolbeatModel)

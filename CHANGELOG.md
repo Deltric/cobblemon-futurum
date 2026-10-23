@@ -3,6 +3,13 @@
 
 ### Additions
 
+### New Rideable Pokémon
+- Vikavolt
+
+### Particles
+## New Move Animations
+- Water Shuriken
+
 ### Cries added/updated for the following Pokémon
 - Hoppip
 - Skiploom
@@ -38,6 +45,8 @@
 
 ### Animation updates for the following Pokémon
 - Vikavolt
+- Magby
+- Magmar
 
 ### Changes
 - Changed the Misc icon in the Campfire Pot Recipe Book to Health Candy
@@ -72,6 +81,7 @@
 - Fixed absence or incorrect mergers in spawning conditions, making max height/depth of conditions to use the min value instead
 - Added stricter riding checks on server side to prevent possible packet forgery when player tries to ride pokemon
 - Fixed Pokémon cries and animation sounds played from GUIs, such as the starter selection screen and the Pokédex, being tied to the Master volume slider instead of Friendly Creatures
+- Fixed Archeops T-posing during its air_cry animation
 
 ### Developer
 - Bumped NeoForge to `21.1.195` to get access to MixinExtras `0.5` and the expressions annotation

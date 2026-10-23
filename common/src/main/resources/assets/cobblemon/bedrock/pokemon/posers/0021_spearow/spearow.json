@@ -4,12 +4,14 @@
   "profileScale": 0.93,
   "profileTranslation": [0, 0.39, 0],
   "rootBone": "spearow",
-  "animations": {"cry": "q.bedrock_stateful('spearow', 'cry')"},
+  "animations": {
+    "cry": "q.bedrock_stateful('spearow', 'cry')"
+  },
   "poses": {
     "standing": {
       "poseTypes": ["STAND", "NONE", "PORTRAIT", "PROFILE"],
       "isBattle": false,
-      "animations": ["q.look('head')", "q.bedrock('spearow', 'ground_idle')"],
+      "animations": ["q.look('head_ai')", "q.bedrock('spearow', 'ground_idle')"],
       "quirks": ["q.bedrock_quirk('spearow', 'blink')"],
       "transformedParts": [
         {
@@ -33,9 +35,8 @@
     "walking": {
       "poseTypes": ["WALK", "SWIM"],
       "animations": [
-        "q.look('head')",
-        "q.bedrock('spearow', 'ground_idle')",
-        "q.biped_walk(1, 1, 'leg_left', 'leg_right')"
+        "q.look('head_ai')",
+        "q.bedrock('spearow', 'ground_walk')"
       ],
       "quirks": ["q.bedrock_quirk('spearow', 'blink')"],
       "transformedParts": [
@@ -61,10 +62,9 @@
       "poseTypes": ["HOVER"],
       "animations": [
         "q.pitch_tilt('body')",
-        "q.sine_wing_flap(0.9, 0.9, 25, 'z', 'wing_open_left', 'wing_open_right')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('spearow', 'ground_idle')"
+        "q.look('head_ai')",
+        "q.bedrock('spearow', 'air_idle')"
       ],
       "quirks": ["q.bedrock_quirk('spearow', 'blink')"],
       "transformedParts": [
@@ -90,10 +90,9 @@
       "poseTypes": ["FLY"],
       "animations": [
         "q.pitch_tilt('body')",
-        "q.sine_wing_flap(0.9, 0.9, 25, 'z', 'wing_open_left', 'wing_open_right')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('spearow', 'ground_idle')"
+        "q.look('head_ai')",
+        "q.bedrock('spearow', 'air_fly')"
       ],
       "quirks": ["q.bedrock_quirk('spearow', 'blink')"],
       "transformedParts": [

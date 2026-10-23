@@ -1,0 +1,45 @@
+{
+  "portraitScale": 2.0,
+  "portraitTranslation": [-0.2, -0.2, 0.0],
+  "profileScale": 0.85,
+  "profileTranslation": [0.0, 0.51, 0.0],
+  "rootBone": "squawkabilly",
+  "animations": {
+    "cry": "q.bedrock_stateful('squawkabilly', 'cry')"
+  },
+  "poses": {
+    "standing": {
+      "poseTypes": ["STAND", "NONE", "PORTRAIT", "PROFILE"],
+      "animations": ["q.look('head')", "q.bedrock('squawkabilly', 'ground_idle')"],
+      "quirks": ["q.bedrock_quirk('squawkabilly', 'blink')"]
+    },
+    "walking": {
+      "poseTypes": ["WALK", "SWIM"],
+      "animations": [
+        "q.look('head')",
+        "q.bedrock('squawkabilly', 'ground_walk')"
+      ],
+      "quirks": ["q.bedrock_quirk('squawkabilly', 'blink')"]
+    },
+    "hover": {
+      "poseTypes": ["HOVER"],
+      "animations": [
+        "q.pitch_tilt('body')",
+        "q.look('neck', 1, 1, 70, -10, 20, -20)",
+        "q.look('head')",
+        "q.bedrock('squawkabilly', 'air_idle')"
+      ],
+      "quirks": ["q.bedrock_quirk('squawkabilly', 'blink')"]
+    },
+    "fly": {
+      "poseTypes": ["FLY"],
+      "animations": [
+        "q.pitch_tilt('body')",
+        "q.look('neck', 1, 1, 70, -10, 20, -20)",
+        "q.look('head')",
+        "q.bedrock('squawkabilly', 'air_fly')"
+      ],
+      "quirks": ["q.bedrock_quirk('squawkabilly', 'blink')"]
+    }
+  }
+}

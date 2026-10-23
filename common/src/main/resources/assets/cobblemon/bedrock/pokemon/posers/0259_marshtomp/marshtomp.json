@@ -8,6 +8,15 @@
     "cry": "q.bedrock_stateful('marshtomp', 'cry')"
   },
   "poses": {
+    "battle-standing": {
+      "isBattle": true,
+      "poseTypes": ["STAND"],
+      "animations": [
+        "q.look('head')",
+        "q.bedrock('marshtomp', 'battle_idle')"
+      ],
+      "quirks": ["q.bedrock_quirk('marshtomp', 'blink')"]
+    },
     "standing": {
       "poseTypes": ["STAND", "FLOAT", "PORTRAIT", "PROFILE", "NONE"],
       "animations": ["q.look('head')", "q.bedrock('marshtomp', 'ground_idle')"],

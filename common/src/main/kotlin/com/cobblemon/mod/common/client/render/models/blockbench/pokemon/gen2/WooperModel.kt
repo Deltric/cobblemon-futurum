@@ -29,8 +29,8 @@ class WooperModel(root: ModelPart) : PokemonPosableModel(root), HeadedFrame {
     override var portraitScale = 2.0F
     override var portraitTranslation = Vec3(-0.15, -0.65, 0.0)
 
-    override var profileScale = 0.9F
-    override var profileTranslation = Vec3(0.0, 0.4, 0.0)
+    override var profileScale = 0.75F
+    override var profileTranslation = Vec3(0.0, 0.6, 0.0)
 
     lateinit var shoulderLeft: Pose
     lateinit var shoulderRight: Pose

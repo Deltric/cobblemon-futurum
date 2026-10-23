@@ -1,8 +1,8 @@
 {
   "portraitScale": 4.2,
   "portraitTranslation": [0.0,-4.7,0],
-  "profileScale": 1.25,
-  "profileTranslation": [0.0,-0.15,0],
+  "profileScale": 1.2,
+  "profileTranslation": [0.0,-0.09,0],
   "rootBone": "nacli",
   "animations": {
     "cry": "q.bedrock_stateful('nacli', 'cry')"

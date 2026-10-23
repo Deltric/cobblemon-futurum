@@ -1,8 +1,8 @@
 {
   "portraitScale": 1.7,
   "portraitTranslation": [0.05, -0.71, 0],
-  "profileScale": 1,
-  "profileTranslation": [0, 0.1, 0],
+  "profileScale": 0.85,
+  "profileTranslation": [0, 0.4, 0],
   "rootBone": "varoom",
   "animations": {
     "cry": "q.bedrock_stateful('varoom', 'cry')"

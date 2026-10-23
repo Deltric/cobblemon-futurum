@@ -77,7 +77,7 @@
         "avoidsWater": true
       },
       "fly": {
-        "canFly": true
+        "canFly": false
       }
     },
     "combat": {

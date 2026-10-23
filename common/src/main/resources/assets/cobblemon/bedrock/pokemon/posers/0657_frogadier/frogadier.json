@@ -1,8 +1,8 @@
 {
    "portraitScale": 1.9,
-   "portraitTranslation": [ -0.1, 1.4, 0 ],
-   "profileScale": 0.7,
-   "profileTranslation": [ 0, 0.7, 0 ],
+   "portraitTranslation": [ -0.2, 1.4, 0 ],
+   "profileScale": 0.57,
+   "profileTranslation": [ 0, 0.88, 0 ],
    "rootBone": "frogadier",
    "animations": {
       "cry": "q.bedrock_stateful('frogadier', 'cry')",

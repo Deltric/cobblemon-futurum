@@ -1,8 +1,8 @@
 {
    "portraitScale": 2.3,
    "portraitTranslation": [-0.53, -1.9, 0],
-   "profileScale": 0.80,
-   "profileTranslation": [0, 0.51, 0],
+   "profileScale": 0.72,
+   "profileTranslation": [ 0, 0.63, 0 ],
    "rootBone": "weedle",
    "animations": {
       "cry": "q.bedrock_stateful('weedle', 'cry')",

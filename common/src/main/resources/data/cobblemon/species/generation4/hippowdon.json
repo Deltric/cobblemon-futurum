@@ -51,7 +51,7 @@
     "moving": {
       "stepHeight": 1,
       "walk": {
-        "walkSpeed": 0.12
+        "walkSpeed": 0.16
       },
       "swim": {
         "avoidsWater": true

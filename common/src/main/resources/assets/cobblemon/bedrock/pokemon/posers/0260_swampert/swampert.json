@@ -8,7 +8,17 @@
     "cry": "q.bedrock_stateful('swampert', 'cry')"
   },
   "poses": {
+    "battle-standing": {
+      "isBattle": true,
+      "poseTypes": ["STAND"],
+      "animations": [
+        "q.look('head_ai')",
+        "q.bedrock('swampert', 'battle_idle')"
+      ],
+      "quirks": ["q.bedrock_quirk('swampert', 'blink')"]
+    },
     "standing": {
+      "isBattle": false,
       "poseTypes": ["STAND", "FLOAT", "PORTRAIT", "PROFILE", "NONE"],
       "animations": [
         "q.look('head_ai')",

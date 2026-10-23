@@ -1,8 +1,8 @@
 {
   "portraitScale": 1.92,
   "portraitTranslation": [-0.64,-0.32,0],
-  "profileScale": 0.5,
-  "profileTranslation": [-0.05,1,0],
+  "profileScale": 0.57,
+  "profileTranslation": [-0.05,0.93,0],
   "rootBone": "helioptile",
   "animations": {
     "cry": "q.bedrock_stateful('helioptile', 'cry')"

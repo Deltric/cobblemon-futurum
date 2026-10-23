@@ -52,7 +52,7 @@
         "q.bedrock_quirk('archeops', 'blink')"
       ],
       "namedAnimations": {
-        "cry": "q.bedrock_primary('archeops', 'air_cry', q.curve('symmetrical_wide'))"
+        "cry": "q.bedrock_stateful('archeops', 'air_cry')"
       }
     },
     "jump": {
@@ -127,7 +127,7 @@
         "q.bedrock_quirk('archeops', 'blink')"
       ],
       "namedAnimations": {
-        "cry": "q.bedrock_primary('archeops', 'air_cry', q.curve('symmetrical_wide'))"
+        "cry": "q.bedrock_stateful('archeops', 'air_cry')"
       }
     },
     "fly": {
@@ -146,7 +146,7 @@
         "q.bedrock_quirk('archeops', 'blink')"
       ],
       "namedAnimations": {
-        "cry": "q.bedrock_primary('archeops', 'air_cry', q.curve('symmetrical_wide'))"
+        "cry": "q.bedrock_stateful('archeops', 'air_cry')"
       }
     },
     "glide": {

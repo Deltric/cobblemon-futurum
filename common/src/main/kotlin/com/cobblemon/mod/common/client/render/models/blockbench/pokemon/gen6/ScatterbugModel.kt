@@ -26,8 +26,8 @@ class ScatterbugModel (root: ModelPart) : PokemonPosableModel(root), HeadedFrame
     override var portraitScale = 2.6F
     override var portraitTranslation = Vec3(-0.2, -1.9, 0.0)
 
-    override var profileScale = 1.2F
-    override var profileTranslation = Vec3(0.0, 0.05, 0.0)
+    override var profileScale = 0.98F
+    override var profileTranslation = Vec3(0.0, 0.28, 0.0)
 
     lateinit var standing: CobblemonPose
     lateinit var walk: CobblemonPose

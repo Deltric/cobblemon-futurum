@@ -17,14 +17,15 @@
       "animations": [
         "q.bedrock('vikavolt', 'ground_idle')"
       ],
+      "condition": "q.has_entity ? !q.in_air : 1.0",
       "isBattle": false,
       "quirks": ["q.bedrock_quirk('vikavolt', 'blink')"],
       "transitions": {
-        "hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "fly": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "battle-standing": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "battle-hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "air-sleep": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))"
+        "hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "fly": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "battle-standing": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "battle-hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "air-sleep": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "battle-standing": {
@@ -37,20 +38,26 @@
       "namedAnimations": {
         "cry": "q.bedrock_primary('vikavolt', 'battle_cry', q.curve('symmetrical_wide'))",
         "recoil": "q.bedrock_stateful('vikavolt', 'air_recoil')"
+      },
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "walking": {
       "poseTypes": ["WALK", "SWIM"],
+      "condition": "!q.in_air && q.riding_style != 'AIR': 1.0 ? 0.0",
       "animations": [
         "q.bedrock('vikavolt', 'ground_walk')"
       ],
       "quirks": ["q.bedrock_quirk('vikavolt', 'blink')"],
       "transitions": {
-        "hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "fly": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "battle-standing": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "battle-hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "air-sleep": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))"
+        "hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "fly": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "battle-standing": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "battle-hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "air-sleep": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "hover": {
@@ -64,6 +71,11 @@
       "namedAnimations": {
         "cry": "q.bedrock_stateful('vikavolt', 'air_cry')",
         "recoil": "q.bedrock_stateful('vikavolt', 'air_recoil')"
+      },
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "battle-hover": {
@@ -77,22 +89,67 @@
       "namedAnimations": {
         "cry": "q.bedrock_primary('vikavolt', 'battle_cry', q.curve('symmetrical_wide'))",
         "recoil": "q.bedrock_stateful('vikavolt', 'air_recoil')"
+      },
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "fly": {
       "poseTypes": ["FLY"],
       "animations": [
         "q.pitch_tilt('body')",
-        "q.bedrock('vikavolt', 'air_fly')",
-        {
-          "condition": "q.is_ridden",
-          "animation": "q.bedrock('vikavolt', 'ride_air_fly')"
-        }
+        "q.bedrock('vikavolt', 'air_fly')"
       ],
       "quirks": ["q.bedrock_quirk('vikavolt', 'blink')"],
       "namedAnimations": {
         "cry": "q.bedrock_stateful('vikavolt', 'air_cry')",
         "recoil": "q.bedrock_stateful('vikavolt', 'air_recoil')"
+      },
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
+      }
+    },
+    "mount-hover": {
+      "poseTypes": ["STAND", "HOVER"],
+      "isBattle": false,
+      "condition": "q.has_entity ? q.is_ridden && q.riding_style == 'AIR' : 0.0",
+      "isRideStyle": ["AIR"],
+      "animations": [
+        "q.bedrock('vikavolt', 'air_idle')",
+        "q.bedrock('vikavolt', 'ride_air_fly')"
+      ],
+      "quirks": ["q.bedrock_quirk('vikavolt', 'blink')"],
+      "namedAnimations": {
+        "cry": "q.bedrock_stateful('vikavolt', 'air_cry')",
+        "recoil": "q.bedrock_stateful('vikavolt', 'air_recoil')"
+      },
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
+      }
+    },
+    "mount-fly": {
+      "poseTypes": ["WALK", "FLY"],
+      "isBattle": false,
+      "condition": "q.has_entity ? q.is_ridden && q.riding_style == 'AIR' : 0.0",
+      "animations": [
+        "q.bedrock('vikavolt', 'air_fly')",
+        "q.bedrock('vikavolt', 'ride_air_fly')"
+      ],
+      "quirks": ["q.bedrock_quirk('vikavolt', 'blink')"],
+      "namedAnimations": {
+        "cry": "q.bedrock_stateful('vikavolt', 'air_cry')",
+        "recoil": "q.bedrock_stateful('vikavolt', 'air_recoil')"
+      },
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "air-sleep": {
@@ -104,7 +161,12 @@
       },
       "animations": [
         "q.bedrock('vikavolt', 'air_sleep')"
-      ]
+      ],
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
+      }
     },
     "sleep": {
       "poseTypes": ["SLEEP"],
@@ -117,11 +179,11 @@
         "q.bedrock('vikavolt', 'sleep')"
       ],
       "transitions": {
-        "hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "fly": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "battle-standing": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "battle-hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))",
-        "air-sleep": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('one'))"
+        "hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "fly": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "battle-standing": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "battle-hover": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))",
+        "air-sleep": "q.bedrock_primary('vikavolt', 'air_transition',  q.curve('symmetrical_wide'))"
       }
     },
     "battle-sleep": {
@@ -132,7 +194,12 @@
       },
       "animations": [
         "q.bedrock('vikavolt', 'battle_sleep')"
-      ]
+      ],
+      "transitions": {
+        "standing": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "walking": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))",
+        "sleep": "q.bedrock_primary('vikavolt', 'ground_transition',  q.curve('symmetrical_wide'))"
+      }
     }
   }
 }
