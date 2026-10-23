@@ -51,7 +51,7 @@
   "riding": {
     "behaviours": {
       "AIR": {
-        "key": "cobblemon:air/hover",
+        "key": "cobblemon:air/bird",
         "rideSounds": [
           {
             "muffleEnabled": true,
@@ -68,30 +68,14 @@
             "playForPassengers": false,
             "soundLocation": "cobblemon:ride.loop.wind.mono",
             "volumeExpr": "math.pow(math.min(q.ride_velocity() / 1.5, 1.0),2)"
-          },
-          {
-            "muffleEnabled": true,
-            "pitchExpr": "math.max(1.0 ,0.2 + math.pow(math.min(q.ride_velocity() / 1.5, 1.0),2))",
-            "playForNonPassengers": false,
-            "playForPassengers": true,
-            "soundLocation": "cobblemon:ride.loop.saucer.stereo",
-            "volumeExpr": "math.pow(math.min(q.ride_velocity() / 1.5, 1.0),2)"
-          },
-          {
-            "muffleEnabled": true,
-            "pitchExpr": "math.max(1.0 ,0.2 + math.pow(math.min(q.ride_velocity() / 1.5, 1.0),2))",
-            "playForNonPassengers": true,
-            "playForPassengers": false,
-            "soundLocation": "cobblemon:ride.loop.saucer.mono",
-            "volumeExpr": "math.pow(math.min(q.ride_velocity() / 1.5, 1.0),2)"
           }
         ],
         "stats": {
-          "ACCELERATION": "60-75",
-          "JUMP": "25-45",
-          "SKILL": "35-55",
-          "SPEED": "45-75",
-          "STAMINA": "10-25"
+          "ACCELERATION": "40-65",
+          "JUMP": "0-5",
+          "SKILL": "55-85",
+          "SPEED": "35-50",
+          "STAMINA": "35-55"
         }
       },
       "LAND": {
