@@ -12,7 +12,11 @@
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
         "q.look('head_ai')",
-        "q.bedrock('fearow', 'ground_idle')"
+        "q.bedrock('fearow', 'ground_idle')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_ground_walk')"
+        }
       ],
       "transformedParts": [
         {
@@ -38,7 +42,11 @@
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
         "q.look('head_ai')",
-        "q.bedrock('fearow', 'ground_walk')"
+        "q.bedrock('fearow', 'ground_walk')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_ground_walk')"
+        }
       ],
       "transformedParts": [
         {
@@ -65,7 +73,11 @@
         "q.pitch_tilt('body')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
         "q.look('head_ai')",
-        "q.bedrock('fearow', 'air_idle')"
+        "q.bedrock('fearow', 'air_idle')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_air_fly')"
+        }
       ],
       "transformedParts": [
         {
@@ -88,11 +100,16 @@
     },
     "fly": {
       "poseTypes": ["FLY"],
+      "condition": "!q.is_gliding",
       "animations": [
         "q.pitch_tilt('body')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
         "q.look('head_ai')",
-        "q.bedrock('fearow', 'air_fly')"
+        "q.bedrock('fearow', 'air_fly')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_air_fly')"
+        }
       ],
       "transformedParts": [
         {
@@ -117,6 +134,26 @@
       "poseTypes": ["SLEEP"],
       "animations": ["q.bedrock('fearow', 'sleep')"],
       "namedAnimations": {"cry": "q.bedrock_stateful('dummy', 'cry')"}
+    },
+    "glide": {
+      "poseTypes": ["FLY"],
+      "condition": "q.is_gliding",
+      "animations": [
+        "q.look('neck', 1, 1, 70, -10, 20, -20)",
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'air_glide')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_air_fly')"
+        },
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_dive')"
+        }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
+      ]
     }
   }
 }
