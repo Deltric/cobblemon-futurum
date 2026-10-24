@@ -48,6 +48,13 @@
 - Vikavolt
 - Magby
 - Magmar
+- Ninetales (+ Alolan)
+- Spearow
+- Fearow
+- Squawkabilly
+- Mudkip
+- Marshtomp
+- Swampert
 
 ### Changes
 - Changed the Misc icon in the Campfire Pot Recipe Book to Health Candy
