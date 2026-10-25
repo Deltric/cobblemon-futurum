@@ -8,7 +8,6 @@
   "poses": {
     "standing": {
       "poseTypes": ["STAND", "NONE", "PORTRAIT", "PROFILE"],
-      "isBattle": false,
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
         "q.look('head_ai')",
@@ -35,6 +34,9 @@
           "part": "wing_closed_left",
           "isVisible": true
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "walking": {
@@ -65,6 +67,9 @@
           "part": "wing_closed_left",
           "isVisible": true
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "hover": {
@@ -96,6 +101,9 @@
           "part": "wing_closed_left",
           "isVisible": false
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "fly": {
@@ -128,6 +136,9 @@
           "part": "wing_closed_left",
           "isVisible": false
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "sleep": {
