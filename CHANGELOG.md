@@ -43,6 +43,9 @@
 - Dipplin
 
 ### Model updates for the following Pokémon
+- Froakie
+- Frogadier
+- Greninja
 
 ### Animation updates for the following Pokémon
 - Vikavolt
