@@ -14,6 +14,7 @@
 ### Changes
 
 ### Fixes
+- Fixed blank Cooking Pot recipe book entries and missing tabs on Fabric.
 
 ### Developer
 
