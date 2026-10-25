@@ -27,7 +27,7 @@
             "q.look('head_ai')",
             "q.bedrock('froakie', 'ground_idle')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('froakie', 'blink')"]
       },
       "walking": {
          "poseTypes": ["WALK"],
@@ -36,7 +36,7 @@
             "q.look('head_ai')",
             "q.bedrock('froakie', 'ground_walk')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('froakie', 'blink')"]
       },
       "swimming": {
          "poseTypes": ["WALK","SWIM"],
@@ -46,7 +46,7 @@
             "q.look('head_ai')",
             "q.bedrock('froakie', 'water_swim')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('froakie', 'blink')"]
       },
       "float": {
          "poseTypes": ["STAND","FLOAT"],
@@ -55,7 +55,7 @@
             "q.look('head_ai')",
             "q.bedrock('froakie', 'water_idle')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('froakie', 'blink')"]
       },
       "sleep": {
          "poseTypes": ["SLEEP"],
