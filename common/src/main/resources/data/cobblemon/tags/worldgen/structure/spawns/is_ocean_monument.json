@@ -1,0 +1,13 @@
+{
+  "values": [
+	"minecraft:monument",
+    {
+      "id": "#nova_structures:trident_trial_monument",
+      "required": false
+    },
+    {
+      "id": "#betteroceanmonuments:better_ocean_monuments",
+      "required": false
+    }
+  ]
+}

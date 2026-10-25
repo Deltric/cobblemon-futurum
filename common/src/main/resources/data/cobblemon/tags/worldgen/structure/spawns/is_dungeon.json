@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "nova_structures:bunker",
+      "required": false
+    },
+    {
+      "id": "nova_structures:creeping_crypt",
+      "required": false
+    },
+    {
+      "id": "nova_structures:undead_crypt",
+      "required": false
+    },
+    {
+      "id": "#betterdungeons:better_dungeons",
+      "required": false
+    }
+  ]
+}

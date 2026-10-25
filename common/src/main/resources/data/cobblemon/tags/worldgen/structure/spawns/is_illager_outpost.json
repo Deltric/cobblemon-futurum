@@ -1,0 +1,21 @@
+{
+  "values": [
+	"minecraft:pillager_outpost",
+    {
+      "id": "nova_structures:illager_camp",
+      "required": false
+    },
+    {
+      "id": "nova_structures:tavern_dark_oak",
+      "required": false
+    },
+    {
+      "id": "nova_structures:well_dark_oak",
+      "required": false
+    },
+    {
+      "id": "nova_structures:firewatch_tower_dark_oak",
+      "required": false
+    }
+  ]
+}
