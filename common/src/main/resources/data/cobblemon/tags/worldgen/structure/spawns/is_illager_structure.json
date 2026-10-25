@@ -1,7 +1,7 @@
 {
   "values": [
 	"#cobblemon:spawns/is_illager_outpost",
-    "#cobblemon:ruins/is_witch_structure",
+    "#cobblemon:spawns/is_witch_structure",
     "minecraft:mansion",
     {
       "id": "#nova_structures:illager_structures",
