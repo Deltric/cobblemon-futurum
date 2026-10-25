@@ -239,6 +239,10 @@ open class PokemonBattle(
     }
 
     fun writeShowdownAction(vararg messages: String) {
+        if (messages.any { it.contains("\n") || it.contains("\r") }) {
+            LOGGER.warn("Refusing to forward Showdown action with an embedded line break for battle {}: {}", battleId, messages.joinToString(" | "))
+            return
+        }
         log(messages.joinToString("\n"))
         ShowdownService.service.send(battleId, messages.toList().toTypedArray())
     }
