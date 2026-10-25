@@ -18,6 +18,7 @@
 ### Developer
 
 ### Molang & Datapacks
+- Added `q.target_fainted` function to move action effects that checks if any opponents fainted from the move.
 
 ### Particles
 
