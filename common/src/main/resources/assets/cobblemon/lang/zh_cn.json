@@ -9677,5 +9677,6 @@
     "cobblemon.config.ui.world_spawning_blocklist": "维度生成黑名单",
     "cobblemon.config.ui.world_spawning_blocklist.tooltip": "禁用宝可梦生成逻辑的维度。",
     "advancements.cobblemon.obtain_tm": "让我看看你的招式",
-    "advancements.cobblemon.obtain_tm.description": "发现或刻写一个招式学习器"
+    "advancements.cobblemon.obtain_tm.description": "发现或刻写一个招式学习器",
+    "itemGroup.cobblemon.tm_item": "招式学习器"
 }
