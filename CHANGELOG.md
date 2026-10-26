@@ -8,8 +8,16 @@
 ### Pokémon Added
 
 ### Model updates for the following Pokémon
+- Froakie
+- Frogadier
+- Greninja
+(They have eyelids now.)
 
 ### Animation updates for the following Pokémon
+- Froakie
+- Frogadier
+- Greninja
+(They can blink now.)
 
 ### Changes
 - Reworked spawn presets and added structure tags for spawns
@@ -26,6 +34,7 @@
 - Added `q.target_fainted` function to move action effects that checks if any opponents fainted from the move.
 
 ### Particles
+- Updated Water shuriken to account for new `q.target_fainted` function
 
 #### New Move Animations
 

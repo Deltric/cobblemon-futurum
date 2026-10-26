@@ -141,7 +141,8 @@
     },
     {
       "type": "pause",
-      "pause": 0.5
+      "condition": "q.target_fainted == false",
+      "pause": 1.25
     }
   ]
 }

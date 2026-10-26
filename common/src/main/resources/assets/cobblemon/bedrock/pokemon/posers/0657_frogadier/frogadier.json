@@ -27,7 +27,7 @@
             "q.look('head_ai', 1, 1, 5, -45, 45, -45)",
             "q.bedrock('frogadier', 'ground_idle')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('frogadier', 'blink')"]
       },
       "walking": {
          "poseTypes": ["WALK"],
@@ -36,7 +36,7 @@
             "q.look('head_ai', 1, 1, 0, -45, 45, -45)",
             "q.bedrock('frogadier', 'ground_walk')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('frogadier', 'blink')"]
       },
       "swimming": {
          "poseTypes": ["WALK","SWIM"],
@@ -46,7 +46,7 @@
             "q.look('head_ai')",
             "q.bedrock('frogadier', 'water_swim')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('frogadier', 'blink')"]
       },
       "float": {
          "poseTypes": ["STAND","FLOAT"],
@@ -55,7 +55,7 @@
             "q.look('head_ai')",
             "q.bedrock('frogadier', 'water_idle')"
          ],
-         "quirks": []
+         "quirks": ["q.bedrock_quirk('frogadier', 'blink')"]
       },
       "sleep": {
          "poseTypes": ["SLEEP"],

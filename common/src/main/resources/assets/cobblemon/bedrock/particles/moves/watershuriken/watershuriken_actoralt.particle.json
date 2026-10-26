@@ -64,7 +64,7 @@
 				"rotation": "math.random_integer(0,3)*90"
 			},
 			"minecraft:particle_motion_parametric": {
-				"relative_position": ["-(v.target_deltax+((v.particle_random_1-0.5)*2))*(v.particle_age / v.particle_lifetime)", "(v.target_deltay+((v.particle_random_2-0.5)*2))*(v.particle_age / v.particle_lifetime)", "-v.target_deltaz*(v.particle_age / v.particle_lifetime)"]
+				"relative_position": ["-(v.target_deltax+((v.particle_random_1-0.5)*1.33))*(v.particle_age / v.particle_lifetime)", "(v.target_deltay+((v.particle_random_2-0.5)*1.33))*(v.particle_age / v.particle_lifetime)", "-v.target_deltaz*(v.particle_age / v.particle_lifetime)"]
 			},
 			"minecraft:particle_appearance_billboard": {
 				"size": ["0.4*v.rsize", "0.4*v.rsize"],
