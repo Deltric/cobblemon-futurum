@@ -12,9 +12,11 @@
 ### Animation updates for the following Pokémon
 
 ### Changes
+- Reworked spawn presets and added structure tags for spawns
 
 ### Fixes
 - Fixed blank Cooking Pot recipe book entries and missing tabs on Fabric.
+- Fixed Minior's "Shields Down" ability not working as intended
 
 ### Developer
 
