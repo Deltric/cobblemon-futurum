@@ -7,8 +7,7 @@
             "id": "aegislash-1",
             "pokemon": "aegislash",
             "presets": [
-                "natural",
-                "nether_structures"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -18,6 +17,9 @@
             "condition": {
                 "biomes": [
                     "#minecraft:is_nether"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_nether_structure"
                 ]
             }
         },
@@ -36,7 +38,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ]
             }
         },
@@ -57,10 +59,34 @@
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_dungeon"
+                ]
             }
         },
         {
             "id": "aegislash-4",
+            "pokemon": "aegislash",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "40-50",
+            "weight": 8.0,
+            "condition": {
+                "minSkyLight": 0,
+                "maxSkyLight": 7,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_dungeon"
+                ]
+            }
+        },
+        {
+            "id": "aegislash-5",
             "pokemon": "aegislash",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

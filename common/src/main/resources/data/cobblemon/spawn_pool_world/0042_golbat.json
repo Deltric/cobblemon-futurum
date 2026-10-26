@@ -31,6 +31,9 @@
                 "isRaining": false
             },
             "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
                 "biomes": [
                     "#cobblemon:is_spooky",
                     "#cobblemon:is_freezing"
@@ -188,6 +191,11 @@
                     "#cobblemon:is_spooky"
                 ],
                 "isRaining": false
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ]
             }
         },
         {
@@ -217,6 +225,37 @@
         },
         {
             "id": "golbat-7",
+            "pokemon": "golbat",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "22-46",
+            "weight": 2.7,
+            "weightMultiplier": {
+                "multiplier": 2.0,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "isRaining": false,
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "golbat-8",
             "pokemon": "golbat",
             "presets": [
                 "natural"

@@ -33,6 +33,42 @@
     {
       "id": "litwick-herd-2",
       "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 3,
+      "levelRange": "3-28",
+      "weight": 27.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure",
+          "#cobblemon:spawns/is_graveyard"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "litwick",
+          "weight": 80.0,
+          "levelRange": "6-25",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "litwick-herd-3",
+      "presets": [
         "mansion"
       ],
       "type": "pokemon-herd",

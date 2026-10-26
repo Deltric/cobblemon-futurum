@@ -1,6 +1,6 @@
 {
   "condition": {
-	"minY": 62,
+	"minY": 48,
 	"neededBaseBlocks": [
       "minecraft:sandstone"
     ],

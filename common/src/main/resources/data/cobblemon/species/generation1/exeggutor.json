@@ -503,14 +503,14 @@
         }
       },
       "drops": {
-        "amount": 5,
+        "amount": 3,
         "entries": [
           {
-            "item": "minecraft:egg",
-            "quantityRange": "0-3"
+            "item": "cobblemon:oval_stone",
+            "percentage": 5.0
           },
           {
-            "item": "cobblemon:oval_stone",
+            "item": "cobblemon:grassy_seed",
             "percentage": 5.0
           },
           {

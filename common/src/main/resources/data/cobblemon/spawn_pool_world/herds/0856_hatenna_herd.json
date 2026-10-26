@@ -59,8 +59,9 @@
           "#cobblemon:is_swamp"
         ],
         "structures": [
-          "minecraft:swamp_hut"
-        ]
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

@@ -41,8 +41,7 @@
     {
       "id": "falinks-herd-2",
       "presets": [
-        "natural",
-        "nether_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "uncommon",
@@ -53,6 +52,9 @@
       "condition": {
         "biomes": [
           "#minecraft:is_nether"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_nether_structure"
         ]
       },
       "herdablePokemon": [

@@ -8,9 +8,12 @@
 
 package com.cobblemon.mod.common.net.serverhandling.battle
 
+import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.net.ServerNetworkPacketHandler
 import com.cobblemon.mod.common.api.text.red
 import com.cobblemon.mod.common.battles.BattleRegistry
+import com.cobblemon.mod.common.battles.HealItemActionResponse
+import com.cobblemon.mod.common.battles.MoveActionResponse
 import com.cobblemon.mod.common.exception.IllegalActionChoiceException
 import com.cobblemon.mod.common.net.messages.client.battle.BattleMakeChoicePacket
 import com.cobblemon.mod.common.net.messages.client.battle.BattleQueueRequestPacket
@@ -25,6 +28,27 @@ object BattleSelectActionsHandler : ServerNetworkPacketHandler<BattleSelectActio
         if (!actor.mustChoose) {
             return
         }
+
+        // Battle command injection attempt detection
+        packet.showdownActionResponses.asSequence()
+            .flatMap {
+                when (it) {
+                    is MoveActionResponse -> sequenceOf(it.moveName, it.targetPnx, it.gimmickID)
+                    is HealItemActionResponse -> sequenceOf(it.item)
+                    else -> emptySequence()
+                }
+            }
+            .filterNotNull()
+            .firstOrNull { field -> field.any(Char::isISOControl) }
+            ?.let {
+                // Escapes control chars as \uXXXX to prevent forging logs.
+                val printable = it.replace(Regex("\\p{Cc}")) { "\\u%04x".format(it.value[0].code) }
+                Cobblemon.LOGGER.warn("Blocked battle command injection from ${player.name.string}: $printable")
+                actor.sendUpdate(BattleQueueRequestPacket(actor.request!!))
+                actor.sendUpdate(BattleMakeChoicePacket())
+                return
+            }
+
         try {
             actor.setActionResponses(packet.showdownActionResponses)
         } catch (e: IllegalActionChoiceException) {

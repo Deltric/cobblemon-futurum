@@ -198,7 +198,17 @@ interface Spawner {
         val mid = chunk.getBlockState(startPos)
         val above = chunk.getBlockState(abovePos)
 
-        return above.isPathfindable(PathComputationType.AIR) && mid.isAir
+        // Above must be non-solid
+        if (!above.isPathfindable(PathComputationType.AIR)) {
+            return false
+        }
+
+        // Position must be non-air
+        if (mid.isAir) {
+            return false
+        }
+
+        return true
     }
 
     fun constrainArea(area: SpawningZoneInput): SpawningZoneInput? {

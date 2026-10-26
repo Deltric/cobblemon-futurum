@@ -25,12 +25,44 @@
                 "canSeeSky": false,
                 "biomes": [
                     "#cobblemon:is_desert"
+                ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
+                ]
+            }
+        },
+        {
+            "id": "larvesta-2",
+            "pokemon": "larvesta",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "11-36",
+            "weight": 420.0,
+            "weightMultiplier": {
+                "multiplier": 2.0,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "canSeeSky": false,
+                "biomes": [
+                    "#cobblemon:is_desert"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
                 ],
                 "minY": 48
             }
         },
         {
-            "id": "larvesta-2",
+            "id": "larvesta-3",
             "pokemon": "larvesta",
             "presets": [
                 "natural",
@@ -51,12 +83,44 @@
                 "canSeeSky": false,
                 "biomes": [
                     "#cobblemon:is_jungle"
+                ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ]
+            }
+        },
+        {
+            "id": "larvesta-4",
+            "pokemon": "larvesta",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "11-36",
+            "weight": 420.0,
+            "weightMultiplier": {
+                "multiplier": 2.0,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "canSeeSky": false,
+                "biomes": [
+                    "#cobblemon:is_jungle"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
                 ],
                 "minY": 48
             }
         },
         {
-            "id": "larvesta-3",
+            "id": "larvesta-5",
             "pokemon": "larvesta",
             "presets": [
                 "natural",
@@ -102,7 +166,7 @@
             }
         },
         {
-            "id": "larvesta-4",
+            "id": "larvesta-6",
             "pokemon": "larvesta",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

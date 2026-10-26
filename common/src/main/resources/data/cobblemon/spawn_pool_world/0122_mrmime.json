@@ -58,7 +58,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ]
             },
             "anticondition": {
@@ -141,7 +141,7 @@
                     "#cobblemon:is_freezing"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ]
             }
         }

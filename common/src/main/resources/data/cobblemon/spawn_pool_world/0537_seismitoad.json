@@ -6,6 +6,9 @@
         {
             "id": "seismitoad-1",
             "pokemon": "seismitoad",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",
@@ -28,6 +31,9 @@
         {
             "id": "seismitoad-2",
             "pokemon": "seismitoad",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",
@@ -51,6 +57,9 @@
         {
             "id": "seismitoad-3",
             "pokemon": "seismitoad",
+            "presets": [
+                "natural"
+            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "common",

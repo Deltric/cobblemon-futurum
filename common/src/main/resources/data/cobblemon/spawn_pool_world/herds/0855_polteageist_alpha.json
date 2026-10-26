@@ -24,7 +24,7 @@
         ],
         "timeRange": "day",
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ],
         "minY": 62
       },
@@ -117,7 +117,7 @@
         ],
         "timeRange": "night",
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ],
         "minY": 62
       },
@@ -191,6 +191,153 @@
     },
     {
       "id": "polteageist-alpha-3",
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 6,
+      "levelRange": "24-100",
+      "weight": 80.0,
+      "condition": {
+        "canSeeSky": false,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "day",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "polteageist tea_authenticity=phony alpha=true",
+          "weight": 29.7,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=antique alpha=true",
+          "weight": 0.3,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "sinistea tea_authenticity=phony",
+          "weight": 79.2,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "sinistea tea_authenticity=antique",
+          "weight": 0.8,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=phony",
+          "weight": 118.8,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=antique",
+          "weight": 1.2,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "polteageist-alpha-4",
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 6,
+      "levelRange": "24-100",
+      "weight": 80.0,
+      "condition": {
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "polteageist tea_authenticity=phony alpha=true",
+          "weight": 29.7,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=antique alpha=true",
+          "weight": 0.3,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "sinistea tea_authenticity=phony",
+          "weight": 79.2,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "sinistea tea_authenticity=antique",
+          "weight": 0.8,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=phony",
+          "weight": 118.8,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "polteageist tea_authenticity=antique",
+          "weight": 1.2,
+          "levelRange": "28-47",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "polteageist-alpha-5",
       "presets": [
         "mansion_dining"
       ],

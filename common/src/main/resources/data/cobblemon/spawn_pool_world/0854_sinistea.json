@@ -31,7 +31,7 @@
                 ],
                 "timeRange": "day",
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ],
                 "minY": 62
             },
@@ -76,7 +76,7 @@
                 ],
                 "timeRange": "night",
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ],
                 "minY": 62
             },
@@ -96,6 +96,57 @@
         },
         {
             "id": "sinistea-3",
+            "pokemon": "sinistea",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "6-31",
+            "weight": 73.6,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "canSeeSky": false,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "day",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "sinistea-4",
+            "pokemon": "sinistea",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "6-31",
+            "weight": 73.6,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "sinistea-5",
             "pokemon": "sinistea",
             "presets": [
                 "mansion_dining"

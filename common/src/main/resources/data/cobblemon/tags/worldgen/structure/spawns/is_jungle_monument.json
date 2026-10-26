@@ -1,0 +1,13 @@
+{
+  "values": [
+	"minecraft:jungle_pyramid",
+    {
+      "id": "#nova_structures:jungle_ruins",
+      "required": false
+    },
+    {
+      "id": "#betterjungletemples:better_jungle_temples",
+      "required": false
+    }
+  ]
+}

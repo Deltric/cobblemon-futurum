@@ -22,6 +22,11 @@
         ],
         "timeRange": "night"
       },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ]
+      },
       "herdablePokemon": [
         {
           "pokemon": "houndstone held_item=cobblemon:ghost_gem alpha=true",
@@ -54,8 +59,7 @@
     {
       "id": "houndstone-alpha-2",
       "presets": [
-        "natural",
-        "mansion"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -63,13 +67,22 @@
       "maxHerdSize": 4,
       "levelRange": "28-100",
       "weight": 100.0,
+      "weightMultiplier": {
+        "multiplier": 0.25,
+        "condition": {
+          "timeRange": "day"
+        }
+      },
       "condition": {
         "minSkyLight": 8,
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
         ],
-        "timeRange": "night"
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {
@@ -102,6 +115,58 @@
     },
     {
       "id": "houndstone-alpha-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "28-100",
+      "weight": 100.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "minecraft:mansion"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "houndstone held_item=cobblemon:ghost_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "greavard",
+          "weight": 80.0,
+          "levelRange": "38-50",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "houndstone",
+          "weight": 120.0,
+          "levelRange": "6-25",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "houndstone-alpha-4",
       "presets": [
         "natural"
       ],
@@ -146,7 +211,7 @@
       ]
     },
     {
-      "id": "houndstone-alpha-4",
+      "id": "houndstone-alpha-5",
       "presets": [
         "natural",
         "nether_fossil"

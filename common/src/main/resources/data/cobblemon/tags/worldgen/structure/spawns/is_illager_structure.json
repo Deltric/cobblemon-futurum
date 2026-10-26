@@ -1,0 +1,11 @@
+{
+  "values": [
+	"#cobblemon:spawns/is_illager_outpost",
+    "#cobblemon:spawns/is_witch_structure",
+    "minecraft:mansion",
+    {
+      "id": "#nova_structures:illager_structures",
+      "required": false
+    }
+  ]
+}

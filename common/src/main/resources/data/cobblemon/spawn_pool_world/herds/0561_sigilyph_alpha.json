@@ -21,7 +21,7 @@
           "#cobblemon:is_desert"
         ],
         "structures": [
-          "#cobblemon:ruin"
+          "#cobblemon:spawns/is_ruins"
         ]
       },
       "herdablePokemon": [
@@ -61,9 +61,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
-        ],
+        ]
+      },
+      "anticondition": {
         "structures": [
-          "minecraft:desert_well"
+          "#cobblemon:spawns/is_desert_monument"
         ]
       },
       "herdablePokemon": [
@@ -89,8 +91,7 @@
     {
       "id": "sigilyph-alpha-3",
       "presets": [
-        "natural",
-        "jungle_pyramid"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -103,7 +104,12 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument",
+          "minecraft:desert_well"
+        ],
+        "minY": 48
       },
       "herdablePokemon": [
         {
@@ -127,6 +133,92 @@
     },
     {
       "id": "sigilyph-alpha-4",
+      "presets": [
+        "natural",
+        "jungle_pyramid"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "22-100",
+      "weight": 100.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ]
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_jungle_monument"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "sigilyph held_item=cobblemon:flying_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "sigilyph",
+          "weight": 80.0,
+          "levelRange": "27-46",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "sigilyph-alpha-5",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "22-100",
+      "weight": 100.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_jungle_monument"
+        ],
+        "minY": 48
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "sigilyph held_item=cobblemon:flying_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "sigilyph",
+          "weight": 80.0,
+          "levelRange": "27-46",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "sigilyph-alpha-6",
       "presets": [
         "trail_ruins"
       ],
@@ -164,11 +256,7 @@
       ]
     },
     {
-      "id": "sigilyph-alpha-5",
-      "presets": [
-        "natural",
-        "end_city"
-      ],
+      "id": "sigilyph-alpha-7",
       "type": "pokemon-herd",
       "bucket": "boss",
       "spawnablePositionType": "grounded",
@@ -178,6 +266,9 @@
       "condition": {
         "biomes": [
           "#cobblemon:is_end"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_end_structure"
         ]
       },
       "herdablePokemon": [
@@ -201,7 +292,7 @@
       ]
     },
     {
-      "id": "sigilyph-alpha-6",
+      "id": "sigilyph-alpha-8",
       "type": "pokemon-herd",
       "bucket": "boss",
       "spawnablePositionType": "grounded",
@@ -237,7 +328,7 @@
       ]
     },
     {
-      "id": "sigilyph-alpha-7",
+      "id": "sigilyph-alpha-9",
       "type": "pokemon-herd",
       "bucket": "boss",
       "spawnablePositionType": "grounded",

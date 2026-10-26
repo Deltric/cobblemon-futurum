@@ -21,7 +21,7 @@
           "#cobblemon:is_jungle"
         ],
         "structures": [
-          "#cobblemon:ruin"
+          "#cobblemon:spawns/is_ruins"
         ]
       },
       "herdablePokemon": [
@@ -64,44 +64,9 @@
           "#cobblemon:is_desert"
         ]
       },
-      "herdablePokemon": [
-        {
-          "pokemon": "darumaka",
-          "weight": 80.0,
-          "levelRange": "10-29",
-          "levelRangeOffset": "-3-3",
-          "maxTimes": 7,
-          "isLeader": false,
-          "isFollower": true
-        },
-        {
-          "pokemon": "darmanitan",
-          "weight": 20.0,
-          "levelRange": "37-50",
-          "levelRangeOffset": "-2-4",
-          "maxTimes": 2,
-          "isLeader": false,
-          "isFollower": true
-        }
-      ]
-    },
-    {
-      "id": "darumaka-herd-3",
-      "presets": [
-        "natural",
-        "jungle_pyramid"
-      ],
-      "type": "pokemon-herd",
-      "bucket": "common",
-      "spawnablePositionType": "grounded",
-      "maxHerdSize": 4,
-      "levelRange": "7-54",
-      "weight": 600.0,
-      "condition": {
-        "minSkyLight": 8,
-        "maxSkyLight": 15,
-        "biomes": [
-          "#cobblemon:is_jungle"
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
         ]
       },
       "herdablePokemon": [
@@ -126,7 +91,138 @@
       ]
     },
     {
+      "id": "darumaka-herd-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "7-54",
+      "weight": 600.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_desert"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
+        ],
+        "minY": 48
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "darumaka",
+          "weight": 80.0,
+          "levelRange": "10-29",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "darmanitan",
+          "weight": 20.0,
+          "levelRange": "37-50",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
       "id": "darumaka-herd-4",
+      "presets": [
+        "natural",
+        "jungle_pyramid"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "7-54",
+      "weight": 600.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_jungle"
+        ]
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_jungle_monument"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "darumaka",
+          "weight": 80.0,
+          "levelRange": "10-29",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "darmanitan",
+          "weight": 20.0,
+          "levelRange": "37-50",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "darumaka-herd-5",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "7-54",
+      "weight": 600.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_jungle"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_jungle_monument"
+        ],
+        "minY": 48
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "darumaka",
+          "weight": 80.0,
+          "levelRange": "10-29",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "darmanitan",
+          "weight": 20.0,
+          "levelRange": "37-50",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "darumaka-herd-6",
       "presets": [
         "natural"
       ],

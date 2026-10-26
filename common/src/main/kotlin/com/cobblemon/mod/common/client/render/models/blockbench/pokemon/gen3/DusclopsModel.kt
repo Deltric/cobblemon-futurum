@@ -34,7 +34,7 @@ class DusclopsModel (root: ModelPart) : PokemonPosableModel(root) {
     lateinit var battleidle: Pose
 
     override fun registerPoses() {
-        animations["cry"] = "q.bedrock_stateful('squirtle', 'cry')".asExpressionLike()
+        animations["cry"] = "q.bedrock_stateful('dusclops', 'cry')".asExpressionLike()
 
         val blink = quirk { bedrockStateful("dusclops", "blink") }
 

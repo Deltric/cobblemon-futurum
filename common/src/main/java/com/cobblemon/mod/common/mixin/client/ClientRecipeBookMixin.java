@@ -69,7 +69,7 @@ public abstract class ClientRecipeBookMixin {
                     value = "INVOKE",
                     target = "Lcom/google/common/collect/ImmutableMap;copyOf(Ljava/util/Map;)Lcom/google/common/collect/ImmutableMap;"
             ))
-    private void addCustomAggregateCategories(Iterable<RecipeHolder<?>> recipes, RegistryAccess registryAccess, CallbackInfo ci, @Local(name = "map2") Map<RecipeBookCategories, List<RecipeCollection>> map2) {
+    private void addCustomAggregateCategories(Iterable<RecipeHolder<?>> recipes, RegistryAccess registryAccess, CallbackInfo ci, @Local(ordinal = 1) Map<RecipeBookCategories, List<RecipeCollection>> map2) {
         CobblemonRecipeCategories.Companion.getCustomAggregateCategories().forEach((recipeBookCategories, list) -> map2.put(recipeBookCategories, (List) list.stream().flatMap((recipeBookCategoriesx) -> ((List) map2.getOrDefault(recipeBookCategoriesx, ImmutableList.of())).stream()).collect(ImmutableList.toImmutableList())));
     }
 }

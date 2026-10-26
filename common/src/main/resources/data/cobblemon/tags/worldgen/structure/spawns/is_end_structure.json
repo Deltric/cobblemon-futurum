@@ -1,0 +1,17 @@
+{
+  "values": [
+	  "minecraft:end_city",
+    {
+      "id": "#nova_structures:end_castle",
+      "required": false
+    },
+    {
+      "id": "nova_structures:creeping_crypt",
+      "required": false
+    },
+    {
+      "id": "enderscape:end_city",
+      "required": false
+    }
+  ]
+}

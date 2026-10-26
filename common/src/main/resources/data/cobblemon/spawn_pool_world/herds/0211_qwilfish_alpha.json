@@ -22,7 +22,7 @@
       },
       "anticondition": {
         "structures": [
-          "minecraft:monument"
+          "#cobblemon:spawns/is_ocean_monument"
         ]
       },
       "herdablePokemon": [
@@ -48,8 +48,7 @@
     {
       "id": "qwilfish-alpha-2",
       "presets": [
-        "water",
-        "ocean_monument"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -61,7 +60,11 @@
         "canSeeSky": true,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_monument"
+        ],
+        "maxY": 62
       },
       "anticondition": {
         "biomes": [
@@ -111,7 +114,7 @@
       },
       "anticondition": {
         "structures": [
-          "minecraft:monument"
+          "#cobblemon:spawns/is_ocean_monument"
         ]
       },
       "herdablePokemon": [
@@ -137,8 +140,7 @@
     {
       "id": "qwilfish-alpha-4",
       "presets": [
-        "water",
-        "ocean_monument"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -152,7 +154,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_monument"
+        ],
+        "maxY": 62
       },
       "anticondition": {
         "biomes": [

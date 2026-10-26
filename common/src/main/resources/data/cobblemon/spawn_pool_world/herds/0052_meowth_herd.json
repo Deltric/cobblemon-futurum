@@ -81,7 +81,7 @@
         ],
         "isRaining": false,
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "anticondition": {
@@ -182,7 +182,7 @@
           "#cobblemon:is_arid"
         ],
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [
@@ -209,8 +209,7 @@
     {
       "id": "meowth-alola-1",
       "presets": [
-        "natural",
-        "illager_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -230,7 +229,11 @@
         "biomes": [
           "#cobblemon:is_overworld"
         ],
-        "isRaining": false
+        "isRaining": false,
+        "structures": [
+          "#cobblemon:spawns/is_illager_structure"
+        ],
+        "minY": 62
       },
       "anticondition": {
         "biomes": [
@@ -262,8 +265,7 @@
     {
       "id": "meowth-alola-2",
       "presets": [
-        "natural",
-        "illager_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -283,7 +285,11 @@
         "biomes": [
           "#cobblemon:is_arid",
           "#cobblemon:is_freezing"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_illager_structure"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {
@@ -309,7 +315,7 @@
     {
       "id": "meowth-alola-3",
       "presets": [
-        "illager_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "uncommon",
@@ -321,6 +327,9 @@
         "canSeeSky": false,
         "biomes": [
           "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_illager_structure"
         ],
         "minY": 62
       },

@@ -155,6 +155,11 @@
         ],
         "timeRange": "night"
       },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ]
+      },
       "herdablePokemon": [
         {
           "pokemon": "misdreavus",
@@ -178,6 +183,50 @@
     },
     {
       "id": "misdreavus-herd-5",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 3,
+      "levelRange": "19-50",
+      "weight": 20.0,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "night",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "misdreavus",
+          "weight": 90.0,
+          "levelRange": "22-41",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "mismagius",
+          "weight": 10.0,
+          "levelRange": "41-46",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 1,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "misdreavus-herd-6",
       "presets": [
         "natural"
       ],
@@ -214,7 +263,7 @@
       ]
     },
     {
-      "id": "misdreavus-herd-6",
+      "id": "misdreavus-herd-7",
       "type": "pokemon-herd",
       "bucket": "common",
       "spawnablePositionType": "grounded",

@@ -117,6 +117,9 @@ abstract class ShowdownActionResponse(val type: ShowdownActionResponseType) {
 
 data class MoveActionResponse(var moveName: String, var targetPnx: String? = null, var gimmickID: String? = null): ShowdownActionResponse(ShowdownActionResponseType.MOVE) {
     override fun isValid(activeBattlePokemon: ActiveBattlePokemon, showdownMoveSet: ShowdownMoveset?, forceSwitch: Boolean): Boolean {
+        // Ensure that the gimmick ID the player is sending is valid
+        gimmickID?.let { if (it !in VALID_GIMMICK_IDS) return false }
+
         if (forceSwitch || showdownMoveSet == null) {
             return false
         }
@@ -168,6 +171,10 @@ data class MoveActionResponse(var moveName: String, var targetPnx: String? = nul
         gimmickID = buffer.readNullable { buffer.readString() }
         return this
     }
+
+    companion object {
+        private val VALID_GIMMICK_IDS = ShowdownMoveset.Gimmick.entries.map { it.id }.toSet()
+    }
 }
 
 data class HealItemActionResponse(var item: String) : ShowdownActionResponse(ShowdownActionResponseType.FORCE_PASS) {
@@ -183,7 +190,8 @@ data class HealItemActionResponse(var item: String) : ShowdownActionResponse(Sho
     }
 
     override fun isValid(activeBattlePokemon: ActiveBattlePokemon, showdownMoveSet: ShowdownMoveset?, forceSwitch: Boolean): Boolean {
-        return !forceSwitch
+        // Previously checked for !forceSwitch, excepts in the case of a forceSwitch, this couldn't legally be sent anyway.
+        return false
     }
 
     override fun toShowdownString(activeBattlePokemon: ActiveBattlePokemon, showdownMoveSet: ShowdownMoveset?): String {

@@ -25,6 +25,9 @@
         "timeRange": "night"
       },
       "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ],
         "biomes": [
           "#cobblemon:is_volcanic"
         ]
@@ -77,6 +80,11 @@
         ],
         "timeRange": "night"
       },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ]
+      },
       "herdablePokemon": [
         {
           "pokemon": "chimecho held_item=cobblemon:psychic_gem alpha=true",
@@ -108,6 +116,63 @@
     },
     {
       "id": "chimecho-alpha-3",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "22-100",
+      "weight": 80.0,
+      "weightMultiplier": {
+        "multiplier": 0.25,
+        "condition": {
+          "timeRange": "day"
+        }
+      },
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_graveyard"
+        ],
+        "minY": 62
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "chimecho held_item=cobblemon:psychic_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "chimecho",
+          "weight": 90.0,
+          "levelRange": "27-43",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "chingling",
+          "weight": 30.0,
+          "levelRange": "8-27",
+          "levelRangeOffset": "-4-2",
+          "maxTimes": 3,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "chimecho-alpha-4",
       "type": "pokemon-herd",
       "bucket": "boss",
       "spawnablePositionType": "grounded",

@@ -30,9 +30,6 @@
         {
             "id": "gothitelle-2",
             "pokemon": "gothitelle",
-            "presets": [
-                "end_city"
-            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "uncommon",
@@ -47,6 +44,9 @@
             "condition": {
                 "biomes": [
                     "#cobblemon:is_end"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_end_structure"
                 ]
             }
         }

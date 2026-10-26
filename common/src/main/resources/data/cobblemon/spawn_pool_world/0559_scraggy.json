@@ -67,7 +67,7 @@
                     "#cobblemon:is_arid"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ],
                 "isPokeSnack": true
             },

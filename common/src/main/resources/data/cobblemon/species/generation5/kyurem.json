@@ -372,6 +372,19 @@
         "herd": {
           "maxSize": 4
         }
+      },
+      "drops": {
+        "amount": 7,
+        "entries": [
+          {
+            "item": "minecraft:packed_ice",
+            "quantityRange": "2-4"
+          },
+          {
+            "item": "minecraft:dragon_breath",
+            "quantityRange": "2-3"
+          }
+        ]
       }
     },
     {
@@ -566,6 +579,19 @@
         "herd": {
           "maxSize": 4
         }
+      },
+      "drops": {
+        "amount": 7,
+        "entries": [
+          {
+            "item": "minecraft:packed_ice",
+            "quantityRange": "2-4"
+          },
+          {
+            "item": "minecraft:dragon_breath",
+            "quantityRange": "2-3"
+          }
+        ]
       }
     }
   ],

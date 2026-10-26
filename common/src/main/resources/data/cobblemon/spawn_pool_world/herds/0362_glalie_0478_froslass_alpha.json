@@ -151,8 +151,9 @@
           "#cobblemon:is_overworld"
         ],
         "structures": [
-          "minecraft:igloo"
-        ]
+          "#cobblemon:spawns/is_igloo"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {
