@@ -17,6 +17,7 @@
 ### Fixes
 - Fixed blank Cooking Pot recipe book entries and missing tabs on Fabric.
 - Fixed Minior's "Shields Down" ability not working as intended
+- Fixed size error with ceiling attached Orb hitbox
 
 ### Developer
 
