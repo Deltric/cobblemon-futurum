@@ -20,14 +20,14 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(RecipeBookComponent.class)
 public class RecipeBookComponentMixin {
-    @Definition(id = "recipeBookCategories", local = @Local(name = "recipeBookCategories"))
+    @Definition(id = "recipeBookCategories", local = @Local(type = RecipeBookCategories.class))
     @Definition(id = "FURNACE_SEARCH", field = "Lnet/minecraft/client/RecipeBookCategories;FURNACE_SEARCH:Lnet/minecraft/client/RecipeBookCategories;")
     @Expression("recipeBookCategories != FURNACE_SEARCH")
     @ModifyExpressionValue(
             method = "updateTabs",
             at = @At(value = "MIXINEXTRAS:EXPRESSION")
     )
-    private boolean notCookingPotSearch(boolean original, @Local(name = "recipeBookCategories") RecipeBookCategories recipeBookCategories) {
+    private boolean notCookingPotSearch(boolean original, @Local RecipeBookCategories recipeBookCategories) {
         return original && recipeBookCategories != CobblemonRecipeCategories.COOKING_POT_SEARCH.toVanillaCategory();
     }
 }
