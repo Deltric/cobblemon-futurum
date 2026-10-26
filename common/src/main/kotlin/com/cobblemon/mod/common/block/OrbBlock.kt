@@ -30,7 +30,7 @@ class OrbBlock(properties: Properties) : SixFaceRotationalBlock(properties) {
 
         val FLOOR_NORTH = Shapes.box(0.3125, 0.0, 0.3125, 0.6875, 0.375, 0.6875)
         val WALL_NORTH = Shapes.box(0.3125, 0.3125, 0.625, 0.6875, 0.6875, 1.0)
-        val CEILING_NORTH = Shapes.box(0.3125, 0.625, 0.375, 0.6875, 1.0, 0.6875)
+        val CEILING_NORTH = Shapes.box(0.3125, 0.625, 0.3125, 0.6875, 1.0, 0.6875)
     }
 
     init {
