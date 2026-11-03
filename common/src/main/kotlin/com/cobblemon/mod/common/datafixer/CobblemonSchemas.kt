@@ -29,7 +29,7 @@ object CobblemonSchemas {
     private val SAME: (Int, Schema) -> Schema = ::Schema
     private val RESULT: DataFixerBuilder.Result = this.create()
 
-    const val DATA_VERSION = 3
+    const val DATA_VERSION = 4
 
     /**
      * The Cobblemon [DataFixer].
@@ -86,10 +86,19 @@ object CobblemonSchemas {
         builder.addFixer(RaisedPPStagesFix(schema1))
         val schema2 = builder.addSchema(2, SAME)
         builder.addFixer(HypertrainIVFix(schema2))
-        // Keep schemas 0/1/2 historical. The complete item payload is upgraded
-        // by native DFU without changing Cobblemon's structural template.
+        // Schema 3 is upstream's type gem block-state fix (released in 1.8.2).
+        // Worlds saved by those releases already carry version 3, so the 26.3
+        // item upgrade must be a later version or it would be skipped for them.
         val schema3 = builder.addSchema(3, SAME)
-        builder.addFixer(PokemonItemComponentsFix(schema3))
+        builder.addFixer(TypeGemGrowthTypeFix(schema3))
+        // Keep schemas 0-3 historical. The complete item payload is upgraded
+        // by native DFU without changing Cobblemon's structural template.
+        // Earlier builds of this port stamped version 3 for the item upgrade
+        // without running the type gem fix, so it is repeated here; it leaves
+        // already-migrated clusters unchanged.
+        val schema4 = builder.addSchema(4, SAME)
+        builder.addFixer(PokemonItemComponentsFix(schema4))
+        builder.addFixer(TypeGemGrowthTypeFix(schema4))
     }
 
     private class CobblemonDataFixerCodec<R>(private val baseCodec: Codec<R>, private val typeReference: TypeReference) : Codec<R> {

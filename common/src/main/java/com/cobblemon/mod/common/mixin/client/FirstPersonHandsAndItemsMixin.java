@@ -9,6 +9,7 @@
 package com.cobblemon.mod.common.mixin.client;
 
 import com.cobblemon.mod.common.OrientationControllable;
+import com.cobblemon.mod.common.client.render.player.FirstPersonRecallBallRenderer;
 import com.cobblemon.mod.common.item.PokedexItem;
 import net.minecraft.client.player.FirstPersonHandsAndItems;
 import net.minecraft.client.player.LocalPlayer;
@@ -30,5 +31,6 @@ public abstract class FirstPersonHandsAndItemsMixin {
             state.xBob = state.viewXRot;
             state.yBob = state.viewYRot;
         }
+        FirstPersonRecallBallRenderer.INSTANCE.extract(player, partialTicks);
     }
 }

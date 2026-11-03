@@ -39,10 +39,6 @@
         "q.bedrock_quirk('weezing_galar', 'blink')",
         "q.bedrock_quirk('weezing_galar', 'blink2')"
       ]
-    },
-    "sleeping": {
-      "poseTypes": ["SLEEP"],
-      "animations": ["q.bedrock('weezing_galar', 'sleep')"]
     }
   }
 }

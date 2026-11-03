@@ -7,7 +7,7 @@
   "animations": {
     "cry": "q.bedrock_stateful('pidgeot', 'cry')",
     "recoil": "q.bedrock_stateful('pidgeot', 'recoil')",
-    "special": "q.bedrock_primary('pidgeot', 'special', q.curve('symmetrical'))"
+    "status": "q.bedrock_primary('pidgeot', 'status', q.curve('symmetrical_wide'))"
   },
   "firstPersonCameraOffset": {
     "seat_1": [0, 0.45, 0]

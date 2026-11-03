@@ -21,6 +21,35 @@
                     "#cobblemon:is_spooky"
                 ],
                 "timeRange": "night"
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ]
+            }
+        },
+        {
+            "id": "dusknoir-2",
+            "pokemon": "dusknoir",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "41-53",
+            "weight": 0.5,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
             }
         },
         {

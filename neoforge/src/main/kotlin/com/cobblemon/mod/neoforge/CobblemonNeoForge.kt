@@ -33,6 +33,8 @@ import com.cobblemon.mod.neoforge.worldgen.CobblemonBiomeModifiers
 import com.mojang.brigadier.arguments.ArgumentType
 import net.minecraft.commands.synchronization.ArgumentTypeInfo
 import net.minecraft.commands.synchronization.ArgumentTypeInfos
+import net.minecraft.core.HolderLookup
+import net.minecraft.core.RegistryAccess
 import net.minecraft.core.registries.Registries
 import net.minecraft.core.component.DataComponents
 import com.cobblemon.mod.common.api.item.CobblemonComposting
@@ -62,6 +64,8 @@ import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.serialization.Codec
 import net.minecraft.world.level.ItemLike
 import net.minecraft.world.level.biome.Biome
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.FlowerPotBlock
 import net.minecraft.world.level.levelgen.GenerationStep
 import net.minecraft.world.level.levelgen.placement.PlacedFeature
 import net.neoforged.api.distmarker.Dist
@@ -97,7 +101,7 @@ class CobblemonNeoForge(
     private val commandArgumentTypes = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, Cobblemon.MODID)
     private data class ServerReloader(
         val identifier: Identifier,
-        val listener: PreparableReloadListener,
+        val listener: (HolderLookup.Provider) -> PreparableReloadListener,
         val dependencies: List<Identifier>
     )
     private val reloadableResources = arrayListOf<ServerReloader>()
@@ -293,7 +297,26 @@ class CobblemonNeoForge(
     override fun registerBlocks() {
         modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonBlocks.resourceKey) { helper ->
-                CobblemonBlocks.register { identifier, block -> helper.register(identifier, block) }
+                CobblemonBlocks.register { identifier, block ->
+                    if (block !is FlowerPotBlock) helper.register(identifier, block)
+                }
+            }
+        }
+
+        MOD_BUS.addListener<RegisterEvent>(EventPriority.LOW) { event ->
+            // Register the pots after registering main blocks to solve race condition when pottable blocks are still not registered
+            event.register(CobblemonBlocks.resourceKey) { helper ->
+                CobblemonBlocks.register { identifier, block ->
+                    if (block is FlowerPotBlock) {
+                        helper.register(identifier, block)
+
+                        val pottedIdentifier = RegistryAccessResolver.getAccess()
+                            .registryOrThrow(Registries.BLOCK)
+                            .getKeyOrNull(block.potted)!!
+
+                        (Blocks.FLOWER_POT as FlowerPotBlock).addPlant(pottedIdentifier) { block }
+                    }
+                }
             }
         }
     }
@@ -457,20 +480,24 @@ class CobblemonNeoForge(
         }
     }
 
-    override fun registerResourceReloader(identifier: Identifier, reloader: PreparableReloadListener, type: PackType, dependencies: Collection<Identifier>) {
+    override fun registerResourceReloader(
+        identifier: Identifier,
+        type: PackType,
+        dependencies: Collection<Identifier>,
+        reloaderFactory: (HolderLookup.Provider) -> PreparableReloadListener
+    ) {
         if (type == PackType.SERVER_DATA) {
-            this.reloadableResources += ServerReloader(identifier, reloader, dependencies.toList())
+            this.reloadableResources += ServerReloader(identifier, reloaderFactory, dependencies.toList())
         }
         else {
-            CobblemonNeoForgeClient.registerResourceReloader(identifier, reloader, dependencies)
+            CobblemonNeoForgeClient.registerResourceReloader(identifier, reloaderFactory(RegistryAccess.EMPTY), dependencies)
         }
     }
 
     private fun onReload(e: AddServerReloadListenersEvent) {
         reloadableResources.forEach {
-            e.addListener(it.identifier, RegistryOpsProvider.wrapReloadListener(it.listener) { _ ->
-                e.serverResources.registryLookup
-            })
+            val lookup = e.serverResources.registryLookup
+            e.addListener(it.identifier, RegistryOpsProvider.wrapReloadListener(it.listener(lookup)) { _ -> lookup })
         }
         reloadableResources.forEach { registration ->
             registration.dependencies.forEach { dependency -> e.addDependency(dependency, registration.identifier) }

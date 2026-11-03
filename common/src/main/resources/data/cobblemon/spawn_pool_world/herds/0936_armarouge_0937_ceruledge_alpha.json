@@ -5,8 +5,7 @@
     {
       "id": "armarouge-ceruledge-alpha-1",
       "presets": [
-        "natural",
-        "nether_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -17,6 +16,9 @@
       "condition": {
         "biomes": [
           "#minecraft:is_nether"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_nether_structure"
         ]
       },
       "herdablePokemon": [
@@ -43,7 +45,24 @@
           "levelRangeOffset": "-3-3",
           "maxTimes": 7,
           "isLeader": false,
-          "isFollower": true
+          "isFollower": true,
+          "dropTable": {
+            "amount": 3,
+            "entries": [
+              {
+                "item": "minecraft:blaze_rod",
+                "quantityRange": "0-1"
+              },
+              {
+                "item": "cobblemon:charcoal_stick",
+                "percentage": 2.5
+              },
+              {
+                "item": "cobblemon:rawst_berry",
+                "percentage": 2.5
+              }
+            ]
+          }
         },
         {
           "pokemon": "armarouge",
@@ -52,7 +71,28 @@
           "levelRangeOffset": "-2-4",
           "maxTimes": 3,
           "isLeader": false,
-          "isFollower": true
+          "isFollower": true,
+          "dropTable": {
+            "amount": 5,
+            "entries": [
+              {
+                "item": "minecraft:blaze_rod",
+                "quantityRange": "0-2"
+              },
+              {
+                "item": "cobblemon:charcoal_stick",
+                "percentage": 5.0
+              },
+              {
+                "item": "cobblemon:auspicious_armor",
+                "percentage": 5.0
+              },
+              {
+                "item": "cobblemon:rawst_berry",
+                "percentage": 5.0
+              }
+            ]
+          }
         },
         {
           "pokemon": "ceruledge",
@@ -61,7 +101,28 @@
           "levelRangeOffset": "-2-4",
           "maxTimes": 3,
           "isLeader": false,
-          "isFollower": true
+          "isFollower": true,
+          "dropTable": {
+            "amount": 5,
+            "entries": [
+              {
+                "item": "minecraft:blaze_rod",
+                "quantityRange": "0-2"
+              },
+              {
+                "item": "cobblemon:charcoal_stick",
+                "percentage": 5.0
+              },
+              {
+                "item": "cobblemon:malicious_armor",
+                "percentage": 5.0
+              },
+              {
+                "item": "cobblemon:rawst_berry",
+                "percentage": 5.0
+              }
+            ]
+          }
         }
       ]
     },

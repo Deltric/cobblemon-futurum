@@ -210,6 +210,14 @@ class FormData(
     val evolutions: MutableSet<Evolution>
         get() = _evolutions ?: mutableSetOf()
 
+    /** The evolutions explicitly set on this form, as opposed to [evolutions] which falls back to an empty set. Used to tell whether this form overrides the species' evolutions when syncing. */
+    internal val ownEvolutions: MutableSet<Evolution>?
+        get() = this._evolutions
+
+    /** The preEvolution explicitly set on this form, as opposed to [preEvolution] which falls back to the species'. Used to tell whether this form overrides the species' preEvolution when syncing. */
+    internal val ownPreEvolution: PreEvolution?
+        get() = this._preEvolution
+
     val battleTheme: Identifier
         get() = _battleTheme ?: species.battleTheme
 

@@ -1,5 +1,7 @@
 {
     "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "group": "mulches",
     "ingredients": [
         "minecraft:sand",
         "cobblemon:mulch_base"

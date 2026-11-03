@@ -2,8 +2,8 @@
   "rootBone": "murkrow",
   "portraitScale": 3,
   "portraitTranslation": [-0.35, -1.23, 0],
-  "profileScale": 0.95,
-  "profileTranslation": [0, 0.35, 0],
+  "profileScale": 0.85,
+  "profileTranslation": [0, 0.45, 0],
   "animations": {
     "cry": "q.bedrock_stateful('murkrow', 'cry')"
   },

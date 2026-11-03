@@ -1,0 +1,57 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "cobblemon:cyan_mint_leaf",
+          "modifier": [
+            {
+              "add": false,
+              "count": 2.0,
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:cyan_mint_leaf_litter",
+                "state": {
+                  "amount": "2"
+                }
+              }
+            },
+            {
+              "add": false,
+              "count": 3.0,
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:cyan_mint_leaf_litter",
+                "state": {
+                  "amount": "3"
+                }
+              }
+            },
+            {
+              "add": false,
+              "count": 4.0,
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:cyan_mint_leaf_litter",
+                "state": {
+                  "amount": "4"
+                }
+              }
+            },
+            {
+              "type": "minecraft:explosion_decay"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "cobblemon:blocks/cyan_mint_leaf_litter"
+}

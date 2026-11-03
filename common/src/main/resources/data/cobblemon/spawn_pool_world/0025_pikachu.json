@@ -37,7 +37,9 @@
             },
             "anticondition": {
                 "biomes": [
-                    "#cobblemon:is_spooky"
+                    "#cobblemon:is_beach",
+                    "#cobblemon:is_spooky",
+                    "#cobblemon:is_tropical_island"
                 ]
             }
         },

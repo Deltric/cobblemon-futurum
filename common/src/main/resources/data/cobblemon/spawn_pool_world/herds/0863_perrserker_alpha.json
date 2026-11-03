@@ -82,7 +82,7 @@
           "#cobblemon:is_taiga"
         ],
         "structures": [
-          "#minecraft:village"
+          "#cobblemon:spawns/is_civilization"
         ]
       },
       "herdablePokemon": [

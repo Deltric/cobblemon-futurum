@@ -227,7 +227,24 @@
       ],
       "preEvolution": "floette",
       "evolutions": [],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 5,
+        "entries": [
+          {
+            "item": "minecraft:dandelion",
+            "quantityRange": "0-3"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 10.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 10.0
+          }
+        ]
+      }
     },
     {
       "name": "Orange",
@@ -246,7 +263,24 @@
       ],
       "preEvolution": "floette",
       "evolutions": [],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 5,
+        "entries": [
+          {
+            "item": "minecraft:orange_tulip",
+            "quantityRange": "0-3"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 10.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 10.0
+          }
+        ]
+      }
     },
     {
       "name": "Blue",
@@ -265,7 +299,24 @@
       ],
       "preEvolution": "floette",
       "evolutions": [],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 5,
+        "entries": [
+          {
+            "item": "minecraft:cornflower",
+            "quantityRange": "0-3"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 10.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 10.0
+          }
+        ]
+      }
     },
     {
       "name": "White",
@@ -284,7 +335,24 @@
       ],
       "preEvolution": "floette",
       "evolutions": [],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 5,
+        "entries": [
+          {
+            "item": "minecraft:oxeye_daisy",
+            "quantityRange": "0-3"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 10.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 10.0
+          }
+        ]
+      }
     }
   ]
 }

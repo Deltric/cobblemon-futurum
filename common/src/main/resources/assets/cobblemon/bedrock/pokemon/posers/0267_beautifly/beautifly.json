@@ -4,6 +4,9 @@
   "profileScale": 0.60,
   "profileTranslation": [0, 0.90, 0],
   "rootBone": "beautifly",
+  "animations": {
+    "cry": "q.bedrock_stateful('beautifly', 'cry')"
+  },
   "poses": {
 	"battle-standing": {
      "poseTypes": ["STAND"],

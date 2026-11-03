@@ -37,6 +37,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.event.player.UseBlockCallback
@@ -58,9 +59,13 @@ import net.fabricmc.fabric.impl.resource.ResourceLoaderImpl
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.commands.synchronization.ArgumentTypeInfo
+import net.minecraft.core.HolderLookup
 import net.minecraft.core.Registry
 import net.minecraft.core.component.DataComponents
 import com.cobblemon.mod.common.api.item.CobblemonComposting
+import net.minecraft.core.RegistryAccess
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.Identifier
@@ -179,6 +184,7 @@ object CobblemonFabric : CobblemonImplementation {
         ServerPlayConnectionEvents.DISCONNECT.register { handler, server ->
             if (!server.isStopped) server.executeIfPossible { PlatformEvents.SERVER_PLAYER_LOGOUT.post(ServerPlayerEvent.Logout(handler.player)) }
         }
+        ServerPlayerEvents.AFTER_RESPAWN.register { oldPlayer, newPlayer, alive -> PlatformEvents.PLAYER_RESPAWN.post(ServerPlayerEvent.Respawn(newPlayer)) }
         ServerLivingEntityEvents.ALLOW_DEATH.register { entity, _, _ ->
             if (entity is ServerPlayer) {
                 PlatformEvents.PLAYER_DEATH.postThen(
@@ -354,11 +360,16 @@ object CobblemonFabric : CobblemonImplementation {
         }
     }
 
-    override fun registerResourceReloader(identifier: Identifier, reloader: PreparableReloadListener, type: PackType, dependencies: Collection<Identifier>) {
+    override fun registerResourceReloader(
+        identifier: Identifier,
+        type: PackType,
+        dependencies: Collection<Identifier>,
+        reloaderFactory: (HolderLookup.Provider) -> PreparableReloadListener
+    ) {
         val loader = ResourceLoader.get(type)
         val listener = if (type == PackType.SERVER_DATA) {
-            RegistryOpsProvider.wrapReloadListener(reloader) { it.get(ResourceLoader.REGISTRY_LOOKUP_KEY) }
-        } else reloader
+            RegistryOpsProvider.wrapReloadListener(RegistryAwareReloadListener(identifier, reloaderFactory)) { it.get(ResourceLoader.REGISTRY_LOOKUP_KEY) }
+        } else reloaderFactory(RegistryAccess.EMPTY)
         loader.registerReloadListener(identifier, listener)
         dependencies.forEach { dependency -> loader.addListenerOrdering(dependency, identifier) }
     }
@@ -392,4 +403,29 @@ object CobblemonFabric : CobblemonImplementation {
             this.fabricItemGroupEntries.accept(item)
         }
     }
+}
+
+/** Creates the server data listener for each reload from that reload's staged registry lookup. */
+private class RegistryAwareReloadListener(
+    private val identifier: Identifier,
+    private val factory: (HolderLookup.Provider) -> PreparableReloadListener
+) : PreparableReloadListener {
+    private var current: Pair<PreparableReloadListener.SharedState, PreparableReloadListener>? = null
+
+    private fun listenerFor(state: PreparableReloadListener.SharedState): PreparableReloadListener =
+        current?.takeIf { it.first === state }?.second
+            ?: factory(state.get(ResourceLoader.REGISTRY_LOOKUP_KEY)).also { current = state to it }
+
+    override fun prepareSharedState(currentReload: PreparableReloadListener.SharedState) {
+        listenerFor(currentReload).prepareSharedState(currentReload)
+    }
+
+    override fun reload(
+        currentReload: PreparableReloadListener.SharedState,
+        taskExecutor: Executor,
+        preparationBarrier: PreparableReloadListener.PreparationBarrier,
+        reloadExecutor: Executor
+    ): CompletableFuture<Void> = listenerFor(currentReload).reload(currentReload, taskExecutor, preparationBarrier, reloadExecutor)
+
+    override fun getName(): String = identifier.toString()
 }

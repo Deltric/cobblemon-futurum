@@ -12,6 +12,7 @@ import com.cobblemon.mod.common.client.render.models.blockbench.pokemon.PokemonP
 import com.cobblemon.mod.common.client.render.models.blockbench.frame.HeadedFrame
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.Pose
 import com.cobblemon.mod.common.entity.PoseType
+import com.cobblemon.mod.common.util.asExpressionLike
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.world.phys.Vec3
 
@@ -28,6 +29,8 @@ class MasquerainModel(root: ModelPart) : PokemonPosableModel(root), HeadedFrame 
     lateinit var walk: Pose
     lateinit var standing: Pose
     override fun registerPoses() {
+        animations["cry"] = "q.bedrock_stateful('masquerain', 'cry')".asExpressionLike()
+
         val blink = quirk { bedrockStateful("masquerain", "blink") }
         standing = registerPose(
             poseName = "standing",

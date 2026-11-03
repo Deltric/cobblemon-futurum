@@ -1201,7 +1201,7 @@ open class PokemonEntity(
                 }
                 return InteractionResult.SUCCESS
             } else if (itemStack.`is`(Items.BOWL)) {
-                if (pokemon.aspects.any { it.contains("mooshtank") }) {
+                if (pokemon.aspects.any { it.contains("mooshtank") && !it.contains("mooshtank-false") }) {
                     player.playSound(SoundEvents.MOOSHROOM_MILK, 1.0f, 1.0f)
                     // if the Mooshtank ate a Flower beforehand
                     if (pokemon.lastFlowerFed != ItemStack.EMPTY && pokemon.aspects.any { it.contains("mooshtank-brown") }) {
@@ -1243,7 +1243,8 @@ open class PokemonEntity(
             ) {
                 if (pokemon.aspects.any { it.contains("mooshtank-brown") }) {
                     player.playSound(SoundEvents.MOOSHROOM_EAT, 1.0f, 1.0f)
-                    pokemon.lastFlowerFed = itemStack
+                    pokemon.lastFlowerFed = itemStack.copyWithCount(1)
+                    if (!player.isCreative && !level().isClientSide) itemStack.shrink(1)
                     return InteractionResult.SUCCESS
                 }
             } else if (!player.isShiftKeyDown && StashHandler.interactMob(player, pokemon, itemStack)) {
@@ -1302,16 +1303,7 @@ open class PokemonEntity(
     }
 
     private fun showInteractionWheel(player: ServerPlayer, itemStack: ItemStack) {
-         val canRide = ifRidingAvailableSupply(false) { behaviour, settings, state ->
-            if (platform != PlatformType.NONE) return@ifRidingAvailableSupply false
-            if (tethering != null) return@ifRidingAvailableSupply false;
-            if (seats.isEmpty()) return@ifRidingAvailableSupply false;
-            if ((owner as? ServerPlayer)?.isInBattle() == true) return@ifRidingAvailableSupply false;
-            if (this.owner != player && this.passengers.isEmpty()) return@ifRidingAvailableSupply false;
-            if(pokemon.effectiveScale < Cobblemon.config.minimumRidingScale) return@ifRidingAvailableSupply false;
-            if(beamMode == 3) return@ifRidingAvailableSupply false;
-            return@ifRidingAvailableSupply behaviour.isActive(settings, state, this);
-        }
+        val canRide = isRideableFor(player)
         if (pokemon.getOwnerPlayer() == player) {
             val cosmeticItemDefinition = CobblemonCosmeticItems.findValidCosmeticForPokemonAndItem(
                 player.level().registryAccess(),
@@ -1331,6 +1323,18 @@ open class PokemonEntity(
             player.isShiftKeyDown = false
             tryRidingPokemon(player)
         }
+    }
+
+    fun isRideableFor(player: ServerPlayer): Boolean = ifRidingAvailableSupply(false) canRide@{ behaviour, settings, state ->
+        if (!player.isWithinEntityInteractionRange(this, player.entityInteractionRange())) return@canRide false
+        if (platform != PlatformType.NONE) return@canRide false
+        if (tethering != null) return@canRide false
+        if (seats.isEmpty()) return@canRide false
+        if ((owner as? ServerPlayer)?.isInBattle() == true) return@canRide false
+        if (this.owner != player && this.passengers.isEmpty()) return@canRide false
+        if (pokemon.effectiveScale < Cobblemon.config.minimumRidingScale) return@canRide false
+        if (beamMode == 3) return@canRide false
+        return@canRide behaviour.isActive(settings, state, this)
     }
 
     override fun getDimensions(pose: Pose): EntityDimensions {
@@ -1492,19 +1496,31 @@ open class PokemonEntity(
 
         // Evolution item logic
         if (pokemon.getOwnerPlayer() == player) {
+            fun evolutionUnlocked(): Boolean {
+                stack.consume(1, player)
+                this.level().playSoundServer(
+                    position = this.position(),
+                    sound = CobblemonSounds.ITEM_USE,
+                    volume = 1F,
+                    pitch = 1F
+                )
+                return true
+            }
             val context = ItemInteractionEvolution.ItemInteractionContext(stack, player.level())
-            pokemon.lockedEvolutions
-                    .filterIsInstance<ItemInteractionEvolution>()
-                    .forEach { evolution ->
-                        if (evolution.attemptEvolution(pokemon, context)) {
-                            stack.consume(1, player)
-                            this.level().playSoundServer(
-                                    position = this.position(),
-                                    sound = CobblemonSounds.ITEM_USE,
-                                    volume = 1F,
-                                    pitch = 1F
-                            )
-                            return true
+            val lockedItemEvolutions = pokemon.lockedEvolutions.filterIsInstance<ItemInteractionEvolution>()
+            // forced evolutions > check those first and do ONLY one if there's multiple
+            lockedItemEvolutions.filter { !it.optional }.forEach {
+                if (it.attemptEvolution(pokemon, context)) {
+                   return evolutionUnlocked()
+                }
+            }
+            // optional evolutions > unlock all with single item use
+            lockedItemEvolutions.filter { it.optional }
+                    // we unlock all evolutions that depend on this single item
+                    .map { evolution -> return@map evolution.attemptEvolution(pokemon, context) }
+                    .let {
+                        if (it.contains(true)) { // if any of the evolutions were unlocked, we take the item
+                            return evolutionUnlocked()
                         }
                     }
         }
@@ -1602,9 +1618,8 @@ open class PokemonEntity(
                 || stack.`is`(CobblemonItemTags.WHITELISTED_ITEMS_TO_HOLD)
 
     fun tryRidingPokemon(player: ServerPlayer): Boolean {
-        if (pokemon.effectiveScale < Cobblemon.config.minimumRidingScale) {
-            return false
-        }
+        if (!isRideableFor(player)) return false
+
         val event = RidePokemonEvent.Pre(player, this)
         CobblemonEvents.RIDE_EVENT_PRE.post(event)
         if (!event.isCanceled) {

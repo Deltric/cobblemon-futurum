@@ -29,6 +29,11 @@
                     "#cobblemon:is_taiga"
                 ],
                 "timeRange": "night"
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ]
             }
         },
         {
@@ -56,6 +61,41 @@
                     "#cobblemon:is_spooky"
                 ],
                 "timeRange": "night"
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ]
+            }
+        },
+        {
+            "id": "trevenant-3",
+            "pokemon": "trevenant",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "26-47",
+            "weight": 0.5,
+            "weightMultiplier": {
+                "multiplier": 2.0,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62
             }
         }
     ]

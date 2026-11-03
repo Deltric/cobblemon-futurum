@@ -18,7 +18,7 @@ import net.minecraft.util.datafix.fixes.References;
 
 /** Migrates the two saved Pokémon item stacks without decoding mod components. */
 public final class PokemonItemComponentsFix extends DataFix {
-    public static final int FIX_VERSION = 3;
+    public static final int FIX_VERSION = 4;
     public static final int LEGACY_ITEM_VERSION = 3955;
     public static final int TARGET_ITEM_VERSION = 5023;
     public static final String ITEM_VERSION_KEY = "cobblemon:item_data_version";

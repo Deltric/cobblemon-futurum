@@ -14,7 +14,7 @@
             "spawnablePositionType": "grounded",
             "bucket": "common",
             "level": "1-25",
-            "weight": 90.0,
+            "weight": 54.0,
             "condition": {
                 "minSkyLight": 8,
                 "maxSkyLight": 15,
@@ -28,9 +28,38 @@
                 "isPokeSnack": true
             },
             "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
                 "biomes": [
                     "#cobblemon:is_arid"
                 ]
+            }
+        },
+        {
+            "id": "rookidee-2",
+            "pokemon": "rookidee",
+            "presets": [
+                "natural",
+                "treetop"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "1-25",
+            "weight": 54.0,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "day",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62,
+                "isPokeSnack": true
             }
         }
     ]

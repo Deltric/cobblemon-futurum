@@ -1,8 +1,8 @@
 {
   "portraitScale": 2.1,
   "portraitTranslation": [-0.11, -1.29, 0],
-  "profileScale": 1.39,
-  "profileTranslation": [-0.02, -0.35, 0],
+  "profileScale": 1.0,
+  "profileTranslation": [-0.02, 0.22, 0],
   "rootBone": "rookidee",
   "animations": {
     "cry": "q.bedrock_stateful('rookidee', 'cry')",

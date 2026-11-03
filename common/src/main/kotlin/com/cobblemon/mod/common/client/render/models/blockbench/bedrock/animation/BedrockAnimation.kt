@@ -19,6 +19,7 @@ import com.cobblemon.mod.common.client.render.models.blockbench.PosableState
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.Bone
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.RenderContext
 import com.cobblemon.mod.common.client.sound.instances.AlphaCrySoundInstance
+import com.cobblemon.mod.common.client.sound.instances.UIEntitySoundInstance
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.util.effectiveName
 import com.cobblemon.mod.common.util.genericRuntime
@@ -121,7 +122,7 @@ class BedrockSoundKeyframe(
                     }
                 }
             } else {
-                Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(soundEvent, 1F, 1F))
+                Minecraft.getInstance().soundManager.play(UIEntitySoundInstance(soundEvent))
             }
         }
     }
@@ -262,9 +263,9 @@ data class BedrockAnimation(
     fun applyEffects(entity: Entity?, state: PosableState, previousSeconds: Float, newSeconds: Float) {
         val effectCondition: (effectKeyframe: BedrockEffectKeyframe) -> Boolean =
             if (previousSeconds > newSeconds) {
-                { it.seconds >= previousSeconds || it.seconds <= newSeconds }
+                { it.seconds >= previousSeconds || it.seconds < newSeconds }
             } else {
-                { it.seconds in previousSeconds..newSeconds }
+                { it.seconds >= previousSeconds && it.seconds < newSeconds }
             }
 
         effects.filter(effectCondition).forEach { it.run(entity, state) }

@@ -24,6 +24,31 @@
             "id": "lampent-2",
             "pokemon": "lampent",
             "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "41-46",
+            "weight": 5.7,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure",
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "lampent-3",
+            "pokemon": "lampent",
+            "presets": [
                 "mansion"
             ],
             "type": "pokemon",

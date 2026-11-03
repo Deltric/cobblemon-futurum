@@ -16,6 +16,8 @@ import com.mojang.serialization.DynamicOps
 import com.mojang.serialization.JsonOps
 import net.minecraft.client.Minecraft
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.RegistryAccess
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.packs.resources.PreparableReloadListener
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
@@ -86,4 +88,22 @@ object RegistryOpsProvider {
 
     fun getOpsWithDefaultFallback(): DynamicOps<JsonElement> =
         getRegistryLookupWithDefaultFallback()?.createSerializationContext(JsonOps.INSTANCE) ?: JsonOps.INSTANCE
+}
+
+/**
+ * Utility for getting registry access with the correct client/server registry access.
+ * Used as a fallback when manually encoding/decoding registry-backed values (e.g., items, predicates).
+ * During a reload this is the staged lookup, since the reload's tags are not applied to the global registries yet.
+ */
+object RegistryAccessResolver {
+    private val builtInAccess: RegistryAccess by lazy { RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY) }
+
+    fun getAccess(): HolderLookup.Provider {
+        try {
+            Cobblemon.implementation
+        } catch (e: UninitializedPropertyAccessException) {
+            return builtInAccess
+        }
+        return RegistryOpsProvider.getRegistryLookupWithDefaultFallback() ?: builtInAccess
+    }
 }

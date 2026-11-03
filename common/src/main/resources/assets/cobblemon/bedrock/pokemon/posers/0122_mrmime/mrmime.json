@@ -94,13 +94,6 @@
         "q.bedrock('mr_mime', 'ground_run')"
       ],
       "quirks": ["q.bedrock_quirk('mr_mime', 'blink')"]
-    },
-    "sleep": {
-      "poseTypes": ["SLEEP"],
-      "namedAnimations": {
-        "cry": "q.bedrock_stateful('dummy', 'cry')"
-      },
-      "animations": ["q.bedrock('mr_mime', 'sleep')"]
     }
   }
 }

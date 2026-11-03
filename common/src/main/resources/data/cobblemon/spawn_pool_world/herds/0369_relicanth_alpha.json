@@ -42,8 +42,7 @@
     {
       "id": "relicanth-alpha-2",
       "presets": [
-        "water",
-        "ocean_ruins"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -55,7 +54,11 @@
         "canSeeSky": true,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_ruins"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {
@@ -99,7 +102,8 @@
       "anticondition": {
         "biomes": [
           "#cobblemon:is_deep_ocean",
-          "#cobblemon:is_lush"
+          "#cobblemon:is_lush",
+          "minecraft:sulfur_caves"
         ]
       },
       "herdablePokemon": [
@@ -125,8 +129,7 @@
     {
       "id": "relicanth-alpha-4",
       "presets": [
-        "water",
-        "ocean_ruins"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -140,7 +143,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_ruins"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {

@@ -29,7 +29,7 @@ import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay
 class CookingPotRecipeBookComponent(menu: CookingPotMenu) : RecipeBookComponent<CookingPotMenu>(menu, listOf(
     TabInfo(Items.COMPASS, CobblemonRecipeCategories.COOKING_POT_SEARCH.toVanillaCategory()),
     TabInfo(CobblemonItems.LEEK_AND_POTATO_STEW, CobblemonRecipeCategories.COOKING_POT_FOODS.toVanillaCategory()),
-    TabInfo(CobblemonItems.PROTEIN, CobblemonRecipeCategories.COOKING_POT_MISC.toVanillaCategory()),
+    TabInfo(CobblemonItems.HEALTH_CANDY, CobblemonRecipeCategories.COOKING_POT_MISC.toVanillaCategory()),
     TabInfo(CobblemonItems.POTION, CobblemonRecipeCategories.COOKING_POT_MEDICINES.toVanillaCategory()),
     TabInfo(CobblemonItems.APRIJUICE_RED, CobblemonRecipeCategories.COOKING_POT_COMPLEX_DISHES.toVanillaCategory())
 )) {

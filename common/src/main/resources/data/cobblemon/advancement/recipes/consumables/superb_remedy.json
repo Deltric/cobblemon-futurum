@@ -13,10 +13,18 @@
             },
             "trigger": "minecraft:inventory_changed"
         },
-        "has_the_recipe": {
+        "has_the_main_recipe": {
             "conditions": {
                 "recipes": [
                     "cobblemon:superb_remedy"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        },
+        "has_the_secondary_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:superb_remedy_2"
                 ]
             },
             "trigger": "minecraft:recipe_unlocked"
@@ -25,12 +33,14 @@
     "requirements": [
         [
             "has_remedy",
-            "has_the_recipe"
+            "has_the_main_recipe",
+            "has_the_secondary_recipe"
         ]
     ],
     "rewards": {
         "recipes": [
-            "cobblemon:superb_remedy"
+            "cobblemon:superb_remedy",
+            "cobblemon:superb_remedy_2"
         ]
     }
 }

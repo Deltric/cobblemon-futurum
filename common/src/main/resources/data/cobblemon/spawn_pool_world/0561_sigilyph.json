@@ -22,7 +22,7 @@
                     "#cobblemon:is_desert"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ]
             }
         },
@@ -43,14 +43,40 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_overworld"
-                ],
+                ]
+            },
+            "anticondition": {
                 "structures": [
-                    "minecraft:desert_well"
+                    "#cobblemon:spawns/is_desert_monument"
                 ]
             }
         },
         {
             "id": "sigilyph-3",
+            "pokemon": "sigilyph",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "24-49",
+            "weight": 600.0,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument",
+                    "minecraft:desert_well"
+                ],
+                "minY": 48
+            }
+        },
+        {
+            "id": "sigilyph-4",
             "pokemon": "sigilyph",
             "presets": [
                 "natural",
@@ -67,10 +93,38 @@
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ]
             }
         },
         {
-            "id": "sigilyph-4",
+            "id": "sigilyph-5",
+            "pokemon": "sigilyph",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "24-49",
+            "weight": 600.0,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ],
+                "minY": 48
+            }
+        },
+        {
+            "id": "sigilyph-6",
             "pokemon": "sigilyph",
             "presets": [
                 "trail_ruins"
@@ -89,12 +143,8 @@
             }
         },
         {
-            "id": "sigilyph-5",
+            "id": "sigilyph-7",
             "pokemon": "sigilyph",
-            "presets": [
-                "natural",
-                "end_city"
-            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "uncommon",
@@ -103,11 +153,14 @@
             "condition": {
                 "biomes": [
                     "#cobblemon:is_end"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_end_structure"
                 ]
             }
         },
         {
-            "id": "sigilyph-7",
+            "id": "sigilyph-8",
             "pokemon": "sigilyph",
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -124,7 +177,7 @@
             }
         },
         {
-            "id": "sigilyph-8",
+            "id": "sigilyph-9",
             "pokemon": "sigilyph",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

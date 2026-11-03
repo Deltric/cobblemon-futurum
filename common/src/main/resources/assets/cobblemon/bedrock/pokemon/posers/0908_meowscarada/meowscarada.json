@@ -35,9 +35,6 @@
         "q.look('neck_ruff', 1, 0, 50, -45 )",
         "q.bedrock('meowscarada', 'battle_idle')"
       ],
-      "namedAnimations": {
-        "cry": "q.bedrock_stateful('meowscarada', 'battle_cry')"
-      },
       "transformTicks": 10,
       "quirks": [
         "q.bedrock_quirk('meowscarada', 'blink')"

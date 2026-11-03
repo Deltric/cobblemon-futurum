@@ -27,7 +27,7 @@
                     "#aether:is_aether",
                     "#cobblemon:is_overworld"
                 ],
-                "maxLight": 7
+                "maxLight": 0
             },
             "anticondition": {
                 "biomes": [
@@ -88,10 +88,45 @@
                     "#cobblemon:is_spooky"
                 ],
                 "maxLight": 7
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ]
             }
         },
         {
             "id": "gengar-4",
+            "pokemon": "gengar",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "36-50",
+            "weight": 0.4,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "gengar-5",
             "pokemon": "gengar",
             "presets": [
                 "natural"

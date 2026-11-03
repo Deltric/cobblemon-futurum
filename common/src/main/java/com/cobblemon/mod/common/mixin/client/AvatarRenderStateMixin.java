@@ -11,6 +11,7 @@ package com.cobblemon.mod.common.mixin.client;
 import com.cobblemon.mod.common.client.render.AvatarPokemonState;
 import com.cobblemon.mod.common.client.render.ModelGeometry;
 import com.cobblemon.mod.common.client.render.MountedPlayerPose;
+import com.cobblemon.mod.common.client.render.player.RecallArmAnimationTracker;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,4 +27,7 @@ public class AvatarRenderStateMixin implements AvatarPokemonState {
     @Override public void cobblemon$setIconGeometry(ModelGeometry geometry) { cobblemon$iconGeometry = geometry; }
     @Override public ModelGeometry cobblemon$getShoulderGeometry() { return cobblemon$shoulderGeometry; }
     @Override public void cobblemon$setShoulderGeometry(ModelGeometry geometry) { cobblemon$shoulderGeometry = geometry; }
+    @Unique private RecallArmAnimationTracker.RecallBallRender cobblemon$recallBall;
+    @Override public RecallArmAnimationTracker.RecallBallRender cobblemon$getRecallBall() { return cobblemon$recallBall; }
+    @Override public void cobblemon$setRecallBall(RecallArmAnimationTracker.RecallBallRender recall) { cobblemon$recallBall = recall; }
 }

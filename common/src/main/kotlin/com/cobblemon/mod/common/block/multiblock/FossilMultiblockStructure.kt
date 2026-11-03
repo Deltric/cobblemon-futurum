@@ -35,6 +35,7 @@ import com.cobblemon.mod.common.client.sound.instances.CancellableSoundInstance
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.item.PokeBallItem
 import com.cobblemon.mod.common.pokemon.Pokemon
+import com.cobblemon.mod.common.pokemon.activestate.SentOutState
 import com.cobblemon.mod.common.util.DataKeys
 import com.cobblemon.mod.common.util.giveOrDropItemStack
 import com.cobblemon.mod.common.util.lang
@@ -239,6 +240,7 @@ class FossilMultiblockStructure (
                 entity.setPos(Vec3.atCenterOf(fixedPosition).subtract(0.0, 0.5, 0.0))
                 // TODO: Find a correct way to set the new entity's Yaw rotation. (Face away from the machine)
                 if (world.addFreshEntity(entity)) {
+                    pokemon.state = SentOutState(entity)
                     CobblemonEvents.FOSSIL_REVIVED.post(FossilRevivedEvent(pokemon, null))
                     return true
                 } else {

@@ -15,7 +15,6 @@ import com.cobblemon.mod.common.api.pokemon.stats.Stat
 import com.cobblemon.mod.common.item.CobblemonItem
 import com.cobblemon.mod.common.pokemon.Pokemon
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
@@ -24,7 +23,6 @@ import net.minecraft.world.level.Level
 
 class MochiItem(properties: Properties, override val stat: Stat): CobblemonItem(properties), EVIncreaseItem {
     override val evIncreaseAmount: Int = 4
-    override val sound: SoundEvent = CobblemonSounds.MOCHI_USE
 
     override fun applyToPokemon(player: ServerPlayer, stack: ItemStack, pokemon: Pokemon): InteractionResult {
         if (!canUseOnPokemon(stack, pokemon)) {
@@ -41,5 +39,10 @@ class MochiItem(properties: Properties, override val stat: Stat): CobblemonItem(
             return use(user, user.getItemInHand(hand))
         }
         return InteractionResult.SUCCESS
+    }
+
+    override fun onSuccessfulApply(player: ServerPlayer, stack: ItemStack, pokemon: Pokemon) {
+        pokemon.entity?.playSound(CobblemonSounds.MOCHI_USE)
+        stack.consume(1, player)
     }
 }

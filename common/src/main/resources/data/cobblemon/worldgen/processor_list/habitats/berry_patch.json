@@ -45,7 +45,11 @@
             "predicate_type": "minecraft:always_true"
           },
           "output_state": {
-            "id": "minecraft:oak_leaves"
+            "id": "minecraft:oak_leaves",
+            "properties": {
+              "persistent": "true",
+              "waterlogged": "false"
+            }
           }
         }
       ]

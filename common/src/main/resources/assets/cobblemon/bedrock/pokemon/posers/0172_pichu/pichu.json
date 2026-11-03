@@ -32,7 +32,8 @@
     },
     "sleep": {
       "poseTypes": ["SLEEP"],
-      "animations": ["q.bedrock('pichu', 'sleep')"]
+      "animations": ["q.bedrock('pichu', 'sleep')"],
+      "namedAnimations": {"cry": "q.bedrock_stateful('dummy', 'cry')"}
     },    
       "shoulder_left": {
       "poseTypes": ["SHOULDER_LEFT"],

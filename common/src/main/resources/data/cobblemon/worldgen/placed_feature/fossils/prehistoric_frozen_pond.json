@@ -7,7 +7,7 @@
         },
         {
             "type": "minecraft:rarity_filter",
-            "chance": 200
+            "chance": 100
         },
         {
             "type": "minecraft:heightmap",
@@ -23,7 +23,7 @@
                 ],
                 "offset": [
                     0,
-                    0,
+                    -1,
                     0
                 ]
             },

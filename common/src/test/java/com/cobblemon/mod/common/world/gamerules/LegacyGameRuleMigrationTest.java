@@ -22,16 +22,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LegacyGameRuleMigrationTest {
     @Test
-    void preservesNonDefaultValuesForAllSixRules() {
+    void preservesNonDefaultValuesForAllSevenRules() {
         var oldRules = json("""
             {"battleInvulnerability":"true", "doPokemonSpawning":"false",
              "doPokemonLoot":"false", "mobTargetInBattle":"false",
-             "doShinyStarters":"true", "healersHealPC":"true"}
+             "doShinyStarters":"true", "healersHealPC":"true",
+             "doPokemonPredation":"false"}
             """);
         var expected = json("""
             {"cobblemon:battle_invulnerability":true, "cobblemon:do_pokemon_spawning":false,
              "cobblemon:do_pokemon_loot":false, "cobblemon:mob_target_in_battle":false,
-             "cobblemon:do_shiny_starters":true, "cobblemon:healers_heal_pc":true}
+             "cobblemon:do_shiny_starters":true, "cobblemon:healers_heal_pc":true,
+             "cobblemon:do_pokemon_predation":false}
             """);
         assertEquals(expected.getValue(), LegacyGameRuleMigration.migrate(oldRules).getValue());
     }

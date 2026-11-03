@@ -1,16 +1,18 @@
 {
     "type": "minecraft:crafting_shaped",
+    "category": "misc",
     "pattern": [
-        " R ",
-        "SPF",
-        " I "
+        "PGP",
+        "SRF",
+        "PIP"
     ],
     "key": {
         "R": "minecraft:rabbit_foot",
         "S": "minecraft:sugar",
         "I": "minecraft:ink_sac",
-        "F": "minecraft:feather",
-        "P": "minecraft:paper"
+        "F": "#c:feathers",
+        "P": "minecraft:paper",
+        "G": "#c:dusts/glowstone"
     },
     "result": {
         "id": "cobblemon:blunder_policy"

@@ -52,7 +52,7 @@ class PokemonItemComponentsFixTest {
 
     private static JsonObject fix(JsonObject input, int sourceVersion) {
         return CobblemonSchemas.getDATA_FIXER().update(CobblemonTypeReferences.getPOKEMON(),
-                new Dynamic<>(JsonOps.INSTANCE, input), sourceVersion, 3).getValue().getAsJsonObject();
+                new Dynamic<>(JsonOps.INSTANCE, input), sourceVersion, CobblemonSchemas.DATA_VERSION).getValue().getAsJsonObject();
     }
 
     private static CompoundTag nbt(JsonElement json) {
@@ -87,7 +87,7 @@ class PokemonItemComponentsFixTest {
             var source = pokemon(name);
             var json = fix(source, 2);
             var tag = CobblemonSchemas.getDATA_FIXER().update(CobblemonTypeReferences.getPOKEMON(),
-                    new Dynamic<>(NbtOps.INSTANCE, nbt(source)), 2, 3).getValue();
+                    new Dynamic<>(NbtOps.INSTANCE, nbt(source)), 2, CobblemonSchemas.DATA_VERSION).getValue();
             // JSON has no numeric tag kinds; native fixes deliberately emit NBT
             // floats/ints rather than JsonOps' compact byte/short conversion.
             // NBT also represents booleans as numeric bytes.
@@ -106,7 +106,7 @@ class PokemonItemComponentsFixTest {
         assertEquals(source.get("unknown"), fixed.get("unknown"));
         var originalTag = nbt(source);
         var fixedTag = (CompoundTag) CobblemonSchemas.getDATA_FIXER().update(CobblemonTypeReferences.getPOKEMON(),
-                new Dynamic<>(NbtOps.INSTANCE, originalTag), 2, 3).getValue();
+                new Dynamic<>(NbtOps.INSTANCE, originalTag), 2, CobblemonSchemas.DATA_VERSION).getValue();
         assertEquals(originalTag.get("unknown"), fixedTag.get("unknown"));
         assertEquals(originalTag.getCompoundOrEmpty("HeldItem").getCompoundOrEmpty("components").get("example:unknown"),
                 fixedTag.getCompoundOrEmpty("HeldItem").getCompoundOrEmpty("components").get("example:unknown"));
@@ -120,9 +120,9 @@ class PokemonItemComponentsFixTest {
         entity.putString("id", "cobblemon:pokemon"); entity.put("Pokemon", nbt(pokemon("combined")));
         var entities = new net.minecraft.nbt.ListTag(); entities.add(entity);
         var chunk = new CompoundTag(); chunk.put("Entities", entities);
-        var fixedChunk = DataFixTypes.ENTITY_CHUNK.update(CobblemonSchemas.getDATA_FIXER(), chunk, 2, 3);
+        var fixedChunk = DataFixTypes.ENTITY_CHUNK.update(CobblemonSchemas.getDATA_FIXER(), chunk, 2, CobblemonSchemas.DATA_VERSION);
         var migrated = fixedChunk.getListOrEmpty("Entities").getCompoundOrEmpty(0).getCompoundOrEmpty("Pokemon");
-        assertEquals(3, migrated.getIntOr("cobblemon:data_version", -1));
+        assertEquals(CobblemonSchemas.DATA_VERSION, migrated.getIntOr("cobblemon:data_version", -1));
         assertEquals(5023, migrated.getIntOr("cobblemon:item_data_version", -1));
         var codec = CobblemonSchemas.INSTANCE.wrapCodec(CompoundTag.CODEC, CobblemonTypeReferences.getPOKEMON());
         var first = codec.encodeStart(NbtOps.INSTANCE, codec.parse(NbtOps.INSTANCE, migrated).getOrThrow()).getOrThrow();
@@ -130,7 +130,7 @@ class PokemonItemComponentsFixTest {
         assertEquals(migrated, first);
         assertEquals(first, second);
         assertEquals(migrated, CobblemonSchemas.getDATA_FIXER().update(CobblemonTypeReferences.getPOKEMON(),
-                new Dynamic<>(NbtOps.INSTANCE, migrated), 2, 3).getValue());
+                new Dynamic<>(NbtOps.INSTANCE, migrated), 2, CobblemonSchemas.DATA_VERSION).getValue());
     }
 
     @Test
@@ -159,7 +159,7 @@ class PokemonItemComponentsFixTest {
         var codec = CobblemonSchemas.INSTANCE.wrapCodec(com.mojang.serialization.Codec.PASSTHROUGH, CobblemonTypeReferences.getPOKEMON());
         var parsed = codec.parse(JsonOps.INSTANCE, pokemon("combined")).getOrThrow();
         var saved = codec.encodeStart(JsonOps.INSTANCE, parsed).getOrThrow();
-        assertEquals(3, saved.getAsJsonObject().get("cobblemon:data_version").getAsInt());
+        assertEquals(CobblemonSchemas.DATA_VERSION, saved.getAsJsonObject().get("cobblemon:data_version").getAsInt());
         assertEquals(5023, saved.getAsJsonObject().get("cobblemon:item_data_version").getAsInt());
         assertEquals(saved, codec.encodeStart(JsonOps.INSTANCE, codec.parse(JsonOps.INSTANCE, saved).getOrThrow()).getOrThrow());
     }
@@ -182,7 +182,7 @@ class PokemonItemComponentsFixTest {
             var expected = DataFixers.getDataFixer().update(References.ITEM_STACK,
                     new Dynamic<>(NbtOps.INSTANCE, item), 3818, 5023).getValue();
             var fixed = (CompoundTag) CobblemonSchemas.getDATA_FIXER().update(CobblemonTypeReferences.getPOKEMON(),
-                    new Dynamic<>(NbtOps.INSTANCE, source), 0, 3).getValue();
+                    new Dynamic<>(NbtOps.INSTANCE, source), 0, CobblemonSchemas.DATA_VERSION).getValue();
             assertEquals(expected, fixed.get("HeldItem"), text);
             assertEquals(expected, fixed.get("CosmeticItem"), text);
             assertEquals(source.get("unknown"), fixed.get("unknown"));
@@ -196,7 +196,7 @@ class PokemonItemComponentsFixTest {
     void sourceZeroChunkRulePreservesAlreadyNativeUpgradedBlockEntityItems() throws Exception {
         var chunk = TagParser.parseCompoundFully("{DataVersion:3700,'cobblemon:data_version':0,xPos:0,zPos:0,Status:'minecraft:full',block_entities:[{id:'cobblemon:chest',x:1,y:70,z:2,unknown:{value:0.125d},Items:[{id:'minecraft:leather_boots',count:7,Slot:3b,components:{'minecraft:custom_model_data':{floats:[42.0f]},'example:opaque':{value:0.375d}}}]}]}");
         var fixed = (CompoundTag) CobblemonSchemas.getDATA_FIXER().update(References.CHUNK,
-                new Dynamic<>(NbtOps.INSTANCE, chunk), 0, 3).getValue();
+                new Dynamic<>(NbtOps.INSTANCE, chunk), 0, CobblemonSchemas.DATA_VERSION).getValue();
         assertEquals(chunk, fixed);
     }
 
@@ -229,7 +229,7 @@ class PokemonItemComponentsFixTest {
             assertEquals(expected.getAsJsonObject().get("count"),
                     fixed.getAsJsonObject("HeldItem").get("count"), entry.getKey() + " count");
             var fixedTag = CobblemonSchemas.getDATA_FIXER().update(CobblemonTypeReferences.getPOKEMON(),
-                    new Dynamic<>(NbtOps.INSTANCE, nbt(source)), 0, 3).getValue();
+                    new Dynamic<>(NbtOps.INSTANCE, nbt(source)), 0, CobblemonSchemas.DATA_VERSION).getValue();
             // JsonOps chooses narrow numeric tags; native fixes intentionally emit
             // int counts and float model data. Compare NBT payload semantics and
             // separately require the native integer count representation.
@@ -259,5 +259,29 @@ class PokemonItemComponentsFixTest {
         assertEquals(unknown, repeated.getAsJsonObject("HeldItem").getAsJsonObject("components").get("example:opaque"));
         assertEquals(5023, repeated.get("cobblemon:item_data_version").getAsInt());
         assertEquals(repeated, fix(repeated, 0));
+    }
+
+    @Test
+    void upstreamVersionThreeRecordsStillReceiveTheItemUpgrade() {
+        // Upstream 1.8.2+ stamps version 3 (its type gem fix) on 1.21.1 records
+        // that have no item version, so the item upgrade must still run from 3.
+        var source = pokemon("combined");
+        source.addProperty("cobblemon:data_version", 3);
+        var fixed = fix(source, 3);
+        var expected = fix(pokemon("combined"), 2);
+        assertEquals(expected.get("HeldItem"), fixed.get("HeldItem"));
+        assertEquals(expected.get("CosmeticItem"), fixed.get("CosmeticItem"));
+        assertEquals(5023, fixed.get("cobblemon:item_data_version").getAsInt());
+    }
+
+    @Test
+    void earlierPortVersionThreeRecordsAreNotConvertedTwice() {
+        // Earlier builds of this port stamped version 3 after upgrading items.
+        var saved = fix(pokemon("combined"), 2);
+        saved.addProperty("cobblemon:data_version", 3);
+        var result = fix(saved, 3);
+        assertEquals(saved.get("HeldItem"), result.get("HeldItem"));
+        assertEquals(saved.get("CosmeticItem"), result.get("CosmeticItem"));
+        assertEquals(5023, result.get("cobblemon:item_data_version").getAsInt());
     }
 }

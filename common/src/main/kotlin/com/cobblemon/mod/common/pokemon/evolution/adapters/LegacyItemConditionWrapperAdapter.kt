@@ -9,7 +9,7 @@
 package com.cobblemon.mod.common.pokemon.evolution.adapters
 
 import com.cobblemon.mod.common.util.adapters.CodecBackedAdapter
-import com.cobblemon.mod.common.util.adapters.RegistryOpsProvider
+import com.cobblemon.mod.common.util.adapters.RegistryAccessResolver
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -21,6 +21,7 @@ import net.minecraft.advancements.predicates.DataComponentMatchers
 import net.minecraft.advancements.predicates.ItemPredicate
 import net.minecraft.core.component.predicates.DataComponentPredicates
 import net.minecraft.advancements.predicates.NbtPredicate
+import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
@@ -28,13 +29,17 @@ import net.minecraft.tags.TagKey
 import java.lang.reflect.Type
 
 // This is an ugly adapter because breaking changes are scary and people would ;(
-object LegacyItemConditionWrapperAdapter : JsonDeserializer<ItemPredicate>, JsonSerializer<ItemPredicate> {
+// A null registryAccess is resolved on each use so a reload's staged tags are seen.
+class LegacyItemConditionWrapperAdapter(val registryAccess: HolderLookup.Provider? = null)
+    : JsonDeserializer<ItemPredicate>, JsonSerializer<ItemPredicate> {
 
-    private const val TAG_PREFIX = "#"
-    private const val LEGACY_ITEM = "item"
-    private const val LEGACY_NBT = "nbt"
+    companion object {
+        private const val TAG_PREFIX = "#"
+        private const val LEGACY_ITEM = "item"
+        private const val LEGACY_NBT = "nbt"
+    }
 
-    private val codecAdapter = CodecBackedAdapter(ItemPredicate.CODEC)
+    private val codecAdapter = CodecBackedAdapter(ItemPredicate.CODEC, registryAccess)
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ItemPredicate {
         if (json.isJsonPrimitive) {
@@ -66,9 +71,9 @@ object LegacyItemConditionWrapperAdapter : JsonDeserializer<ItemPredicate>, Json
                 { id ->
                     if (isTag) {
                         val tag = TagKey.create(Registries.ITEM, id)
-                        val lookup = RegistryOpsProvider.getRegistryLookupWithDefaultFallback()
-                            ?.lookupOrThrow(Registries.ITEM) ?: BuiltInRegistries.ITEM
-                        builder.of(lookup, tag)
+                        (registryAccess ?: RegistryAccessResolver.getAccess()).lookup(Registries.ITEM)
+                            .map { builder.of(it, tag) }
+                            .orElseGet { builder }
                     } else {
                         BuiltInRegistries.ITEM.getOptional(id)
                             .map { builder.of(BuiltInRegistries.ITEM, it) }

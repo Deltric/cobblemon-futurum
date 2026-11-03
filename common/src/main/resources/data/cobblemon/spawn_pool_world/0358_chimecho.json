@@ -32,6 +32,9 @@
                 "timeRange": "night"
             },
             "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
                 "biomes": [
                     "#cobblemon:is_volcanic"
                 ]
@@ -61,10 +64,52 @@
                     "#cobblemon:is_magical"
                 ],
                 "timeRange": "night"
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ]
             }
         },
         {
             "id": "chimecho-3",
+            "pokemon": "chimecho",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "24-46",
+            "weight": 37.0,
+            "weightMultipliers": [
+                {
+                    "multiplier": 0.25,
+                    "condition": {
+                        "timeRange": "day"
+                    }
+                },
+                {
+                    "multiplier": 2.0,
+                    "condition": {
+                        "isPokeSnack": true
+                    }
+                }
+            ],
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "chimecho-4",
             "pokemon": "chimecho",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

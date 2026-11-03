@@ -7347,5 +7347,6 @@
     "cobblemon.mark.ribbon_day_downcast": "Стрічка смутку",
     "cobblemon.mark.ribbon_day_downcast.desc": "Стрічка на згадку про почуття смутку, що додали життю барв.",
     "cobblemon.mark.ribbon_day_downcast.title": "Приголомшений %1$s",
-    "cobblemon.mark.ribbon_day_relax": "Стрічка відпочинку"
+    "cobblemon.mark.ribbon_day_relax": "Стрічка відпочинку",
+    "cobblemon.mark.ribbon_day_relax.title": "%1$s відпочив"
 }

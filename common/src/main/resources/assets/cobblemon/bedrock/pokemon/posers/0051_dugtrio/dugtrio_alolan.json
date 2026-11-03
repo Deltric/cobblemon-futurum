@@ -5,9 +5,9 @@
   "profileTranslation": [0.0, 0.29, 0],
   "rootBone": "dugtrio_alolan",
   "animations": {
+    "faint": "q.bedrock_primary('dugtrio_alolan', 'faint', q.curve('one'))",
     "cry": "q.bedrock_stateful('dugtrio_alolan', 'cry')",
-    "recoil": "q.bedrock_stateful('dugtrio_alolan', 'recoil')",
-    "physical": "q.bedrock_primary('dugtrio_alolan', 'physical', q.curve('symmetrical'))"
+    "physical": "q.bedrock_primary('dugtrio_alolan', 'physical', q.curve('symmetrical_wide'))"
   },
   "poses": {
     "standing": {

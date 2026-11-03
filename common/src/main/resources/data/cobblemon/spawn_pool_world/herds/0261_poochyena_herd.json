@@ -46,8 +46,7 @@
     {
       "id": "poochyena-herd-2",
       "presets": [
-        "natural",
-        "pillager_outpost"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -60,7 +59,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_overworld"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_illager_outpost"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

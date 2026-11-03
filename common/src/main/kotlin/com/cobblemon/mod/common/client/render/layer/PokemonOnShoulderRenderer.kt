@@ -9,6 +9,7 @@
 package com.cobblemon.mod.common.client.render.layer
 
 import com.bedrockk.molang.runtime.value.DoubleValue
+import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags
 import com.cobblemon.mod.common.client.render.item.HeldItemRenderer
@@ -23,7 +24,6 @@ import com.cobblemon.mod.common.pokemon.Species
 import com.cobblemon.mod.common.util.DataKeys
 import com.cobblemon.mod.common.util.isPokemonEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Axis
 import java.util.UUID
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.player.PlayerModel
@@ -39,11 +39,14 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.client.renderer.entity.RenderLayerParent
 import net.minecraft.client.renderer.entity.layers.RenderLayer
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtOps
 import net.minecraft.nbt.Tag
 import net.minecraft.resources.Identifier
+import net.minecraft.tags.ItemTags
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 
 class PokemonOnShoulderRenderer(renderLayerParent: RenderLayerParent<AvatarRenderState, PlayerModel>) :
@@ -56,7 +59,12 @@ class PokemonOnShoulderRenderer(renderLayerParent: RenderLayerParent<AvatarRende
     private val heldItemRenderer = HeldItemRenderer()
 
     override fun submit(matrixStack: PoseStack, collector: SubmitNodeCollector, packedLight: Int, state: AvatarRenderState, yaw: Float, pitch: Float) {
-        (state as AvatarPokemonState).`cobblemon$getShoulderGeometry`()?.submit(matrixStack, collector, state.outlineColor)
+        val geometry = (state as AvatarPokemonState).`cobblemon$getShoulderGeometry`() ?: return
+        // The parent model is posed for this state before its layers submit, so shoulders follow the body (e.g. crouching).
+        matrixStack.pushPose()
+        parentModel.body.translateAndRotate(matrixStack)
+        geometry.submit(matrixStack, collector, state.outlineColor)
+        matrixStack.popPose()
     }
 
     fun extract(player: Player, renderState: AvatarRenderState, partialTicks: Float) {
@@ -137,16 +145,16 @@ class PokemonOnShoulderRenderer(renderLayerParent: RenderLayerParent<AvatarRende
             val width = shoulderData.form.hitbox.width
             val heightOffset = -1.5 * scale
             val widthOffset = width / 2 - 0.7
-            // If they're sneaking, the pokemon needs to rotate a little bit and push forward
-            // Shoulders move a bit when sneaking which is why the translation is necessary.
-            // Shoulder exact rotation according to testing (miasmus) is 0.4 radians, the -0.15 is eyeballed though.
-            if (livingEntity.isCrouching) {
-                matrixStack.rotate(Axis.XP.rotation(0.4F))
-                matrixStack.translate(0F, 0F, -0.15F)
+            // The body transform (including crouching) is applied when the geometry is submitted.
+            val chestItem = livingEntity.getItemBySlot(EquipmentSlot.CHEST)
+            val armorHeightOffset = if (chestItem.`is`(ItemTags.CHEST_ARMOR) && !isArmorOffsetBlacklisted(chestItem)) {
+                ARMOR_HEIGHT_OFFSET
+            } else {
+                0F
             }
             matrixStack.translate(
                 if (pLeftShoulder) -widthOffset else widthOffset,
-                (if (livingEntity.isCrouching) heightOffset + 0.2 else heightOffset),
+                heightOffset - armorHeightOffset,
                 0.0
             )
 
@@ -236,7 +244,13 @@ class PokemonOnShoulderRenderer(renderLayerParent: RenderLayerParent<AvatarRende
 
     companion object {
 
+        private const val ARMOR_HEIGHT_OFFSET = 1F / 16F
         private val playerCache = java.util.WeakHashMap<Player, ShoulderCache>()
+
+        private fun isArmorOffsetBlacklisted(itemStack: ItemStack): Boolean {
+            val itemIdentifier = BuiltInRegistries.ITEM.getKey(itemStack.item)
+            return itemIdentifier in Cobblemon.config.shoulderMountArmorOffsetBlacklist
+        }
 
         private fun extractUuid(shoulderNbt: CompoundTag): UUID {
             if (!shoulderNbt.contains(DataKeys.SHOULDER_UUID)) {

@@ -14,6 +14,7 @@ import com.cobblemon.mod.common.client.render.models.blockbench.pokemon.PokemonP
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.ModelPartTransformation
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.Pose
 import com.cobblemon.mod.common.entity.PoseType
+import com.cobblemon.mod.common.util.asExpressionLike
 import com.cobblemon.mod.common.util.isInWater
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.world.phys.Vec3
@@ -36,6 +37,8 @@ class SurskitModel(root: ModelPart) : PokemonPosableModel(root), HeadedFrame {
     val wateroffset = -8
 
     override fun registerPoses() {
+        animations["cry"] = "q.bedrock_stateful('surskit', 'cry')".asExpressionLike()
+
         val blink = quirk { bedrockStateful("surskit", "blink") }
         standing = registerPose(
             poseName = "standing",

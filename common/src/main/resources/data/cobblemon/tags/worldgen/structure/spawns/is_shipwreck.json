@@ -1,0 +1,10 @@
+{
+  "values": [
+	"#minecraft:shipwreck",
+    "#cobblemon:fishing_boat",
+    {
+      "id": "aquamirae:shipwreck",
+      "required": false
+    }
+  ]
+}

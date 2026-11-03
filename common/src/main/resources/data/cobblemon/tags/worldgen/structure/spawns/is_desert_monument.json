@@ -1,0 +1,13 @@
+{
+  "values": [
+	"minecraft:desert_pyramid",
+    {
+      "id": "#nova_structures:desert_ruins",
+      "required": false
+    },
+    {
+      "id": "#betterdeserttemples:desert_temple",
+      "required": false
+    }
+  ]
+}

@@ -84,6 +84,9 @@ dependencies {
         runtimeOnly(it)
     }
 
+    // AppleSkin stores api under `api` classifier in their coordinates
+    // Because of that, we cannot just add it to integrations bundle
+    compileOnly(variantOf(libs.appleskin.api.fabric) { classifier("api") })
 }
 
 publishing {

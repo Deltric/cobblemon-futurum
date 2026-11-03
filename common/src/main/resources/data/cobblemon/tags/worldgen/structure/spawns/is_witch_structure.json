@@ -1,0 +1,34 @@
+{
+  "values": [
+	"minecraft:swamp_hut",
+    "#minecraft:cats_spawn_as_black",
+    {
+      "id": "#nova_structures:witch_villa",
+      "required": false
+    },
+    {
+      "id": "nova_structures:tavern_mangrove",
+      "required": false
+    },
+    {
+      "id": "nova_structures:tavern_swamp",
+      "required": false
+    },
+    {
+      "id": "nova_structures:village_swamp",
+      "required": false
+    },
+    {
+      "id": "nova_structures:firewatch_tower_swamp",
+      "required": false
+    },
+    {
+      "id": "nova_structures:remnant_ominous_shop",
+      "required": false
+    },
+    {
+      "id": "betterwitchhuts:witch_hut",
+      "required": false
+    }
+  ]
+}

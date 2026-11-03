@@ -8,11 +8,14 @@
   "poses": {
     "standing": {
       "poseTypes": ["STAND", "NONE", "PORTRAIT", "PROFILE"],
-      "isBattle": false,
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('fearow', 'ground_idle')"
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'ground_idle')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_ground_walk')"
+        }
       ],
       "transformedParts": [
         {
@@ -31,15 +34,21 @@
           "part": "wing_closed_left",
           "isVisible": true
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "walking": {
       "poseTypes": ["WALK", "SWIM"],
       "animations": [
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('fearow', 'ground_idle')",
-        "q.biped_walk(1, 1, 'leg_left', 'leg_right')"
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'ground_walk')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_ground_walk')"
+        }
       ],
       "transformedParts": [
         {
@@ -58,16 +67,22 @@
           "part": "wing_closed_left",
           "isVisible": true
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "hover": {
       "poseTypes": ["HOVER"],
       "animations": [
         "q.pitch_tilt('body')",
-        "q.sine_wing_flap(0.9, 0.9, 25, 'z', 'wing_open_left', 'wing_open_right')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('fearow', 'air_idle')"
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'air_idle')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_air_fly')"
+        }
       ],
       "transformedParts": [
         {
@@ -86,16 +101,23 @@
           "part": "wing_closed_left",
           "isVisible": false
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     },
     "fly": {
       "poseTypes": ["FLY"],
+      "condition": "!q.is_gliding",
       "animations": [
         "q.pitch_tilt('body')",
-        "q.sine_wing_flap(0.9, 0.9, 25, 'z', 'wing_open_left', 'wing_open_right')",
         "q.look('neck', 1, 1, 70, -10, 20, -20)",
-        "q.look('head')",
-        "q.bedrock('fearow', 'air_idle')"
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'air_fly')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_air_fly')"
+        }
       ],
       "transformedParts": [
         {
@@ -114,6 +136,34 @@
           "part": "wing_closed_left",
           "isVisible": false
         }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
+      ]
+    },
+    "sleep": {
+      "poseTypes": ["SLEEP"],
+      "animations": ["q.bedrock('fearow', 'sleep')"],
+      "namedAnimations": {"cry": "q.bedrock_stateful('dummy', 'cry')"}
+    },
+    "glide": {
+      "poseTypes": ["FLY"],
+      "condition": "q.is_gliding",
+      "animations": [
+        "q.look('neck', 1, 1, 70, -10, 20, -20)",
+        "q.look('head_ai')",
+        "q.bedrock('fearow', 'air_glide')",
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_air_fly')"
+        },
+        {
+          "condition": "q.is_ridden",
+          "animation": "q.bedrock('fearow', 'ride_dive')"
+        }
+      ],
+      "quirks": [
+        "q.bedrock_quirk('fearow', 'blink')"
       ]
     }
   }

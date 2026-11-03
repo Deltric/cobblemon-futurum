@@ -33,10 +33,7 @@
       "quirks": [
         "q.bedrock_quirk('rhydon', 'blink')",
         "q.bedrock_quirk('rhydon', 'battle_quirk')"
-      ],
-      "namedAnimations": {
-        "cry": "q.bedrock_primary('rhydon', 'battle_cry', q.curve('symmetrical_wide'))"
-      }
+      ]
     },
     "jump": {
       "poseTypes": ["STAND", "WALK"],

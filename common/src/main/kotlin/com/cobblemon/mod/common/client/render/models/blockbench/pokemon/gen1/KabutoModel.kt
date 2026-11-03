@@ -23,8 +23,8 @@ class KabutoModel(root: ModelPart) : PokemonPosableModel(root) {
     override var portraitScale = 3.3F
     override var portraitTranslation = Vec3(0.0, -3.3, 0.0)
 
-    override var profileScale = 1.6F
-    override var profileTranslation = Vec3(0.0, -0.6, 0.0)
+    override var profileScale = 1.25F
+    override var profileTranslation = Vec3(0.0, -0.17, 0.0)
 
     lateinit var standing: CobblemonPose
     lateinit var walk: CobblemonPose

@@ -20,7 +20,8 @@ public final class LegacyGameRuleMigration {
         rules = renameBoolean(rules, "doPokemonLoot", "cobblemon:do_pokemon_loot");
         rules = renameBoolean(rules, "mobTargetInBattle", "cobblemon:mob_target_in_battle");
         rules = renameBoolean(rules, "doShinyStarters", "cobblemon:do_shiny_starters");
-        return renameBoolean(rules, "healersHealPC", "cobblemon:healers_heal_pc");
+        rules = renameBoolean(rules, "healersHealPC", "cobblemon:healers_heal_pc");
+        return renameBoolean(rules, "doPokemonPredation", "cobblemon:do_pokemon_predation");
     }
 
     private static <T> Dynamic<T> renameBoolean(Dynamic<T> rules, String oldName, String newName) {

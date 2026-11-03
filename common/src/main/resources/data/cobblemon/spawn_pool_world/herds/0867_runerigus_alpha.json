@@ -15,7 +15,7 @@
           "#cobblemon:is_overworld"
         ],
         "structures": [
-          "#cobblemon:ruin"
+          "#cobblemon:spawns/is_ruins"
         ],
         "minY": 48
       },
@@ -66,7 +66,7 @@
           "#cobblemon:is_overworld"
         ],
         "structures": [
-          "#cobblemon:ruin"
+          "#cobblemon:spawns/is_ruins"
         ],
         "minY": -37,
         "maxY": 10

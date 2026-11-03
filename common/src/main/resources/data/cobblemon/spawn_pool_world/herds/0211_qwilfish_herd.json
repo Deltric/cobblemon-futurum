@@ -21,7 +21,7 @@
       },
       "anticondition": {
         "structures": [
-          "minecraft:monument"
+          "#cobblemon:spawns/is_ocean_monument"
         ]
       },
       "herdablePokemon": [
@@ -39,8 +39,7 @@
     {
       "id": "qwilfish-herd-2",
       "presets": [
-        "water",
-        "ocean_monument"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -53,7 +52,11 @@
         "biomes": [
           "#cobblemon:is_cold_ocean",
           "#cobblemon:is_frozen_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_monument"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {
@@ -88,7 +91,7 @@
       },
       "anticondition": {
         "structures": [
-          "minecraft:monument"
+          "#cobblemon:spawns/is_ocean_monument"
         ]
       },
       "herdablePokemon": [
@@ -106,8 +109,7 @@
     {
       "id": "qwilfish-herd-4",
       "presets": [
-        "water",
-        "ocean_monument"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -122,7 +124,11 @@
         "biomes": [
           "#cobblemon:is_cold_ocean",
           "#cobblemon:is_frozen_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_monument"
+        ],
+        "maxY": 62
       },
       "herdablePokemon": [
         {
@@ -190,7 +196,7 @@
       },
       "anticondition": {
         "structures": [
-          "minecraft:monument"
+          "#cobblemon:spawns/is_ocean_monument"
         ]
       },
       "herdablePokemon": [
@@ -217,8 +223,7 @@
     {
       "id": "qwilfish-hisui-herd-2",
       "presets": [
-        "water",
-        "ocean_monument"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -230,7 +235,11 @@
         "canSeeSky": true,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_monument"
+        ],
+        "maxY": 62
       },
       "anticondition": {
         "biomes": [
@@ -281,7 +290,7 @@
       },
       "anticondition": {
         "structures": [
-          "minecraft:monument"
+          "#cobblemon:spawns/is_ocean_monument"
         ]
       },
       "herdablePokemon": [
@@ -308,8 +317,7 @@
     {
       "id": "qwilfish-hisui-herd-4",
       "presets": [
-        "water",
-        "ocean_monument"
+        "water"
       ],
       "type": "pokemon-herd",
       "bucket": "common",
@@ -323,7 +331,11 @@
         "maxSkyLight": 15,
         "biomes": [
           "#cobblemon:is_ocean"
-        ]
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_ocean_monument"
+        ],
+        "maxY": 62
       },
       "anticondition": {
         "biomes": [

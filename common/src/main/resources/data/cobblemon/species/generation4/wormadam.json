@@ -1,4 +1,5 @@
 {
+  "implemented": true,
   "nationalPokedexNumber": 413,
   "name": "Wormadam",
   "primaryType": "bug",
@@ -43,6 +44,12 @@
   "catchRate": 45,
   "eggCycles": 15,
   "baseFriendship": 50,
+  "baseScale": 0.8,
+  "hitbox": {
+    "width": 0.8,
+    "height": 1.75,
+    "fixed": false
+  },
   "drops": {
     "amount": 3,
     "entries": [
@@ -290,7 +297,24 @@
       ],
       "preEvolution": "burmy",
       "evolutions": [],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 4,
+        "entries": [
+          {
+            "item": "minecraft:string",
+            "quantityRange": "0-2"
+          },
+          {
+            "item": "cobblemon:shed_shell",
+            "percentage": 5.0
+          },
+          {
+            "item": "cobblemon:occa_berry",
+            "percentage": 5.0
+          }
+        ]
+      }
     },
     {
       "name": "Trash",
@@ -426,7 +450,24 @@
       ],
       "preEvolution": "burmy",
       "evolutions": [],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 4,
+        "entries": [
+          {
+            "item": "minecraft:string",
+            "quantityRange": "0-2"
+          },
+          {
+            "item": "cobblemon:shed_shell",
+            "percentage": 5.0
+          },
+          {
+            "item": "cobblemon:occa_berry",
+            "percentage": 5.0
+          }
+        ]
+      }
     }
   ],
   "behaviour": {

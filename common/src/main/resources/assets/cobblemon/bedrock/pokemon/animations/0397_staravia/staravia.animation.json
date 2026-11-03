@@ -331,6 +331,11 @@
 						"1.5": [0, 0, 0]
 					}
 				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "pokemon.staravia.cry"
+				}
 			}
 		},
 		"animation.staravia.blink": {

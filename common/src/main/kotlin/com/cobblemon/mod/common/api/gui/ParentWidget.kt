@@ -13,7 +13,6 @@ import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import net.minecraft.client.gui.components.AbstractWidget
-import net.minecraft.client.gui.components.Renderable
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
@@ -62,6 +61,7 @@ abstract class ParentWidget(
     }
 
     override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        if (!active) return false
         return children.any {
             it.mouseClicked(event, doubleClick)
         }

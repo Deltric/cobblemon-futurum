@@ -108,7 +108,7 @@
       "namedAnimations": {
         "cry": "q.bedrock_stateful('dummy', 'cry')"
       },
-      "animations": ["q.bedrock('tentacruel', 'sleep')"]
+      "animations": ["q.bedrock('tentacruel', 'water_sleep')"]
     },
     "ground-sleep": {
       "poseTypes": ["SLEEP"],
@@ -116,7 +116,7 @@
       "namedAnimations": {
         "cry": "q.bedrock_stateful('dummy', 'cry')"
       },
-      "animations": ["q.bedrock('tentacruel', 'sleep')"]
+      "animations": ["q.bedrock('tentacruel', 'ground_sleep')"]
     }
   }
 }

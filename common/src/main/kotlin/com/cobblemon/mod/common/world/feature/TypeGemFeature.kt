@@ -12,6 +12,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.util.RandomSource
 import com.mojang.serialization.MapCodec
+import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonBlocks.TYPE_GEM_CORE
 import com.cobblemon.mod.common.CobblemonBlocks.typeGemBlocks
 import com.cobblemon.mod.common.block.TypeGemCoreBlock
@@ -47,7 +48,7 @@ class TypeGemFeature(val state: BlockState) : Feature {
         val coreState = TYPE_GEM_CORE.defaultBlockState()
 
         // Place the gem first then make sure it placed before placing the core.
-        worldGenLevel.setBlock(origin, coreState, UPDATE_ALL)
+        worldGenLevel.setBlock(chosenPos, gemState, UPDATE_ALL)
         if (!worldGenLevel.getBlockState(chosenPos).`is`(gemBlock)) {
             return false
         }
@@ -55,7 +56,9 @@ class TypeGemFeature(val state: BlockState) : Feature {
 
         // Trigger forced growth with clusters
         val coreBlock = coreState.block as TypeGemCoreBlock
-        coreBlock.forceGrow(worldGenLevel, origin, random, 0.5f)
+        repeat(Cobblemon.config.typeGemInitialExpansionCycles) {
+            coreBlock.expand(worldGenLevel, origin, random, true)
+        }
 
         // println("[TypeGemFeature] Placed ${gemId.path} at $chosenPos")
         return true

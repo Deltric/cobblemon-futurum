@@ -46,7 +46,7 @@ abstract class SubmergedTypeSpawningCondition<T : SubmergedSpawnablePosition> : 
         super.copyFrom(other, merger)
         if (other is SubmergedTypeSpawningCondition) {
             minDepth = merger.mergeSingle(minDepth, other.minDepth)
-            maxDepth = merger.mergeSingle(minDepth, other.minDepth)
+            maxDepth = merger.mergeSingle(maxDepth, other.maxDepth)
             fluidIsSource = merger.mergeSingle(fluidIsSource, other.fluidIsSource)
             fluid = merger.mergeSingle(fluid, other.fluid)
         }

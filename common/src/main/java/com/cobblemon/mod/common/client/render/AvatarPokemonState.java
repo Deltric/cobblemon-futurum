@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.render;
 
+import com.cobblemon.mod.common.client.render.player.RecallArmAnimationTracker;
+
 public interface AvatarPokemonState {
     MountedPlayerPose cobblemon$getMountedPose();
     void cobblemon$setMountedPose(MountedPlayerPose pose);
@@ -15,4 +17,6 @@ public interface AvatarPokemonState {
     void cobblemon$setIconGeometry(ModelGeometry geometry);
     ModelGeometry cobblemon$getShoulderGeometry();
     void cobblemon$setShoulderGeometry(ModelGeometry geometry);
+    RecallArmAnimationTracker.RecallBallRender cobblemon$getRecallBall();
+    void cobblemon$setRecallBall(RecallArmAnimationTracker.RecallBallRender recall);
 }

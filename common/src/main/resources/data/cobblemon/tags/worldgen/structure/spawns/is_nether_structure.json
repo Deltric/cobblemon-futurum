@@ -1,0 +1,14 @@
+{
+  "values": [
+	"#cobblemon:spawns/is_piglin_structure",
+	"minecraft:fortress",
+    {
+      "id": "#nova_structures:nether_skeleton_structures",
+      "required": false
+    },
+    {
+      "id": "#betterfortresses:better_fortresses",
+      "required": false
+    }
+  ]
+}

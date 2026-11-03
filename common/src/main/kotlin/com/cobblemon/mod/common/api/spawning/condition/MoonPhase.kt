@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.spawning.condition
 
+import com.cobblemon.mod.common.util.lang
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.level.Level
 
 /**
@@ -44,4 +46,7 @@ enum class MoonPhase {
         fun ofWorld(world: Level): MoonPhase = VALUES[Math.floorMod(world.overworldClockTime / 24000L, 8L).toInt()]
     }
 
+    fun displayName(): MutableComponent {
+        return lang("ui.moon_phase.${this.name.lowercase()}")
+    }
 }

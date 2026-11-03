@@ -51,6 +51,11 @@ interface ServerPlayerEvent {
     data class Logout(override val player: ServerPlayer) : ServerPlayerEvent
 
     /**
+     * Fired when the [player] respawns (either by coming back from the end or dying).
+     */
+    data class Respawn(override val player: ServerPlayer) : ServerPlayerEvent
+
+    /**
      * Fired when the [player] dies.
      * If canceled the death will be prevented but healing is required in order to not be stuck in a loop.
      */

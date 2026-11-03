@@ -27,6 +27,10 @@
                 "isRaining": false
             },
             "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure",
+                    "#cobblemon:spawns/is_graveyard"
+                ],
                 "biomes": [
                     "#cobblemon:is_freezing"
                 ]
@@ -52,7 +56,8 @@
             },
             "anticondition": {
                 "biomes": [
-                    "#cobblemon:is_deep_dark"
+                    "#cobblemon:is_deep_dark",
+                    "minecraft:sulfur_caves"
                 ]
             }
         },
@@ -76,7 +81,8 @@
             },
             "anticondition": {
                 "biomes": [
-                    "#cobblemon:is_deep_dark"
+                    "#cobblemon:is_deep_dark",
+                    "minecraft:sulfur_caves"
                 ]
             }
         },
@@ -99,6 +105,37 @@
         },
         {
             "id": "spinarak-5",
+            "pokemon": "spinarak",
+            "presets": [
+                "natural",
+                "treetop"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "1-25",
+            "weight": 54.0,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "isRaining": false,
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure",
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            },
+            "anticondition": {
+                "biomes": [
+                    "#cobblemon:is_freezing"
+                ]
+            }
+        },
+        {
+            "id": "spinarak-6",
             "pokemon": "spinarak",
             "presets": [
                 "mansion"

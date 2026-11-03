@@ -1,0 +1,225 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "cobblemon:mistleaf",
+              "condition": {
+                "terms": [
+                  {
+                    "predicate": {
+                      "items": "minecraft:shears"
+                    },
+                    "type": "minecraft:match_tool"
+                  },
+                  {
+                    "predicate": {
+                      "predicates": {
+                        "minecraft:enchantments": [
+                          {
+                            "enchantments": "minecraft:silk_touch",
+                            "levels": {
+                              "min": 1
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "type": "minecraft:match_tool"
+                  }
+                ],
+                "type": "minecraft:any_of"
+              },
+              "modifier": [
+                {
+                  "add": false,
+                  "count": 1,
+                  "type": "minecraft:set_count"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "cobblemon:misty_seed",
+              "condition": {
+                "type": "minecraft:survives_explosion"
+              },
+              "modifier": [
+                {
+                  "enchantment": "minecraft:fortune",
+                  "formula": "minecraft:binomial_with_bonus_count",
+                  "parameters": {
+                    "extra": 2,
+                    "probability": 0.5714286
+                  },
+                  "type": "minecraft:apply_bonus",
+                  "condition": {
+                    "predicate": {
+                      "predicates": {
+                        "minecraft:enchantments": [
+                          {
+                            "enchantments": "minecraft:fortune",
+                            "levels": {
+                              "min": 1
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "type": "minecraft:match_tool"
+                  }
+                },
+                {
+                  "count": 1,
+                  "add": true,
+                  "type": "minecraft:set_count"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:mistleaf",
+            "state": {
+              "half": "lower"
+            }
+          },
+          {
+            "offsetY": 1,
+            "predicate": {
+              "block": {
+                "blocks": "cobblemon:mistleaf",
+                "state": {
+                  "half": "upper"
+                }
+              }
+            },
+            "type": "minecraft:location_check"
+          }
+        ]
+      }
+    },
+    {
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "cobblemon:mistleaf",
+              "condition": {
+                "terms": [
+                  {
+                    "predicate": {
+                      "items": "minecraft:shears"
+                    },
+                    "type": "minecraft:match_tool"
+                  },
+                  {
+                    "predicate": {
+                      "predicates": {
+                        "minecraft:enchantments": [
+                          {
+                            "enchantments": "minecraft:silk_touch",
+                            "levels": {
+                              "min": 1
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "type": "minecraft:match_tool"
+                  }
+                ],
+                "type": "minecraft:any_of"
+              },
+              "modifier": [
+                {
+                  "add": false,
+                  "count": 1,
+                  "type": "minecraft:set_count"
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "cobblemon:misty_seed",
+              "condition": {
+                "type": "minecraft:survives_explosion"
+              },
+              "modifier": [
+                {
+                  "enchantment": "minecraft:fortune",
+                  "formula": "minecraft:binomial_with_bonus_count",
+                  "parameters": {
+                    "extra": 2,
+                    "probability": 0.5714286
+                  },
+                  "type": "minecraft:apply_bonus",
+                  "condition": {
+                    "predicate": {
+                      "predicates": {
+                        "minecraft:enchantments": [
+                          {
+                            "enchantments": "minecraft:fortune",
+                            "levels": {
+                              "min": 1
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "type": "minecraft:match_tool"
+                  }
+                },
+                {
+                  "count": 1,
+                  "add": true,
+                  "type": "minecraft:set_count"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:mistleaf",
+            "state": {
+              "half": "upper"
+            }
+          },
+          {
+            "offsetY": -1,
+            "predicate": {
+              "block": {
+                "blocks": "cobblemon:mistleaf",
+                "state": {
+                  "half": "lower"
+                }
+              }
+            },
+            "type": "minecraft:location_check"
+          }
+        ]
+      }
+    }
+  ]
+}

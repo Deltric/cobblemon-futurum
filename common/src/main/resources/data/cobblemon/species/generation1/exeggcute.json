@@ -285,6 +285,13 @@
             {
               "variant": "biome",
               "biomeCondition": "#cobblemon:evolution/regional/exeggcute_kantobiome"
+            },
+            {
+              "variant": "negate",
+              "inner": {
+                "variant": "biome",
+                "biomeCondition": "#cobblemon:evolution/regional/exeggcute_alolabiome"
+              }
             }
           ],
           "requiredContext": "cobblemon:leaf_stone"

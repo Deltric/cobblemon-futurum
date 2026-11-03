@@ -1,5 +1,6 @@
 {
     "type": "minecraft:smelting",
+    "category": "misc",
     "ingredient": "cobblemon:relic_coin",
     "result": {
         "id": "minecraft:gold_nugget"

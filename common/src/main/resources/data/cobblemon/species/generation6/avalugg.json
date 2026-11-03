@@ -243,8 +243,12 @@
         "speed": 38
       },
       "drops": {
-        "amount": 2,
+        "amount": 4,
         "entries": [
+          {
+            "item": "minecraft:ice",
+            "quantityRange": "0-2"
+          },
           {
             "item": "cobblemon:never_melt_ice",
             "percentage": 5.0

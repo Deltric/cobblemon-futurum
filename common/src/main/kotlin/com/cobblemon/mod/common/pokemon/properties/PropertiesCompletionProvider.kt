@@ -13,6 +13,7 @@ import com.cobblemon.mod.common.api.abilities.Abilities
 import com.cobblemon.mod.common.api.data.DataRegistry
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.api.pokemon.Natures
+import com.cobblemon.mod.common.api.pokemon.feature.AbstractChoiceSpeciesFeatureProvider
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.pokemon.status.Statuses
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
@@ -134,17 +135,18 @@ internal object PropertiesCompletionProvider : DataRegistry {
     private fun addDefaults() {
         this.inject(setOf("level", "lvl", "l"), setOf("1", "${Cobblemon.config.maxPokemonLevel}") )
         this.inject(setOf("shiny", "s"), setOf("yes", "no"))
-        this.inject(setOf("gender"), Gender.values().map { it.name.lowercase() })
+        this.inject(setOf("alpha", "is_alpha"), setOf("yes", "no"))
+        this.inject(setOf("gender"), Gender.entries.map { it.name.lowercase() })
         this.inject(setOf("friendship"), setOf("0", Cobblemon.config.maxPokemonFriendship.toString()))
         this.inject(setOf("fullness"), setOf("0", "255"))
         this.inject(setOf("pokeball"), PokeBalls.all().map { it.name.simplify() })
         this.inject(setOf("nature"), Natures.all().map { it.name.simplify() })
         this.inject(setOf("ability"), Abilities.all().map { if (it.name.asIdentifierDefaultingNamespace().namespace == Cobblemon.MODID) it.name.asIdentifierDefaultingNamespace().path else it.name })
-        this.inject(setOf("dmax"), setOf("0", Cobblemon.config.maxDynamaxLevel.toString()))
-        this.inject(setOf("gmax"), setOf("yes", "no"))
+        this.inject(setOf("dmax_level", "dmax"), setOf("0", Cobblemon.config.maxDynamaxLevel.toString()))
+        this.inject(setOf("gmax_factor", "gmax"), setOf("yes", "no"))
         this.inject(setOf("type", "elemental_type"), ElementalTypes.all().map { it.name })
         this.inject(setOf("tera_type", "tera"), TeraTypes.map { it.id.simplify() })
-        this.inject(setOf("tradeable"), setOf("yes", "no"))
+        this.inject(setOf("tradeable", "tradable"), setOf("yes", "no"))
         this.inject(setOf("originaltrainer", "ot"), setOf(""))
         this.inject(setOf("originaltrainertype", "ottype"), setOf("None", "Player", "NPC"))
         this.inject(setOf("nickname", "nick"), setOf(""))
@@ -164,7 +166,11 @@ internal object PropertiesCompletionProvider : DataRegistry {
     private fun addCustom() {
         CustomPokemonProperty.properties.forEach { property ->
             // We won't tab complete properties that have no key attached to them as it would be fairly hard to determine which one to suggest
-            if (property.needsKey) {
+            if (property.needsKey && property !is AbstractChoiceSpeciesFeatureProvider<*>) {
+                this.inject(property.keys, property.examples())
+            }
+            // Except choice features that fill examples with all available choices - Gito
+            if (property is AbstractChoiceSpeciesFeatureProvider<*>) {
                 this.inject(property.keys, property.examples())
             }
         }

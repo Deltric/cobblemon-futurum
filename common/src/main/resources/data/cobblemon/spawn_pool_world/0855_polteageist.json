@@ -31,7 +31,7 @@
                 ],
                 "timeRange": "day",
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ],
                 "minY": 62
             },
@@ -76,7 +76,7 @@
                 ],
                 "timeRange": "night",
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ],
                 "minY": 62
             },
@@ -96,6 +96,57 @@
         },
         {
             "id": "polteageist-3",
+            "pokemon": "polteageist",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "26-51",
+            "weight": 6.4,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "canSeeSky": false,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "day",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "polteageist-4",
+            "pokemon": "polteageist",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "26-51",
+            "weight": 6.4,
+            "weightMultiplier": {
+                "multiplier": 1.25,
+                "condition": {
+                    "isPokeSnack": true
+                }
+            },
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "timeRange": "night",
+                "structures": [
+                    "#cobblemon:spawns/is_witch_structure"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "polteageist-5",
             "pokemon": "polteageist",
             "presets": [
                 "mansion_dining"

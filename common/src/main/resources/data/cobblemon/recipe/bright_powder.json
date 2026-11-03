@@ -1,6 +1,6 @@
 {
     "type": "minecraft:smelting",
-    "group": "misc",
+    "category": "misc",
     "ingredient": "minecraft:glow_lichen",
     "result": {
         "id": "cobblemon:bright_powder"

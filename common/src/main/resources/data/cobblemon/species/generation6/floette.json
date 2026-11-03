@@ -255,7 +255,23 @@
           "requiredContext": "cobblemon:shiny_stone"
         }
       ],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 3,
+        "entries": [
+          {
+            "item": "minecraft:dandelion"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 5.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 5.0
+          }
+        ]
+      }
     },
     {
       "name": "Orange",
@@ -284,7 +300,23 @@
           "requiredContext": "cobblemon:shiny_stone"
         }
       ],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 3,
+        "entries": [
+          {
+            "item": "minecraft:orange_tulip"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 5.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 5.0
+          }
+        ]
+      }
     },
     {
       "name": "Blue",
@@ -313,7 +345,23 @@
           "requiredContext": "cobblemon:shiny_stone"
         }
       ],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 3,
+        "entries": [
+          {
+            "item": "minecraft:cornflower"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 5.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 5.0
+          }
+        ]
+      }
     },
     {
       "name": "White",
@@ -342,7 +390,23 @@
           "requiredContext": "cobblemon:shiny_stone"
         }
       ],
-      "battleOnly": false
+      "battleOnly": false,
+      "drops": {
+        "amount": 3,
+        "entries": [
+          {
+            "item": "minecraft:oxeye_daisy"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 5.0
+          },
+          {
+            "item": "cobblemon:kebia_berry",
+            "percentage": 5.0
+          }
+        ]
+      }
     },
     {
       "name": "Eternal",
@@ -372,10 +436,14 @@
       },
       "baseExperienceYield": 193,
       "drops": {
-        "amount": 2,
+        "amount": 3,
         "entries": [
           {
             "item": "minecraft:wither_rose"
+          },
+          {
+            "item": "cobblemon:misty_seed",
+            "percentage": 5.0
           },
           {
             "item": "cobblemon:kebia_berry",

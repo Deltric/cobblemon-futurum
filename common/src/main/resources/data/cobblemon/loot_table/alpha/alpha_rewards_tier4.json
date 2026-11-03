@@ -4,8 +4,8 @@
     {
       "rolls": {
         "type": "minecraft:uniform",
-        "min": 2,
-        "max": 3
+        "min": 1,
+        "max": 1
       },
       "bonus_rolls": 0.0,
       "entries": [
@@ -18,7 +18,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }
@@ -52,7 +52,7 @@
       "rolls": {
         "type": "minecraft:uniform",
         "min": 1,
-        "max": 2
+        "max": 1
       },
       "bonus_rolls": 0.0,
       "entries": [
@@ -69,7 +69,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }
@@ -84,7 +84,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }
@@ -99,7 +99,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }
@@ -114,7 +114,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }
@@ -129,7 +129,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }
@@ -144,7 +144,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 3
+                "max": 1
               },
               "type": "set_count"
             }

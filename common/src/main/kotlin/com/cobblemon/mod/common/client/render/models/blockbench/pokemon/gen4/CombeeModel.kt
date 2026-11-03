@@ -14,6 +14,7 @@ import com.cobblemon.mod.common.client.render.models.blockbench.pokemon.PokemonP
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.ModelPartTransformation
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.Pose
 import com.cobblemon.mod.common.entity.PoseType
+import com.cobblemon.mod.common.util.asExpressionLike
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.world.phys.Vec3
 
@@ -36,6 +37,8 @@ class CombeeModel (root: ModelPart) : PokemonPosableModel(root) {
     val shoulderZOffset = 8
 
     override fun registerPoses() {
+        animations["cry"] = "q.bedrock_stateful('combee', 'cry')".asExpressionLike()
+
         val blink1 = quirk { bedrockStateful("combee", "blink_right") }
         val blink2 = quirk { bedrockStateful("combee", "blink_gender") }
         val blink3 = quirk { bedrockStateful("combee", "blink_left") }

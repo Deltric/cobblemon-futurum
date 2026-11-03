@@ -7,8 +7,7 @@
             "id": "doublade-1",
             "pokemon": "doublade",
             "presets": [
-                "natural",
-                "nether_structures"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -18,6 +17,9 @@
             "condition": {
                 "biomes": [
                     "#minecraft:is_nether"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_nether_structure"
                 ]
             }
         },
@@ -36,7 +38,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ]
             }
         },
@@ -57,10 +59,34 @@
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_dungeon"
+                ]
             }
         },
         {
             "id": "doublade-4",
+            "pokemon": "doublade",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "uncommon",
+            "level": "35-45",
+            "weight": 152.0,
+            "condition": {
+                "minSkyLight": 0,
+                "maxSkyLight": 7,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_dungeon"
+                ]
+            }
+        },
+        {
+            "id": "doublade-5",
             "pokemon": "doublade",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

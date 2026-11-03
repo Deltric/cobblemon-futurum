@@ -15,6 +15,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.server.Bootstrap;
+import sun.misc.Unsafe;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,13 @@ class PokemonInfoWidgetInputTest {
         Bootstrap.bootStrap();
     }
 
+    // The widget only keeps its parent screen for later callbacks; routing does not construct a screen.
+    private static PokedexGUI parent() throws Exception {
+        var field = Unsafe.class.getDeclaredField("theUnsafe");
+        field.setAccessible(true);
+        return (PokedexGUI) ((Unsafe) field.get(null)).allocateInstance(PokedexGUI.class);
+    }
+
     private static AbstractContainerEventHandler screen(GuiEventListener... children) {
         return new AbstractContainerEventHandler() {
             @Override public List<? extends GuiEventListener> children() {
@@ -35,9 +43,9 @@ class PokemonInfoWidgetInputTest {
         };
     }
 
-    @Test void nativeScreenRoutesTheVisibleCryAndAnimationButtonsToTheirParent() {
+    @Test void nativeScreenRoutesTheVisibleCryAndAnimationButtonsToTheirParent() throws Exception {
         for (int[] origin : new int[][] {{0, 0}, {180, 28}, {320, 140}}) {
-            var info = new PokemonInfoWidget(origin[0], origin[1], form -> Unit.INSTANCE);
+            var info = new PokemonInfoWidget(parent(), origin[0], origin[1], form -> Unit.INSTANCE);
             var screen = screen(info);
             // Centers of the real half-scale cry and previous/next animation controls.
             for (double x : new double[] {118, 6.5, 21.5}) {
@@ -52,8 +60,8 @@ class PokemonInfoWidgetInputTest {
         }
     }
 
-    @Test void suppressedPortraitDoesNotCaptureTheMovesOverlay() {
-        var info = new PokemonInfoWidget(180, 28, form -> Unit.INSTANCE);
+    @Test void suppressedPortraitDoesNotCaptureTheMovesOverlay() throws Exception {
+        var info = new PokemonInfoWidget(parent(), 180, 28, form -> Unit.INSTANCE);
         GuiEventListener moves = new GuiEventListener() {
             @Override public boolean isMouseOver(double x, double y) { return true; }
             @Override public void setFocused(boolean focused) {}

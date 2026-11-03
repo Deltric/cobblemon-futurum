@@ -1,5 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
+    "category": "misc",
     "ingredients": [
         "cobblemon:razor_fang",
         "cobblemon:dragon_gem"

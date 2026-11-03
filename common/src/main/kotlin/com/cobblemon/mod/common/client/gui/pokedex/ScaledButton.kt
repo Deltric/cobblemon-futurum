@@ -21,8 +21,8 @@ import net.minecraft.client.sounds.SoundManager
 import net.minecraft.resources.Identifier
 
 class ScaledButton(
-    var buttonX: Float,
-    var buttonY: Float,
+    buttonX: Float,
+    buttonY: Float,
     val buttonWidth: Number,
     val buttonHeight: Number,
     var resource: Identifier? = null,
@@ -30,6 +30,18 @@ class ScaledButton(
     val silent: Boolean = false,
     val clickAction: Button.OnPress
 ): Button(buttonX.toInt(), buttonY.toInt(), buttonWidth.toInt(), buttonHeight.toInt(), "".text(), clickAction, DEFAULT_NARRATION), CobblemonRenderable {
+
+    var buttonX: Float = buttonX
+        set(value) {
+            field = value
+            this.x = value.toInt()
+        }
+
+    var buttonY: Float = buttonY
+        set(value) {
+            field = value
+            this.y = value.toInt()
+        }
 
     var isWidgetActive = false
     var isVisible = true

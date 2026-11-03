@@ -83,7 +83,7 @@
       "namedAnimations": {
         "cry": "q.bedrock_stateful('dummy', 'cry')"
       },
-      "animations": ["q.bedrock('tentacool', 'ground_sleep')"]
+      "animations": ["q.bedrock('tentacool', 'sleep')"]
     }
   }
 }

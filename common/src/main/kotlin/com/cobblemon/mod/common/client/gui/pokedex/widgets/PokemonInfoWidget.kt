@@ -11,10 +11,10 @@ package com.cobblemon.mod.common.client.gui.pokedex.widgets
 import net.minecraft.client.input.MouseButtonEvent
 import com.bedrockk.molang.runtime.MoLangRuntime
 import com.cobblemon.mod.common.api.gui.blitk
-import com.cobblemon.mod.common.api.pokedex.entry.PokedexEntry
 import com.cobblemon.mod.common.api.molang.MoLangFunctions.setup
 import com.cobblemon.mod.common.api.pokedex.PokedexEntryProgress
 import com.cobblemon.mod.common.api.pokedex.entry.PokedexCosmeticVariation
+import com.cobblemon.mod.common.api.pokedex.entry.PokedexEntry
 import com.cobblemon.mod.common.api.pokedex.entry.PokedexForm
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.text.bold
@@ -26,8 +26,9 @@ import com.cobblemon.mod.common.client.CobblemonResources
 import com.cobblemon.mod.common.client.gui.ProfileTransformType
 import com.cobblemon.mod.common.client.gui.TypeIcon
 import com.cobblemon.mod.common.client.gui.drawProfilePokemon
-import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.HALF_OVERLAY_HEIGHT
+import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUI
 import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.HALF_OVERLAY_WIDTH
+import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.HALF_OVERLAY_HEIGHT
 import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.POKEMON_PORTRAIT_HEIGHT
 import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.POKEMON_PORTRAIT_WIDTH
 import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.PORTRAIT_POKE_BALL_HEIGHT
@@ -61,7 +62,7 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.io.FileNotFoundException
 
-class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) -> (Unit)) : SoundlessWidget(
+class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val updateForm: (PokedexForm) -> (Unit)) : SoundlessWidget(
     pX,
     pY,
     POKEMON_PORTRAIT_WIDTH,
@@ -83,7 +84,6 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
         private val arrowFormLeft = cobblemonResource("textures/gui/pokedex/forms_arrow_left.png")
         private val arrowFormRight = cobblemonResource("textures/gui/pokedex/forms_arrow_right.png")
 
-        private val caughtIcon = cobblemonResource("textures/gui/pokedex/caught_icon.png")
         private val typeBar = cobblemonResource("textures/gui/pokedex/type_bar.png")
         private val typeBarDouble = cobblemonResource("textures/gui/pokedex/type_bar_double.png")
 
@@ -101,9 +101,6 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
 
     var currentEntry : PokedexEntry? = null
 
-    var speciesName: MutableComponent = Component.translatable("")
-    var speciesNumber: MutableComponent = "0000".text()
-
     val runtime = MoLangRuntime().setupClient().setup().also {
         it.environment.query.addFunction("get_pokedex") { CobblemonClient.clientPokedexData.struct }
     }
@@ -112,10 +109,6 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
     var selectedFormIndex: Int = 0
 
     var type: Array<ElementalType?> = arrayOf(null, null)
-    var seenShinyStates: Set<String> = setOf()
-    var shiny = false
-    var maleRatio = -1F
-    var gender: Gender = Gender.GENDERLESS
 
     var renderablePokemon : RenderablePokemon? = null
 
@@ -196,7 +189,10 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
         20,
         resource = buttonGenderMale,
         clickAction = {
-            if (maleRatio > 0 && maleRatio < 1) gender = if (gender == Gender.MALE) Gender.FEMALE else Gender.MALE
+            val maleRatio = parent.maleRatio
+            if (maleRatio > 0 && maleRatio < 1) {
+                parent.gender = if (parent.gender == Gender.MALE) Gender.FEMALE else Gender.MALE
+            }
             updateAspects()
         }
     ).apply { addWidget(this) }
@@ -208,8 +204,8 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
         20,
         buttonNone,
         clickAction = {
-            if (seenShinyStates.size > 1) {
-                shiny = !shiny
+            if (parent.seenShinyStates.size > 1) {
+                parent.shiny = !parent.shiny
                 updateAspects()
             }
         }
@@ -264,8 +260,7 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
     override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val currentEntry = this.currentEntry ?: return
 
-        val hasKnowledge =
-            CobblemonClient.clientPokedexData.getKnowledgeForSpecies(currentEntry.speciesId) != PokedexEntryProgress.UNREGISTERED
+        val hasKnowledge = CobblemonClient.clientPokedexData.getKnowledgeForSpecies(currentEntry.speciesId) != PokedexEntryProgress.UNREGISTERED
         val species = currentEntry.speciesId.let { PokemonSpecies.getByIdentifier(it) } ?: return
 
         val matrices = context.pose()
@@ -276,35 +271,6 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
             y = pY,
             width = HALF_OVERLAY_WIDTH,
             height = HALF_OVERLAY_HEIGHT)
-
-        drawScaledText(
-            context = context,
-            font = CobblemonResources.DEFAULT_LARGE,
-            text = speciesNumber.bold(),
-            x = pX + 3,
-            y = pY + 1,
-            shadow = true
-        )
-
-        drawScaledText(
-            context = context,
-            font = CobblemonResources.DEFAULT_LARGE,
-            text = (if (hasKnowledge) speciesName else lang("ui.generic.question_marks")).bold(),
-            x = pX + 26,
-            y = pY + 1,
-            colour = 0x606B6E
-        )
-
-        // Caught icon
-        if (isSelectedPokemonOwned()) {
-            blitk(context = context,
-            texture = caughtIcon,
-            x = (pX + 129) / SCALE,
-            y = (pY + 2) / SCALE,
-            width = 14,
-            height = 14,
-            scale = SCALE)
-        }
 
         if (!suppressViewport) {
             blitk(context = context,
@@ -551,8 +517,6 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
 
         if (species != null) {
             this.visibleForms = CobblemonClient.clientPokedexData.getEncounteredForms(pokedexEntry).toMutableList()
-            this.speciesNumber = species.nationalPokedexNumber.toString().padStart(4, '0').text()
-            this.speciesName = species.translatedName
 
             if (forms.isNotEmpty()) {
                 formLeftButton.active = true
@@ -578,23 +542,23 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
         variationButtons.forEach { removeWidget(it.getWidget()) }
         variationButtons.clear()
 
-        seenShinyStates = CobblemonClient.clientPokedexData.getSeenShinyStates(pokedexEntry, pokedexForm)
-        shiny = seenShinyStates.count() == 1 && seenShinyStates.first() == "shiny"
-        shinyButton.resource = if (shiny) buttonShiny else buttonNone
-        shinyButton.visible = shiny || seenShinyStates.size > 1
-        shinyButton.active = seenShinyStates.size > 1
+        parent.seenShinyStates = CobblemonClient.clientPokedexData.getSeenShinyStates(pokedexEntry, pokedexForm)
+        parent.shiny = parent.seenShinyStates.count() == 1 && parent.seenShinyStates.first() == "shiny"
+        shinyButton.resource = if (parent.shiny) buttonShiny else buttonNone
+        shinyButton.visible = parent.shiny || parent.seenShinyStates.size > 1
+        shinyButton.active = parent.seenShinyStates.size > 1
 
         val form = species.forms.find { it.name.equals(pokedexForm.displayForm, ignoreCase = true) } ?: species.standardForm
-        maleRatio = form.maleRatio
+        parent.maleRatio = form.maleRatio
 
         val seenGenders = CobblemonClient.clientPokedexData.getSeenGenders(pokedexEntry, pokedexForm)
         val visibleGenders = seenGenders.filter { it != Gender.GENDERLESS }
         if (visibleGenders.isEmpty()) {
-            gender = Gender.GENDERLESS
+            parent.gender = Gender.GENDERLESS
             genderButton.visible = false
             genderButton.active = false
         } else {
-            gender = visibleGenders.first()
+            parent.gender = visibleGenders.first()
             genderButton.visible = true
             genderButton.active = visibleGenders.size > 1
         }
@@ -673,8 +637,8 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
             return
         }
 
-        genderButton.resource = if (gender == Gender.FEMALE) buttonGenderFemale else buttonGenderMale
-        shinyButton.resource = if (shiny) buttonShiny else buttonNone
+        genderButton.resource = if (parent.gender == Gender.FEMALE) buttonGenderFemale else buttonGenderMale
+        shinyButton.resource = if (parent.shiny) buttonShiny else buttonNone
 
         val species = currentEntry?.speciesId?.let { PokemonSpecies.getByIdentifier(it) }
         if (species != null) {
@@ -683,12 +647,14 @@ class PokemonInfoWidget(val pX: Int, val pY: Int, val updateForm: (PokedexForm) 
 
             updateType(species, form)
 
-            val aspects = mutableSetOf<String>()
-            if (shiny) aspects.add(SHINY_ASPECT.aspect)
+            val aspects = parent.aspects
+            aspects.clear()
 
-            if (gender == Gender.FEMALE) {
+            if (parent.shiny) aspects.add(SHINY_ASPECT.aspect)
+
+            if (parent.gender == Gender.FEMALE) {
                 aspects.add("female")
-            } else if (gender == Gender.MALE) {
+            } else if (parent.gender == Gender.MALE) {
                 aspects.add("male")
             }
 

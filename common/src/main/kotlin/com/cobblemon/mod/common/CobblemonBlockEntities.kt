@@ -114,4 +114,19 @@ object CobblemonBlockEntities : PlatformRegistry<Registry<BlockEntityType<*>>, R
         "poke_snack",
         type(::PokeSnackBlockEntity, CobblemonBlocks.POKE_SNACK, CobblemonBlocks.POKE_CAKE)
     )
+
+    @JvmField
+    val TERRAIN_PLANT: BlockEntityType<TerrainPlantBlockEntity> = this.create(
+        "terrain_plant",
+        type(::TerrainPlantBlockEntity,
+            CobblemonBlocks.VOLTACONIA,
+            CobblemonBlocks.LUCIBELL,
+            CobblemonBlocks.VERDROOT
+        )
+    )
+    @JvmField
+    val MISTLEAF_FLOWER: BlockEntityType<MistleafFlowerBlockEntity> = this.create(
+        "mistleaf",
+        type(::MistleafFlowerBlockEntity, CobblemonBlocks.MISTLEAF)
+    )
 }

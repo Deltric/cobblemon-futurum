@@ -13,7 +13,7 @@
       "spawnablePositionType": "grounded",
       "maxHerdSize": 7,
       "levelRange": "1-37",
-      "weight": 99.0,
+      "weight": 59.4,
       "condition": {
         "minSkyLight": 8,
         "maxSkyLight": 15,
@@ -26,9 +26,57 @@
         "timeRange": "day"
       },
       "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
         "biomes": [
           "#cobblemon:is_arid"
         ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "rookidee",
+          "weight": 80.0,
+          "levelRange": "4-22",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "corvisquire",
+          "weight": 18.0,
+          "levelRange": "20-33",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 3,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "rookidee-herd-2",
+      "presets": [
+        "natural",
+        "treetop"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "common",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 7,
+      "levelRange": "1-37",
+      "weight": 59.4,
+      "condition": {
+        "minSkyLight": 8,
+        "maxSkyLight": 15,
+        "biomes": [
+          "#cobblemon:is_overworld"
+        ],
+        "timeRange": "day",
+        "structures": [
+          "#cobblemon:spawns/is_witch_structure"
+        ],
+        "minY": 62
       },
       "herdablePokemon": [
         {

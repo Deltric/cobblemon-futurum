@@ -21,6 +21,7 @@ import com.cobblemon.mod.common.api.battles.model.actor.BattleActor
 import com.cobblemon.mod.common.api.battles.model.actor.EntityBackedBattleActor
 import com.cobblemon.mod.common.api.battles.model.actor.FleeableBattleActor
 import com.cobblemon.mod.common.api.events.CobblemonEvents
+import com.cobblemon.mod.common.api.events.battles.BattleEndedEvent
 import com.cobblemon.mod.common.api.events.battles.BattleFledEvent
 import com.cobblemon.mod.common.api.events.battles.BattleFleeAttemptEvent
 import com.cobblemon.mod.common.api.molang.MoLangFunctions.asMoLangValue
@@ -124,6 +125,12 @@ open class PokemonBattle(
     var winners = listOf<BattleActor>()
     var losers = listOf<BattleActor>()
     var ended = false
+    /** How the battle ended, or null if it hasn't ended yet. */
+    var endResult: BattleEndResult? = null
+    /** The actor that forfeited the battle, if any. */
+    var forfeitedBy: BattleActor? = null
+    /** Whether a player fled from the battle. */
+    var fled = false
     // TEMP battle showcase stuff
     var announcingRules = false
     var turn: Int = 0
@@ -232,6 +239,10 @@ open class PokemonBattle(
     }
 
     fun writeShowdownAction(vararg messages: String) {
+        if (messages.any { it.contains("\n") || it.contains("\r") }) {
+            LOGGER.warn("Refusing to forward Showdown action with an embedded line break for battle {}: {}", battleId, messages.joinToString(" | "))
+            return
+        }
         log(messages.joinToString("\n"))
         ShowdownService.service.send(battleId, messages.toList().toTypedArray())
     }
@@ -251,6 +262,14 @@ open class PokemonBattle(
 
     fun end() {
         ended = true
+        val result = when {
+            winners.isNotEmpty() && showdownMessages.any { "capture" in it } -> BattleEndResult.CAPTURE
+            winners.isNotEmpty() && forfeitedBy != null -> BattleEndResult.FORFEIT
+            winners.isNotEmpty() -> BattleEndResult.VICTORY
+            fled -> BattleEndResult.FLED
+            else -> BattleEndResult.STOPPED
+        }
+        endResult = result
         val awardToFainted = Cobblemon.config.awardExperienceToFaintedPokemon
         val awardOnLoss = Cobblemon.config.awardExperienceOnBattleLoss
         this.actors.forEach { actor ->
@@ -334,6 +353,7 @@ open class PokemonBattle(
                 }
             }
         }
+        CobblemonEvents.BATTLE_ENDED.post(BattleEndedEvent(this, result, forfeitedBy.takeIf { result == BattleEndResult.FORFEIT }))
         sendUpdate(BattleEndPacket())
         BattleRegistry.closeBattle(this)
     }
@@ -504,6 +524,7 @@ open class PokemonBattle(
                 .forEach{it.pokemon.heal()}
             CobblemonEvents.BATTLE_FLED.post(BattleFledEvent(this, actors.asSequence().filterIsInstance<PlayerBattleActor>().iterator().next()))
             actors.filterIsInstance<EntityBackedBattleActor<*>>().mapNotNull { it.entity }.filterIsInstance<ServerPlayer>().forEach { it.sendSystemMessage(battleLang("flee").yellow()) }
+            fled = true
             stop()
         }
     }
@@ -541,6 +562,7 @@ open class PokemonBattle(
     private fun checkForfeit(): Boolean {
         val forfeit = actors.find { it.responses.any { it is ForfeitActionResponse } }
         return forfeit?.let {
+            forfeitedBy = it
             this.dispatchWaiting { this.broadcastChatMessage(battleLang("forfeit", it.getName()).red()) }
             writeShowdownAction(">forcelose ${it.showdownId}")
             true

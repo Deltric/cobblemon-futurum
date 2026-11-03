@@ -27,6 +27,8 @@ object CobblemonGameRules {
     val SHINY_STARTERS: GameRule<Boolean> = register("do_shiny_starters", GameRuleCategory.MISC, false)
     @JvmField
     val HEALERS_HEAL_PC: GameRule<Boolean> = register("healers_heal_pc", GameRuleCategory.MISC, false)
+    @JvmField
+    val DO_POKEMON_PREDATION: GameRule<Boolean> = register("do_pokemon_predation", GameRuleCategory.MOBS, true)
 
     private fun register(name: String, category: GameRuleCategory, defaultValue: Boolean): GameRule<Boolean> =
         Cobblemon.implementation.registerGameRule(cobblemonResource(name), category, defaultValue)

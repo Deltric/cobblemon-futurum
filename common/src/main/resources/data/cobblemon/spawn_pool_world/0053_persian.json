@@ -78,7 +78,7 @@
                 ],
                 "isRaining": false,
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ]
             },
             "anticondition": {
@@ -155,7 +155,7 @@
                     "#cobblemon:is_arid"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ]
             }
         },
@@ -163,8 +163,7 @@
             "id": "persian-alolan-5",
             "pokemon": "persian alolan",
             "presets": [
-                "natural",
-                "illager_structures"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -191,7 +190,11 @@
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ],
-                "isRaining": false
+                "isRaining": false,
+                "structures": [
+                    "#cobblemon:spawns/is_illager_structure"
+                ],
+                "minY": 62
             },
             "anticondition": {
                 "biomes": [
@@ -204,8 +207,7 @@
             "id": "persian-alolan-6",
             "pokemon": "persian alolan",
             "presets": [
-                "natural",
-                "illager_structures"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -232,15 +234,16 @@
                 "biomes": [
                     "#cobblemon:is_arid",
                     "#cobblemon:is_freezing"
-                ]
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_illager_structure"
+                ],
+                "minY": 62
             }
         },
         {
             "id": "persian-alolan-7",
             "pokemon": "persian alolan",
-            "presets": [
-                "illager_structures"
-            ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
             "bucket": "uncommon",
@@ -256,6 +259,9 @@
                 "canSeeSky": false,
                 "biomes": [
                     "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_illager_structure"
                 ],
                 "minY": 62
             }

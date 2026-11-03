@@ -1,8 +1,8 @@
 {
   "portraitScale": 2.14,
   "portraitTranslation": [ -0.38, -0.64, 0],
-  "profileScale": 0.47,
-  "profileTranslation": [ 0, 1.04, 0],
+  "profileScale": 0.54,
+  "profileTranslation": [ 0, 0.97, 0],
   "rootBone": "morpeko",
   "poses": {
     "standing": {

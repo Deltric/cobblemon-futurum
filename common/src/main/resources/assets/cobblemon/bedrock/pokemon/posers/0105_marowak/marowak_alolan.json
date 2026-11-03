@@ -1,6 +1,6 @@
 {
   "portraitScale": 1.82,
-  "portraitTranslation": [-0.01, 0.64, 0],
+  "portraitTranslation": [0.15, 0.52, 0],
   "profileScale": 0.84,
   "profileTranslation": [0, 0.51, 0],
   "rootBone": "marowak_alolan",
@@ -36,7 +36,7 @@
     },
     "portrait": {
       "poseTypes": ["PORTRAIT"],
-      "animations": ["q.bedrock('marowak_alolan', 'portrait')"]
+      "animations": ["q.bedrock('marowak_alolan', 'ground_idle')"]
     }
   }
 }

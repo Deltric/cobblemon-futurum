@@ -17,10 +17,6 @@
       "poseTypes": ["WALK"],
       "animations": ["q.look('head_ai')", "q.bedrock('servine', 'ground_idle')"],
       "quirks": ["q.bedrock_quirk('servine', 'blink')"]
-    },
-    "sleep": {
-      "poseTypes": ["SLEEP"],
-      "animations": ["q.bedrock('servine', 'sleep')"]
     }
   }
 }

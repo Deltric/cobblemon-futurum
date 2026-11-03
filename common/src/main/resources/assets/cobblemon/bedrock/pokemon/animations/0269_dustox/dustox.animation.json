@@ -255,6 +255,30 @@
 					"position": [0, 0, -0.1]
 				}
 			}
+		},
+		"animation.dustox.cry": {
+			"animation_length": 1,
+			"bones": {
+				"mouth_closed_smile": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.0833": {"pre": [0, 0, 0], "post": [0, 0, 0.1]},
+						"0.625": {"pre": [0, 0, 0.1], "post": [0, 0, 0]}
+					}
+				},
+				"mouth_open": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.0833": {"pre": [0, 0, 0], "post": [0, 0, -0.1]},
+						"0.625": {"pre": [0, 0, -0.1], "post": [0, 0, 0]}
+					}
+				}
+			},
+			"sound_effects": {
+				"0.0833": {
+					"effect": "pokemon.dustox.cry"
+				}
+			}
 		}
 	}
 }

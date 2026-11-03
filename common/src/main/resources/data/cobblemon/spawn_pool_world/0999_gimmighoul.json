@@ -16,7 +16,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ],
                 "minY": 48
             }
@@ -42,6 +42,26 @@
         },
         {
             "id": "gimmighoul-true-3",
+            "pokemon": "gimmighoul roaming=true",
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "5-30",
+            "weight": 20.0,
+            "condition": {
+                "minSkyLight": 8,
+                "maxSkyLight": 15,
+                "biomes": [
+                    "#cobblemon:is_overworld"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_graveyard"
+                ],
+                "minY": 62
+            }
+        },
+        {
+            "id": "gimmighoul-true-4",
             "pokemon": "gimmighoul roaming=true",
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -72,7 +92,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ],
                 "minY": 48
             }

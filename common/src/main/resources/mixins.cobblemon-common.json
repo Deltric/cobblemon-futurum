@@ -6,6 +6,7 @@
   "injectors": {
     "maxShiftBy": 2
   },
+  "mixinextras": {"minVersion": "0.5.0"},
   "client": [
     "client.EntityHitboxDebugRendererMixin",
     "ItemPropertiesMixin",
@@ -29,6 +30,8 @@
     "client.GuiRenderStateMixin",
     "client.HumanoidModelMixin",
     "client.FirstPersonHandsAndItemsMixin",
+    "client.FirstPersonHandsAndItemsRendererMixin",
+    "client.ItemInHandLayerMixin",
     "client.ItemRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.LivingEntityRenderStateMixin",

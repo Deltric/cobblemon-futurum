@@ -35,6 +35,12 @@
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ]
+            },
+            "anticondition": {
+                "biomes": [
+                    "#cobblemon:is_magical",
+                    "#cobblemon:is_spooky"
+                ]
             }
         },
         {
@@ -69,7 +75,13 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
+                ]
+            },
+            "anticondition": {
+                "biomes": [
+                    "#cobblemon:is_magical",
+                    "#cobblemon:is_spooky"
                 ]
             }
         },

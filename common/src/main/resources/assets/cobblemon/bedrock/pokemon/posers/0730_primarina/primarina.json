@@ -6,8 +6,7 @@
   "rootBone": "primarina",
   "animations": {
     "faint": "q.bedrock_primary('primarina', 'faint', q.curve('one'))",
-    "cry": "q.bedrock_stateful('primarina', 'cry')",
-    "recoil": "q.bedrock_stateful('primarina', 'recoil')"
+    "cry": "q.bedrock_stateful('primarina', 'cry')"
   },
   "poses": {
     "battle-standing": {

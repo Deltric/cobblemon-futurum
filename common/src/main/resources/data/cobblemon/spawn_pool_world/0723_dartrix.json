@@ -32,7 +32,7 @@
             }
         },
         {
-            "id": "dartrix-hisui-3",
+            "id": "dartrix-hisui-2",
             "pokemon": "dartrix region_bias=hisui",
             "presets": [
                 "natural",

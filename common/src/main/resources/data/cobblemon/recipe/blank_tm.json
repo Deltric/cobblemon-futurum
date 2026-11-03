@@ -1,11 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "pattern": [
     "AG",
     "GA"
   ],
   "key": {
-    "G": "minecraft:glass",
+    "G": "minecraft:glass_pane",
     "A": "minecraft:amethyst_shard"
   },
   "result": {

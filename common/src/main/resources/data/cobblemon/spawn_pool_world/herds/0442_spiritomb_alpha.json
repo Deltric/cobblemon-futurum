@@ -107,7 +107,7 @@
           "#cobblemon:is_overworld"
         ],
         "structures": [
-          "#cobblemon:ruin"
+          "#cobblemon:spawns/is_ruins"
         ],
         "minY": 48
       },
@@ -384,8 +384,12 @@
         "canSeeSky": false,
         "biomes": [
           "#cobblemon:is_jungle"
-        ],
-        "minY": 48
+        ]
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_jungle_monument"
+        ]
       },
       "herdablePokemon": [
         {
@@ -464,6 +468,101 @@
     {
       "id": "spiritomb-alpha-6",
       "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "22-100",
+      "weight": 50.0,
+      "condition": {
+        "canSeeSky": false,
+        "biomes": [
+          "#cobblemon:is_jungle"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_jungle_monument"
+        ],
+        "minY": 48
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "spiritomb held_item=cobblemon:ghost_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "gastly",
+          "weight": 80.0,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "haunter",
+          "weight": 19.0,
+          "levelRange": "27-37",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "gengar",
+          "weight": 1.0,
+          "levelRange": "37-45",
+          "levelRangeOffset": "-1-5",
+          "maxTimes": 1,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "misdreavus",
+          "weight": 90.0,
+          "levelRange": "22-41",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "mismagius",
+          "weight": 135.0,
+          "levelRange": "41-46",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "yamask",
+          "weight": 80.0,
+          "levelRange": "8-27",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "cofagrigus",
+          "weight": 120.0,
+          "levelRange": "36-44",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "spiritomb-alpha-7",
+      "presets": [
         "natural",
         "desert_pyramid"
       ],
@@ -477,6 +576,105 @@
         "canSeeSky": false,
         "biomes": [
           "#cobblemon:is_desert"
+        ]
+      },
+      "anticondition": {
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
+        ]
+      },
+      "herdablePokemon": [
+        {
+          "pokemon": "spiritomb held_item=cobblemon:ghost_gem alpha=true",
+          "weight": 30.0,
+          "levelRange": "1-100",
+          "maxTimes": 1,
+          "isLeader": true,
+          "isFollower": false
+        },
+        {
+          "pokemon": "gastly",
+          "weight": 80.0,
+          "levelRange": "9-28",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "haunter",
+          "weight": 19.0,
+          "levelRange": "27-37",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 2,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "gengar",
+          "weight": 1.0,
+          "levelRange": "37-45",
+          "levelRangeOffset": "-1-5",
+          "maxTimes": 1,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "misdreavus",
+          "weight": 90.0,
+          "levelRange": "22-41",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "mismagius",
+          "weight": 135.0,
+          "levelRange": "41-46",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "yamask galarian",
+          "weight": 80.0,
+          "levelRange": "8-27",
+          "levelRangeOffset": "-3-3",
+          "maxTimes": 7,
+          "isLeader": false,
+          "isFollower": true
+        },
+        {
+          "pokemon": "runerigus",
+          "weight": 120.0,
+          "levelRange": "36-44",
+          "levelRangeOffset": "-2-4",
+          "maxTimes": 5,
+          "isLeader": false,
+          "isFollower": true
+        }
+      ]
+    },
+    {
+      "id": "spiritomb-alpha-8",
+      "presets": [
+        "natural"
+      ],
+      "type": "pokemon-herd",
+      "bucket": "boss",
+      "spawnablePositionType": "grounded",
+      "maxHerdSize": 4,
+      "levelRange": "22-100",
+      "weight": 50.0,
+      "condition": {
+        "canSeeSky": false,
+        "biomes": [
+          "#cobblemon:is_desert"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_desert_monument"
         ],
         "minY": 48
       },
@@ -555,7 +753,7 @@
       ]
     },
     {
-      "id": "spiritomb-alpha-7",
+      "id": "spiritomb-alpha-9",
       "type": "pokemon-herd",
       "bucket": "boss",
       "spawnablePositionType": "grounded",

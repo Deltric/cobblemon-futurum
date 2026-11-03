@@ -37,7 +37,6 @@ import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cobblemon.mod.common.util.battleLang
 import com.cobblemon.mod.common.util.cobblemonResource
 import java.util.concurrent.CompletableFuture
-import net.minecraft.world.entity.LivingEntity
 
 /**
  * Format: |move|POKEMON|MOVE|TARGET
@@ -77,7 +76,7 @@ class MoveInstruction(
             val pokemonName = userPokemon.getName()
             ShowdownInterpreter.lastCauser[battle.battleId] = message
             // For Spread targets the message data only gives the pnx strings. So we can't know what pokemon are actually targeted until the previous messages have been interpreted
-            val spreadTargetPokemon = spreadTargets.map { battle.activePokemon.firstOrNull() { poke -> poke.getPNX() == it }?.battlePokemon }
+            val spreadTargetPokemon = spreadTargets.map { battle.activePokemon.firstOrNull { poke -> poke.getPNX() == it }?.battlePokemon }
 
             val targetPokemonEntity = targetPokemon?.entity
             if (targetPokemonEntity != null) {
@@ -137,9 +136,19 @@ class MoveInstruction(
 
             val subsequentInstructions = instructionSet.findInstructionsCausedBy(this)
             val missedTargets = subsequentInstructions.filterIsInstance<MissInstruction>().mapNotNull { it.target }
+            val faintedTargets = subsequentInstructions.filterIsInstance<FaintInstruction>().map { it.faintingPokemon }
             val failed = subsequentInstructions.any { it is FailInstruction }
             val failedTargets = subsequentInstructions.filterIsInstance<FailInstruction>().mapNotNull { it.target }
             val hitCountInstruction = subsequentInstructions.filterIsInstance<HitCountInstruction>().firstOrNull()
+
+            runtime.environment.query.addFunction("target_fainted") { params ->
+                if (params.params.size == 0) {
+                    return@addFunction DoubleValue(faintedTargets.isNotEmpty())
+                } else {
+                    val entityUUID = params.getString(0)
+                    return@addFunction DoubleValue(faintedTargets.any { it.entity?.stringUUID == entityUUID })
+                }
+            }
 
             runtime.environment.query.addFunction("missed") { params ->
                 if (params.params.size == 0) {

@@ -1,5 +1,7 @@
 {
     "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "group": "white_dye",
     "ingredients": [
         "cobblemon:pep_up_flower"
     ],

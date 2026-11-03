@@ -20,8 +20,9 @@
                     "#cobblemon:is_ocean"
                 ],
                 "structures": [
-                    "#minecraft:shipwreck"
-                ]
+                    "#cobblemon:spawns/is_shipwreck"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -38,8 +39,9 @@
                     "#cobblemon:is_ocean"
                 ],
                 "structures": [
-                    "#minecraft:shipwreck"
-                ]
+                    "#cobblemon:spawns/is_shipwreck"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -76,8 +78,9 @@
                     "#cobblemon:is_ocean"
                 ],
                 "structures": [
-                    "#minecraft:shipwreck"
-                ]
+                    "#cobblemon:spawns/is_shipwreck"
+                ],
+                "maxY": 62
             }
         },
         {
@@ -96,8 +99,9 @@
                     "#cobblemon:is_ocean"
                 ],
                 "structures": [
-                    "#minecraft:shipwreck"
-                ]
+                    "#cobblemon:spawns/is_shipwreck"
+                ],
+                "maxY": 62
             }
         },
         {

@@ -40,7 +40,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#cobblemon:ruin"
+                    "#cobblemon:spawns/is_ruins"
                 ]
             }
         },
@@ -79,10 +79,36 @@
                 "biomes": [
                     "#cobblemon:is_desert"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
+                ]
             }
         },
         {
             "id": "golett-5",
+            "pokemon": "golett",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "5-30",
+            "weight": 180.0,
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_desert"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_desert_monument"
+                ],
+                "minY": 48
+            }
+        },
+        {
+            "id": "golett-6",
             "pokemon": "golett",
             "presets": [
                 "natural",
@@ -97,10 +123,36 @@
                 "biomes": [
                     "#cobblemon:is_jungle"
                 ]
+            },
+            "anticondition": {
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ]
             }
         },
         {
-            "id": "golett-6",
+            "id": "golett-7",
+            "pokemon": "golett",
+            "presets": [
+                "natural"
+            ],
+            "type": "pokemon",
+            "spawnablePositionType": "grounded",
+            "bucket": "common",
+            "level": "5-30",
+            "weight": 180.0,
+            "condition": {
+                "biomes": [
+                    "#cobblemon:is_jungle"
+                ],
+                "structures": [
+                    "#cobblemon:spawns/is_jungle_monument"
+                ],
+                "minY": 48
+            }
+        },
+        {
+            "id": "golett-8",
             "pokemon": "golett",
             "type": "pokemon",
             "spawnablePositionType": "grounded",

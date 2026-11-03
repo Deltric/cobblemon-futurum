@@ -8,13 +8,20 @@
 
 package com.cobblemon.mod.common.api.pokedex.entry
 
+import com.cobblemon.mod.common.Cobblemon
+import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.data.JsonDataRegistry
 import com.cobblemon.mod.common.api.molang.ExpressionLike
+import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.reactive.SimpleObservable
 import com.cobblemon.mod.common.net.messages.client.data.DexEntrySyncPacket
+import com.cobblemon.mod.common.net.messages.client.data.DexEvolutionDisplaySyncPacket
+import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.util.adapters.ExpressionLikeAdapter
 import com.cobblemon.mod.common.util.adapters.IdentifierAdapter
+import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cobblemon.mod.common.util.cobblemonResource
+import com.cobblemon.mod.common.util.lang
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -38,6 +45,8 @@ object DexEntries : JsonDataRegistry<PokedexEntry> {
 
     val entries = mutableMapOf<Identifier, PokedexEntry>()
 
+    val evolutionDisplays = mutableListOf<DexEvolutionDisplay>()
+
     override fun reload(data: Map<Identifier, PokedexEntry>) {
         data.forEach { _, entry ->
             entries[entry.id] = entry
@@ -50,6 +59,7 @@ object DexEntries : JsonDataRegistry<PokedexEntry> {
                 }
             }
         }
+        computeEvolutionDisplays()
         observable.emit(this)
     }
 
@@ -57,5 +67,58 @@ object DexEntries : JsonDataRegistry<PokedexEntry> {
 
     override fun sync(player: ServerPlayer) {
         DexEntrySyncPacket(entries.values).sendToPlayer(player)
+        DexEvolutionDisplaySyncPacket(evolutionDisplays).sendToPlayer(player)
+    }
+
+    fun computeEvolutionDisplays() {
+        evolutionDisplays.clear()
+        PokemonSpecies.species.forEach {
+            try {
+                evolutionDisplays.addAll(buildDisplays(it.standardForm) + it.forms.flatMap { form -> buildDisplays(form) })
+            } catch (e: Exception) {
+                Cobblemon.LOGGER.error("Failed to build dex evolution displays for ${it.resourceIdentifier}", e)
+            }
+        }
+    }
+
+    fun buildDisplays(form: FormData): List<DexEvolutionDisplay> {
+        val result = mutableListOf<DexEvolutionDisplay>()
+        (form.ownEvolutions ?: form.evolutions).forEach { evolution ->
+            val requirements = mutableListOf<DexEvolutionRequirementDisplay>()
+            getToolTipHeaderIcon(evolution)?.let { header ->
+                requirements.add(header)
+            }
+            evolution.requirements.mapNotNull { resolveRequirementData(it) }.forEach { requirement ->
+                requirements.add(requirement)
+            }
+
+            listOfNotNull(evolution.result, evolution.shedder).forEach resultLoop@{ resultProperties ->
+                val resultSpecies = resultProperties.species
+                    ?.let { PokemonSpecies.getByIdentifier(it.asIdentifierDefaultingNamespace()) }
+                    ?: return@resultLoop
+
+                // The result's own aspects win, otherwise carry the source form's aspects over
+                // like a real evolution does (Alola-Bias Pichu -> Alola-Bias Pikachu)
+                val resultForm = resultSpecies.getForm(resultProperties.aspects).takeIf { it != resultSpecies.standardForm }
+                    ?: resultSpecies.getForm(form.aspects.toSet() + resultProperties.aspects)
+                val toAspects = resultProperties.aspects + resultForm.aspects
+                val resultRequirements = if (resultProperties === evolution.shedder) {
+                    requirements + CobblemonDexEvolutionRequirementDisplay(CobblemonItems.POKE_BALL, lang("ui.pokedex.evolution.shedder.tooltip"))
+                } else {
+                    requirements
+                }
+
+                result.add(DexEvolutionDisplay(
+                    fromSpecies = form.species.resourceIdentifier,
+                    fromForm = form.name,
+                    fromAspects = form.aspects.toSet(),
+                    toSpecies = resultSpecies.resourceIdentifier,
+                    toForm = resultForm.name,
+                    toAspects = toAspects,
+                    requirements = resultRequirements,
+                ))
+            }
+        }
+        return result
     }
 }

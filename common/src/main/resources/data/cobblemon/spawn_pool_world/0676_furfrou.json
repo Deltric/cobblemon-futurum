@@ -41,7 +41,7 @@
                     "#cobblemon:is_overworld"
                 ],
                 "structures": [
-                    "#minecraft:village"
+                    "#cobblemon:spawns/is_civilization"
                 ]
             }
         },
@@ -49,8 +49,7 @@
             "id": "furfrou-3",
             "pokemon": "furfrou",
             "presets": [
-                "natural",
-                "mansion"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -62,7 +61,11 @@
                 "maxSkyLight": 15,
                 "biomes": [
                     "#cobblemon:is_overworld"
-                ]
+                ],
+                "structures": [
+                    "minecraft:mansion"
+                ],
+                "minY": 62
             }
         }
     ]

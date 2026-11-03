@@ -297,12 +297,6 @@
       "learnableMoves": [
         "thunderpunch"
       ],
-      "requirements": [
-        {
-          "variant": "biome",
-          "biomeAnticondition": "#cobblemon:evolution/regional/pikachu_alolabiome"
-        }
-      ],
       "requiredContext": "cobblemon:thunder_stone"
     },
     {
@@ -317,10 +311,6 @@
         {
           "variant": "biome",
           "biomeCondition": "#cobblemon:evolution/regional/pikachu_alolabiome"
-        },
-        {
-          "variant": "biome",
-          "biomeAnticondition": "#cobblemon:evolution/regional/pikachu_kantobiome"
         }
       ],
       "requiredContext": "cobblemon:thunder_stone"
@@ -399,11 +389,14 @@
           "requirements": [
             {
               "variant": "biome",
-              "biomeAnticondition": "#cobblemon:evolution/regional/pikachu_alolabiome"
+              "biomeCondition": "#cobblemon:evolution/regional/pikachu_kantobiome"
             },
             {
-              "variant": "biome",
-              "biomeCondition": "#cobblemon:evolution/regional/pikachu_kantobiome"
+              "variant": "negate",
+              "inner": {
+                "variant": "biome",
+                "biomeCondition": "#cobblemon:evolution/regional/pikachu_alolabiome"
+              }
             }
           ],
           "requiredContext": "cobblemon:thunder_stone"
@@ -415,12 +408,6 @@
           "consumeHeldItem": false,
           "learnableMoves": [
             "psychic"
-          ],
-          "requirements": [
-            {
-              "variant": "biome",
-              "biomeAnticondition": "#cobblemon:evolution/regional/pikachu_kantobiome"
-            }
           ],
           "requiredContext": "cobblemon:thunder_stone"
         }

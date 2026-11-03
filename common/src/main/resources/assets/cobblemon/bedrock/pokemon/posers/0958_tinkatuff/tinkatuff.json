@@ -1,8 +1,8 @@
 {
   "portraitScale": 1.9,
   "portraitTranslation": [0, -0.41, 0.0],
-  "profileScale": 0.9,
-  "profileTranslation": [-0.02, 0.46, 0.0],
+  "profileScale": 0.78,
+  "profileTranslation": [-0.02, 0.58, 0.0],
   "rootBone": "tinkatuff",
   "animations": {
     "faint": "q.bedrock_primary('tinkatuff', 'faint', q.curve('one'))",

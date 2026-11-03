@@ -475,8 +475,8 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField val DUBIOUS_DISC = itemNameBlockItem("dubious_disc", CobblemonBlocks.DUBIOUS_DISC)
     @JvmField val DEEP_SEA_SCALE = noSettingsItem("deep_sea_scale")
     @JvmField val DEEP_SEA_TOOTH = noSettingsItem("deep_sea_tooth")
-    @JvmField val ELECTIRIZER = noSettingsItem("electirizer")
-    @JvmField val MAGMARIZER = noSettingsItem("magmarizer")
+    @JvmField val ELECTIRIZER = itemNameBlockItem("electirizer", CobblemonBlocks.ELECTIRIZER)
+    @JvmField val MAGMARIZER = itemNameBlockItem("magmarizer", CobblemonBlocks.MAGMARIZER)
     @JvmField val OVAL_STONE = noSettingsItem("oval_stone")
     @JvmField val PROTECTOR = noSettingsItem("protector")
     @JvmField val REAPER_CLOTH = noSettingsItem("reaper_cloth")
@@ -711,7 +711,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val PEP_UP_FLOWER = compostableBlockItem("pep_up_flower", CobblemonBlocks.PEP_UP_FLOWER)
     @JvmField
-    val MEDICINAL_BREW = noSettingsItem("medicinal_brew")
+    val MEDICINAL_BREW = itemNameBlockItem("medicinal_brew", CobblemonBlocks.MEDICINAL_BREW)
     @JvmField
     val REMEDY = compostableItem("remedy", 0.65f) { properties -> RemedyItem(properties, RemedyItem.NORMAL) }
     @JvmField
@@ -719,7 +719,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val SUPERB_REMEDY = compostableItem("superb_remedy", 1f) { properties -> RemedyItem(properties, RemedyItem.SUPERB) }
     @JvmField
-    val MOOMOO_MILK = createItem("moomoo_milk") { properties -> MoomooMilk(properties.craftRemainder(Items.GLASS_BOTTLE).stacksTo((16))) }
+    val MOOMOO_MILK = createItem("moomoo_milk") { properties -> MoomooMilk(properties.useItemDescriptionPrefix().craftRemainder(Items.GLASS_BOTTLE).stacksTo((16)), CobblemonBlocks.MOOMOO_MILK) }
 
     @JvmField
     val POTION = createItem("potion") { properties -> PotionItem(properties, PotionType.POTION, CobblemonBlocks.POTION) }
@@ -748,27 +748,27 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val RED_MINT_SEEDS = mintSeed("red", MintType.RED.getCropBlock())
     @JvmField
-    val RED_MINT_LEAF = mintLeaf("red") { properties -> MintLeafItem(properties, MintType.RED) }
+    val RED_MINT_LEAF = compostableItemNameBlockItem("red_mint_leaf", CobblemonBlocks.RED_MINT_LEAF_LITTER, 0.50f)
     @JvmField
     val BLUE_MINT_SEEDS = mintSeed("blue", MintType.BLUE.getCropBlock())
     @JvmField
-    val BLUE_MINT_LEAF = mintLeaf("blue") { properties -> MintLeafItem(properties, MintType.BLUE) }
+    val BLUE_MINT_LEAF = compostableItemNameBlockItem("blue_mint_leaf", CobblemonBlocks.BLUE_MINT_LEAF_LITTER, 0.50f)
     @JvmField
     val CYAN_MINT_SEEDS = mintSeed("cyan", MintType.CYAN.getCropBlock())
     @JvmField
-    val CYAN_MINT_LEAF = mintLeaf("cyan") { properties -> MintLeafItem(properties, MintType.CYAN) }
+    val CYAN_MINT_LEAF = compostableItemNameBlockItem("cyan_mint_leaf", CobblemonBlocks.CYAN_MINT_LEAF_LITTER, 0.50f)
     @JvmField
     val PINK_MINT_SEEDS = mintSeed("pink", MintType.PINK.getCropBlock())
     @JvmField
-    val PINK_MINT_LEAF = mintLeaf("pink") { properties -> MintLeafItem(properties, MintType.PINK) }
+    val PINK_MINT_LEAF = compostableItemNameBlockItem("pink_mint_leaf", CobblemonBlocks.PINK_MINT_LEAF_LITTER, 0.50f)
     @JvmField
     val GREEN_MINT_SEEDS = mintSeed("green", MintType.GREEN.getCropBlock())
     @JvmField
-    val GREEN_MINT_LEAF = mintLeaf("green") { properties -> MintLeafItem(properties, MintType.GREEN) }
+    val GREEN_MINT_LEAF = compostableItemNameBlockItem("green_mint_leaf", CobblemonBlocks.GREEN_MINT_LEAF_LITTER, 0.50f)
     @JvmField
     val WHITE_MINT_SEEDS = mintSeed("white", MintType.WHITE.getCropBlock())
     @JvmField
-    val WHITE_MINT_LEAF = mintLeaf("white") { properties -> MintLeafItem(properties, MintType.WHITE) }
+    val WHITE_MINT_LEAF = compostableItemNameBlockItem("white_mint_leaf", CobblemonBlocks.WHITE_MINT_LEAF_LITTER, 0.50f)
 
     val mints = mutableMapOf<String, MintItem>()
 
@@ -969,7 +969,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val EJECT_PACK = heldItem("eject_pack")
     @JvmField
-    val ELECTRIC_SEED = heldItem("electric_seed")
+    val ELECTRIC_SEED = itemNameBlockItem("electric_seed", CobblemonBlocks.ELECTRIC_SEED)
     @JvmField
     val EVERSTONE = heldItem("everstone")
     @JvmField
@@ -985,7 +985,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val FOCUS_SASH = heldItem("focus_sash")
     @JvmField
-    val GRASSY_SEED = heldItem("grassy_seed")
+    val GRASSY_SEED = itemNameBlockItem("grassy_seed", CobblemonBlocks.GRASSY_SEED)
     @JvmField
     val GRIP_CLAW = heldItem("grip_claw")
     @JvmField
@@ -1033,7 +1033,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val POWER_WEIGHT = heldItem("power_weight")
     @JvmField
-    val PSYCHIC_SEED = heldItem("psychic_seed")
+    val PSYCHIC_SEED = itemNameBlockItem("psychic_seed", CobblemonBlocks.PSYCHIC_SEED)
     @JvmField
     val PROTECTIVE_PADS = heldItem("protective_pads")
     @JvmField
@@ -1057,7 +1057,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val SILVER_POWDER = heldItem("silver_powder")
     @JvmField
-    val SOFT_SAND = heldItem("soft_sand")
+    val SOFT_SAND = itemNameBlockItem("soft_sand", CobblemonBlocks.SOFT_SAND)
     @JvmField
     val SMOKE_BALL = itemNameBlockItem("smoke_ball", CobblemonBlocks.SMOKE_BALL)
     @JvmField
@@ -1065,7 +1065,7 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val STICKY_BARB = heldItem("sticky_barb")
     @JvmField
-    val TERRAIN_EXTENDER = heldItem("terrain_extender")
+    val TERRAIN_EXTENDER = itemNameBlockItem("terrain_extender", CobblemonBlocks.TERRAIN_EXTENDER)
     @JvmField
     val THROAT_SPRAY = itemNameBlockItem("throat_spray", CobblemonBlocks.THROAT_SPRAY)
     @JvmField
@@ -1085,13 +1085,13 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     @JvmField
     val MIRROR_HERB = compostableHeldItem("mirror_herb", null, 0.85F)
     @JvmField
-    val MISTY_SEED = heldItem("misty_seed")
+    val MISTY_SEED = itemNameBlockItem("misty_seed", CobblemonBlocks.MISTY_SEED)
     @JvmField
     val POWER_HERB = compostableHeldItem("power_herb", null, 0.85F)
     @JvmField
     val WHITE_HERB = compostableHeldItem("white_herb", null, 0.85F)
     @JvmField
-    val BRIGHT_POWDER = itemNameBlockItem("bright_powder", CobblemonBlocks.BRIGHT_POWDER)
+    val BRIGHT_POWDER = glowItem("bright_powder", CobblemonBlocks.BRIGHT_POWDER)
     @JvmField
     val METAL_POWDER = itemNameBlockItem("metal_powder", CobblemonBlocks.METAL_POWDER)
     @JvmField
@@ -1557,6 +1557,25 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
     //@JvmField
     //val BINDING_SOIL = blockItem("binding_soil", CobblemonBlocks.BINDING_SOIL)
 
+    // Plants, Flora, and Flowers
+    @JvmField
+    val LOBAILA = compostableBlockItem("lobaila", CobblemonBlocks.LOBAILA, 0.65f)
+    @JvmField
+    val POMOHANA = compostableBlockItem("pomohana", CobblemonBlocks.POMOHANA, 0.3f)
+    @JvmField
+    val PAUVILLEA = compostableBlockItem("pauvillea", CobblemonBlocks.PAUVILLEA, 0.65f)
+    @JvmField
+    val WISTENSU = compostableBlockItem("wistensu", CobblemonBlocks.WISTENSU, 0.5f)
+
+    @JvmField
+    val VOLTACONIA = compostableBlockItem("voltaconia", CobblemonBlocks.VOLTACONIA, 0.85f)
+    @JvmField
+    val VERDROOT = compostableBlockItem("verdroot", CobblemonBlocks.VERDROOT, 0.85f)
+    @JvmField
+    val MISTLEAF = compostableBlockItem("mistleaf", CobblemonBlocks.MISTLEAF, 0.85f)
+    @JvmField
+    val LUCIBELL = compostableBlockItem("lucibell", CobblemonBlocks.LUCIBELL, 0.85f)
+
     /** Supplies the final registry key before any item constructor reads its properties. */
     private fun <I : Item> createItem(name: String, factory: (Properties) -> I): I =
         create(name) { key -> factory(Properties().setId(key)) }
@@ -1712,4 +1731,6 @@ object CobblemonItems : PlatformRegistry<Registry<Item>, ResourceKey<Registry<It
 
     private fun foodItem(properties: Properties, nutrition: Int, saturationModifier: Float): Item =
         CobblemonItem(properties.food(FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturationModifier).build()))
+
+    private fun glowItem(name: String, block: Block): GlowItem = createItem(name) { GlowItem(block, it.useItemDescriptionPrefix()) }
 }

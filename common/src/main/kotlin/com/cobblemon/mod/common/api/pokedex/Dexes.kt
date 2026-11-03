@@ -40,6 +40,17 @@ object Dexes : JsonDataRegistry<PokedexDef> {
     //Maps a dex id to its PokedexDef
     val dexEntryMap = linkedMapOf<Identifier, PokedexDef>()
 
+    val equivalentForms = mapOf(
+        "galar" to listOf("region-bias-galar", "bias-galar", "galar-bias", "galarian", "galar"),
+        "alola" to listOf("region-bias-alola", "bias-alola", "alola-bias", "alolan", "alola"),
+        "hisui" to listOf("region-bias-hisui", "bias-hisui", "hisui-bias", "hisuian", "hisui"),
+        "paldea" to listOf("region-bias-paldea", "bias-paldea", "paldea-bias", "paldean", "paldea"),
+    )
+
+    val equivalentFormsLookup = equivalentForms.flatMap { (key, values) ->
+        values.map { it to key }
+    }.toMap()
+
     override fun reload(data: Map<Identifier, PokedexDef>) {
         dexEntryMap.clear()
         data.entries.sortedBy { it.value.sortOrder }.forEach { (id, def) -> dexEntryMap[id] = def }
@@ -48,5 +59,10 @@ object Dexes : JsonDataRegistry<PokedexDef> {
 
     override fun sync(player: ServerPlayer) {
         PokedexDexSyncPacket(dexEntryMap.values).sendToPlayer(player)
+    }
+
+    fun getFormEquivalents(formName: String): List<String> {
+        val key = equivalentFormsLookup[formName.lowercase()]
+        return equivalentForms[key] ?: listOf(formName.lowercase())
     }
 }

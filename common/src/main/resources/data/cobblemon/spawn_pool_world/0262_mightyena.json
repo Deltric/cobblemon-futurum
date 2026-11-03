@@ -29,8 +29,7 @@
             "id": "mightyena-2",
             "pokemon": "mightyena",
             "presets": [
-                "natural",
-                "pillager_outpost"
+                "natural"
             ],
             "type": "pokemon",
             "spawnablePositionType": "grounded",
@@ -43,6 +42,10 @@
                 "biomes": [
                     "#cobblemon:is_overworld"
                 ],
+                "structures": [
+                    "#cobblemon:spawns/is_illager_outpost"
+                ],
+                "minY": 62,
                 "isPokeSnack": true
             }
         }

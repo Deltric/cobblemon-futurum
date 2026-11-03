@@ -34,6 +34,7 @@ import com.cobblemon.mod.common.client.render.models.blockbench.bedrock.animatio
 import com.cobblemon.mod.common.client.render.models.blockbench.pose.Pose
 import com.cobblemon.mod.common.client.render.models.blockbench.quirk.ModelQuirk
 import com.cobblemon.mod.common.client.render.models.blockbench.quirk.QuirkData
+import com.cobblemon.mod.common.client.sound.instances.UIEntitySoundInstance
 import com.cobblemon.mod.common.entity.PosableEntity
 import com.cobblemon.mod.common.entity.PoseType
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
@@ -44,7 +45,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import java.util.concurrent.ConcurrentLinkedQueue
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.commands.arguments.item.ItemParser
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
@@ -289,7 +289,7 @@ abstract class PosableState : Schedulable {
                         entity.level().playLocalSound(entity, soundEvent, entity.soundSource, volume, pitch)
                     }
                 } else {
-                    Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(soundEvent, volume, pitch))
+                    Minecraft.getInstance().soundManager.play(UIEntitySoundInstance(soundEvent, volume, pitch))
                 }
             }
         }

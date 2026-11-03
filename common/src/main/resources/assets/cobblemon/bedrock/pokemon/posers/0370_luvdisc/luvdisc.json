@@ -5,7 +5,6 @@
   "profileTranslation": [0, -1.3, 0],
   "rootBone": "luvdisc",
   "animations": {
-    "cry": "q.bedrock_stateful('luvdisc', 'cry')",
     "faint": "q.bedrock_primary('luvdisc', 'ground_faint', q.curve('one'))"
   },
   "poses": {
@@ -44,12 +43,12 @@
     "ground-sleep": {
       "poseTypes": ["SLEEP"],
       "isTouchingWater": false,
-      "animations": ["q.bedrock('luvdisc', 'ground-sleep')"]
+      "animations": ["q.bedrock('luvdisc', 'ground_sleep')"]
     },
     "water-sleep": {
       "poseTypes": ["SLEEP"],
       "isTouchingWater": true,
-      "animations": ["q.bedrock('luvdisc', 'water-sleep')"]
+      "animations": ["q.bedrock('luvdisc', 'water_sleep')"]
     }
   }
 }

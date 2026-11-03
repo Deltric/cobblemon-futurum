@@ -49,8 +49,7 @@
     {
       "id": "falinks-alpha-2",
       "presets": [
-        "natural",
-        "nether_structures"
+        "natural"
       ],
       "type": "pokemon-herd",
       "bucket": "boss",
@@ -61,6 +60,9 @@
       "condition": {
         "biomes": [
           "#minecraft:is_nether"
+        ],
+        "structures": [
+          "#cobblemon:spawns/is_nether_structure"
         ]
       },
       "herdablePokemon": [

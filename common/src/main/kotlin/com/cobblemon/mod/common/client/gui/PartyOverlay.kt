@@ -84,6 +84,7 @@ class PartyOverlay  {
             if (HidePartyBinding.shouldHide) {
                 return false
             }
+
             return true
         }
     }

@@ -17,9 +17,7 @@
       "poseTypes": ["WALK", "SWIM"],
       "animations": [
         "q.look('head')",
-        "q.biped_walk(0.66, 0.6, 'leg_left', 'leg_right')",
-        "q.bimanual_swing(0.66, 0.6, 'arm_left', 'arm_right')",
-        "q.bedrock('magmar', 'ground_idle')"
+        "q.bedrock('magmar', 'ground_walk')"
       ],
       "quirks": ["q.bedrock_quirk('magmar', 'blink')"]
     }

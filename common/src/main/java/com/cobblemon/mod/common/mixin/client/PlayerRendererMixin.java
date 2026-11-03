@@ -10,6 +10,7 @@ package com.cobblemon.mod.common.mixin.client;
 
 import com.cobblemon.mod.common.client.render.AvatarPokemonState;
 import com.cobblemon.mod.common.client.render.ClientPlayerIcon;
+import com.cobblemon.mod.common.client.render.layer.PlayerRecallBallRenderer;
 import com.cobblemon.mod.common.client.render.layer.PokemonOnShoulderRenderer;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.client.render.player.MountedPlayerRenderer;
@@ -38,6 +39,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<Avatar, A
     private void cobblemon$addShoulderLayer(EntityRendererProvider.Context context, boolean slim, CallbackInfo ci) {
         cobblemon$shoulders = new PokemonOnShoulderRenderer(this);
         addLayer(cobblemon$shoulders);
+        addLayer(new PlayerRecallBallRenderer(this));
     }
 
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V", at = @At("TAIL"))
@@ -46,10 +48,12 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<Avatar, A
         pokemonState.cobblemon$setShoulderGeometry(null);
         pokemonState.cobblemon$setIconGeometry(null);
         pokemonState.cobblemon$setMountedPose(null);
+        pokemonState.cobblemon$setRecallBall(null);
         if (entity instanceof Player player) {
             if (player.getVehicle() instanceof PokemonEntity) state.isCrouching = false;
             pokemonState.cobblemon$setMountedPose(MountedPlayerRenderer.INSTANCE.extract(player, state));
             cobblemon$shoulders.extract(player, state, partialTicks);
+            pokemonState.cobblemon$setRecallBall(PlayerRecallBallRenderer.Companion.extract(player, state, partialTicks));
             pokemonState.cobblemon$setIconGeometry(ClientPlayerIcon.Companion.extractPlayerIcon(player, partialTicks));
         }
     }

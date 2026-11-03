@@ -1,14 +1,16 @@
 {
     "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "group": "focus_items",
     "pattern": [
         "D  ",
-        "LIL",
+        "LTL",
         "  D"
     ],
     "key": {
         "L": "#c:leathers",
         "D": "minecraft:blaze_powder",
-        "I": "#c:ingots/copper"
+        "T": "minecraft:ghast_tear"
     },
     "result": {
         "id": "cobblemon:focus_sash"
