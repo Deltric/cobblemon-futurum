@@ -26,7 +26,7 @@ import com.cobblemon.mod.common.util.battleLang
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.math.toRGB
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -99,34 +99,30 @@ class BattleMoveSelection(
             }
         }
 
-        fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+        fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
 
             val selectConditionOpacity = moveSelection.opacity * if (!selectable) 0.5F else 1F
 
-            blitk(
-                matrixStack = context.pose(),
-                texture = moveTexture,
-                x = x,
-                y = y,
-                width = MOVE_WIDTH,
-                height = MOVE_HEIGHT,
-                vOffset = if (selectable && isHovered(mouseX.toDouble(), mouseY.toDouble())) MOVE_HEIGHT else 0,
-                textureHeight = MOVE_HEIGHT * 2,
-                red = rgb.first,
-                green = rgb.second,
-                blue = rgb.third,
-                alpha = selectConditionOpacity
-            )
+            blitk(context = context,
+            texture = moveTexture,
+            x = x,
+            y = y,
+            width = MOVE_WIDTH,
+            height = MOVE_HEIGHT,
+            vOffset = if (selectable && isHovered(mouseX.toDouble(), mouseY.toDouble())) MOVE_HEIGHT else 0,
+            textureHeight = MOVE_HEIGHT * 2,
+            red = rgb.first,
+            green = rgb.second,
+            blue = rgb.third,
+            alpha = selectConditionOpacity)
 
-            blitk(
-                matrixStack = context.pose(),
-                texture = moveOverlayTexture,
-                x = x,
-                y = y,
-                width = MOVE_WIDTH,
-                height = MOVE_HEIGHT,
-                alpha = moveSelection.opacity
-            )
+            blitk(context = context,
+            texture = moveOverlayTexture,
+            x = x,
+            y = y,
+            width = MOVE_WIDTH,
+            height = MOVE_HEIGHT,
+            alpha = moveSelection.opacity)
 
             // Type Icon
             TypeIcon(
@@ -184,18 +180,24 @@ class BattleMoveSelection(
         }
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         moveTiles.forEach {
-            it.render(context, mouseX, mouseY, delta)
+            it.extractRenderState(context, mouseX, mouseY, delta)
         }
-        backButton.render(context, mouseX, mouseY, delta)
+        backButton.extractRenderState(context, mouseX, mouseY, delta)
         gimmickButtons.forEach {
-            it.render(context.pose(), mouseX, mouseY, delta)
+            it.extractRenderState(context, mouseX, mouseY, delta)
         }
         if(this.request.activePokemon.getFormat().battleType.slotsPerActor == 3 && (request.activePokemon.getPNX()[2] == 'a' || request.activePokemon.getPNX()[2] == 'c')) {
-            shiftButton.render(context, mouseX, mouseY, delta)
+            shiftButton.extractRenderState(context, mouseX, mouseY, delta)
         }
     }
+
+    override fun isActionHovered(mouseX: Double, mouseY: Double): Boolean =
+        moveTiles.any { it.isHovered(mouseX, mouseY) } ||
+            backButton.isHovered(mouseX, mouseY) ||
+            gimmickButtons.any { it.isHovered(mouseX, mouseY) } ||
+            shiftButton.isHovered(mouseX, mouseY)
 
     override fun mousePrimaryClicked(mouseX: Double, mouseY: Double): Boolean {
         val move = moveTiles.find { it.isHovered(mouseX, mouseY) }

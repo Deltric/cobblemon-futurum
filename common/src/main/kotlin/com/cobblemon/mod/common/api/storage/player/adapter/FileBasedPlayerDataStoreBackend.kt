@@ -34,7 +34,9 @@ abstract class FileBasedPlayerDataStoreBackend<T : InstancedPlayerData>(
     val useNestedStructure = true
 
     override fun setup(server: MinecraftServer) {
-        savePath = server.getWorldPath(LevelResource.PLAYER_DATA_DIR).parent
+        // These are world-root Cobblemon stores. Vanilla player data moved to
+        // players/data; its parent is no longer the world save directory.
+        savePath = server.getWorldPath(LevelResource.ROOT)
     }
 
     protected fun postSaveFileMoving(uuid: UUID) {

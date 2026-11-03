@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "criteria": {
-    "has_gold": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:gold_ingot"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "cobblemon:recipes/blocks",
+    "criteria": {
+        "has_gold": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:gold_ingot"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:gilded_chest"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:gilded_chest"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    "requirements": [
+        [
+            "has_gold",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:gilded_chest"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_gold",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:gilded_chest"
-    ]
-  }
 }

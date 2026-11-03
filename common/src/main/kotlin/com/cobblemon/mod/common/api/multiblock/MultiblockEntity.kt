@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.multiblock
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.api.multiblock.builder.MultiblockStructureBuilder
 import com.cobblemon.mod.common.util.DataKeys
 import net.minecraft.core.BlockPos
@@ -42,25 +44,29 @@ abstract class MultiblockEntity(
     }
 
     override fun getUpdateTag(registryLookup: HolderLookup.Provider): CompoundTag {
-        val result = CompoundTag()
-        saveAdditional(result, registryLookup)
-        return result
+        return saveWithoutMetadata(registryLookup)
     }
 
-    override fun saveAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.saveAdditional(nbt, registryLookup)
-        //Used for checking build conditions in multiblocks (Dont count a block if it has the FORMED flag)
-        nbt.putBoolean(DataKeys.FORMED, masterBlockPos != null)
-        if (multiblockStructure != null && multiblockStructure!!.controllerBlockPos == blockPos) {
-            nbt.put(DataKeys.MULTIBLOCK_STORAGE, multiblockStructure!!.writeToNbt(registryLookup))
+    override fun saveAdditional(output: ValueOutput) {
+        super.saveAdditional(output)
+        // Multiblock build conditions exclude already formed structures.
+        output.putBoolean(DataKeys.FORMED, masterBlockPos != null)
+        val structure = multiblockStructure
+        if (structure != null && structure.controllerBlockPos == blockPos) {
+            structure.save(output.child(DataKeys.MULTIBLOCK_STORAGE))
+        } else {
+            output.storeNullable(DataKeys.CONTROLLER_BLOCK, BlockPos.CODEC, masterBlockPos)
         }
-        else if (masterBlockPos != null) {
-            nbt.put(DataKeys.CONTROLLER_BLOCK, NbtUtils.writeBlockPos(masterBlockPos))
-        }
+    }
+
+    override fun preRemoveSideEffects(pos: BlockPos, state: BlockState) {
+        val world = level ?: return
+        multiblockStructure?.playerWillDestroy(world, pos, state, null)
+        super.preRemoveSideEffects(pos, state)
     }
 
     override fun isValidBlockState(blockState: BlockState) = blockState.block is MultiblockBlock
 
-    abstract override fun loadAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider)
+    abstract override fun loadAdditional(input: ValueInput)
 
 }

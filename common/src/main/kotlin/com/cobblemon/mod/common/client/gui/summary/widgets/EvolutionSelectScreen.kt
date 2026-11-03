@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.pokemon.evolution.EvolutionDisplay
@@ -25,7 +26,7 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.sounds.SoundEvent
 import org.joml.Quaternionf
@@ -56,12 +57,12 @@ class EvolutionSelectScreen(
         return super.addEntry(entry)
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!entriesCreated) {
             entriesCreated = true
             pokemon.evolutionProxy.client().map { EvolveSlot(pokemon, it) }.forEach { entry -> this.addEntry(entry) }
         }
-        super.renderWidget(context, mouseX, mouseY, partialTicks)
+        super.extractWidgetRenderState(context, mouseX, mouseY, partialTicks)
     }
 
     class EvolveSlot(private val pokemon: Pokemon, private val evolution: EvolutionDisplay) : Entry<EvolveSlot>() {
@@ -91,32 +92,22 @@ class EvolutionSelectScreen(
 
         override fun getNarration() = evolution.species.translatedName
 
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            rowTop: Int,
-            rowLeft: Int,
-            rowWidth: Int,
-            rowHeight: Int,
-            mouseX: Int,
-            mouseY: Int,
-            isHovered: Boolean,
-            partialTicks: Float
-        ) {
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, isHovered: Boolean, partialTicks: Float) {
+            val rowTop = this.contentY
+            val rowLeft = this.contentX
+            val rowWidth = this.width
             val x = rowLeft - 3
             val y = rowTop
             val matrices = context.pose()
 
             state.currentAspects = evolution.aspects
 
-            blitk(
-                matrixStack = matrices,
-                texture = slotResource,
-                x = x,
-                y = y,
-                height = SLOT_HEIGHT,
-                width = rowWidth
-            )
+            blitk(context = context,
+            texture = slotResource,
+            x = x,
+            y = y,
+            height = SLOT_HEIGHT,
+            width = rowWidth)
 
             drawScaledText(
                 context = context,
@@ -139,26 +130,24 @@ class EvolutionSelectScreen(
             ).render(context)
 
             selectButton.setPosFloat(x + 23F, y + 13F)
-            selectButton.render(context, mouseX, mouseY, partialTicks)
+            selectButton.extractRenderState(context, mouseX, mouseY, partialTicks)
 
             // Render Pokémon
-            matrices.pushPose()
-            matrices.translate(x + (PORTRAIT_DIAMETER / 2) + 65.0, y - 5.0, 0.0)
-            matrices.scale(2.5F, 2.5F, 1F)
-            drawProfilePokemon(
-                species = this.evolution.species.resourceIdentifier,
-                matrixStack = matrices,
+            matrices.pushMatrix()
+            matrices.translate((x + (PORTRAIT_DIAMETER / 2) + 65.0).toFloat(), (y - 5.0).toFloat())
+            matrices.scale((2.5F).toFloat(), (2.5F).toFloat())
+            drawProfilePokemon(species = this.evolution.species.resourceIdentifier,
+                context = context,
                 rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                 state = state,
                 scale = 6F,
-                partialTicks = partialTicks
-            )
-            matrices.popPose()
+                partialTicks = partialTicks)
+            matrices.popMatrix()
         }
 
-        override fun mouseClicked(d: Double, e: Double, i: Int): Boolean {
+        override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
             if (selectButton.isHovered) {
-                selectButton.onPress()
+                selectButton.onPress(event)
                 return true
             }
             return false

@@ -1,89 +1,93 @@
 {
-    "type": "minecraft:chest",
-    "pools": [
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 3.0,
+        "min": 2.0
+      },
+      "bonus_rolls": 0.0,
+      "entries": [
         {
-            "rolls": {
+          "type": "minecraft:item",
+          "name": "minecraft:string",
+          "weight": 2,
+          "modifier": [
+            {
+              "count": {
                 "type": "minecraft:uniform",
-                "max": 3.0,
-                "min": 2.0
-            },
-            "bonus_rolls": 0.0,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:string",
-                    "weight": 2,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": {
-                                "min": 5,
-                                "max": 10
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:cobweb",
-                    "weight": 1,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": {
-                                "min": 1,
-                                "max": 2
-                            }
-                        }
-                    ]
-                }
-            ]
+                "min": 5,
+                "max": 10
+              },
+              "type": "set_count"
+            }
+          ]
         },
         {
-            "rolls": {
+          "type": "minecraft:item",
+          "name": "minecraft:cobweb",
+          "weight": 1,
+          "modifier": [
+            {
+              "count": {
                 "type": "minecraft:uniform",
-                "max": 3.0,
-                "min": 2.0
-            },
-            "bonus_rolls": 0.0,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:arrow",
-                    "weight": 5,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": {
-                                "min": 5,
-                                "max": 10
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:bow",
-                    "weight": 1,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": 1
-                        },
-                        {
-                            "function": "minecraft:set_damage",
-                            "damage": {
-                                "min": 10,
-                                "max": 38
-                            }
-                        },
-                        {
-                            "function": "enchant_randomly"
-                        }
-                    ]
-                }
-            ]
+                "min": 1,
+                "max": 2
+              },
+              "type": "set_count"
+            }
+          ]
         }
-    ],
-    "random_sequence": "cobblemon:shipwreck_coves/vanilla_chests/cove2_barrel"
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 3.0,
+        "min": 2.0
+      },
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:arrow",
+          "weight": 5,
+          "modifier": [
+            {
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 5,
+                "max": 10
+              },
+              "type": "set_count"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "weight": 1,
+          "modifier": [
+            {
+              "count": 1,
+              "type": "set_count"
+            },
+            {
+              "damage": {
+                "type": "minecraft:uniform",
+                "min": 10,
+                "max": 38
+              },
+              "type": "minecraft:set_damage"
+            },
+            {
+              "type": "enchant_randomly"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "cobblemon:shipwreck_coves/vanilla_chests/cove2_barrel"
 }

@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.api.pokemon
 
+import com.cobblemon.mod.common.util.getList
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.Cobblemon.config
 import com.cobblemon.mod.common.CobblemonMovesetBuilders
@@ -45,13 +46,14 @@ import com.cobblemon.mod.common.util.simplify
 import com.cobblemon.mod.common.util.splitMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.mojang.brigadier.StringReader
 import com.mojang.serialization.Codec
 import com.mojang.serialization.JsonOps
 import java.util.UUID
 import kotlin.math.min
 import kotlin.random.Random
-import net.minecraft.ResourceLocationException
+import net.minecraft.IdentifierException
 import net.minecraft.commands.arguments.item.ItemParser
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
@@ -60,8 +62,9 @@ import net.minecraft.nbt.NbtOps
 import net.minecraft.nbt.StringTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -153,7 +156,7 @@ open class PokemonProperties {
             props.movesetBuilders = parseString(keyPairs, listOf("moveset_builders", "movesetbuilders", "moveset_builder", "movesetbuilder"))?.split(",")?.mapNotNull {
                 try {
                     it.asIdentifierDefaultingNamespace()
-                } catch (_: ResourceLocationException) {
+                } catch (_: IdentifierException) {
                     null
                 }
             }
@@ -219,13 +222,13 @@ open class PokemonProperties {
             }
         }
 
-        private fun parseIdentifierOfRegistry(keyPairs: MutableList<Pair<String, String?>>, validKeys: List<String>, valueFetcher: (ResourceLocation) -> String?): String? {
+        private fun parseIdentifierOfRegistry(keyPairs: MutableList<Pair<String, String?>>, validKeys: List<String>, valueFetcher: (Identifier) -> String?): String? {
             val matched = getMatchedKeyPair(keyPairs, validKeys) ?: return null
             val value = matched.second?.lowercase() ?: return null
             return try {
                 val identifier = value.asIdentifierDefaultingNamespace()
                 valueFetcher(identifier)
-            } catch (_: ResourceLocationException) {
+            } catch (_: IdentifierException) {
                 null
             }
         }
@@ -235,7 +238,7 @@ open class PokemonProperties {
             val value = matched.second?.lowercase() ?: return null
             return try {
                 valueFetcher(value)
-            } catch (_: ResourceLocationException) {
+            } catch (_: IdentifierException) {
                 null
             }
         }
@@ -251,7 +254,7 @@ open class PokemonProperties {
                     try {
                         val species = PokemonSpecies.getByIdentifier(value.asIdentifierDefaultingNamespace()) ?: return null
                         return if (species.resourceIdentifier.namespace == Cobblemon.MODID) species.resourceIdentifier.path else species.resourceIdentifier.toString()
-                    } catch (e: ResourceLocationException) {
+                    } catch (e: IdentifierException) {
                         return null
                     }
                 }
@@ -266,7 +269,7 @@ open class PokemonProperties {
                             val identifier = cleanSpeciesName(pair.first).asIdentifierDefaultingNamespace()
                             val found = PokemonSpecies.getByIdentifier(identifier) ?: return@find false
                             if (found.resourceIdentifier.namespace == Cobblemon.MODID) found.resourceIdentifier.path else found.resourceIdentifier.toString()
-                        } catch (e: ResourceLocationException) {
+                        } catch (e: IdentifierException) {
                             return@find false
                         }
                     }
@@ -365,7 +368,7 @@ open class PokemonProperties {
     var originalTrainerType: OriginalTrainerType? = null
     var originalTrainer: String? = null // Original Trainer by Username or UUID
     var moves: List<String>? = null
-    var movesetBuilders: List<ResourceLocation>? = null
+    var movesetBuilders: List<Identifier>? = null
     var heldItem: String? = null
     var cosmeticItem: String? = null
     var scaleModifier: Float? = null
@@ -380,7 +383,7 @@ open class PokemonProperties {
         species = species?.let {
             return@let try {
                 PokemonSpecies.getByIdentifier(it.asIdentifierDefaultingNamespace())
-            } catch (e: ResourceLocationException) {
+            } catch (e: IdentifierException) {
                 PokemonSpecies.random()
             }
         } ?: PokemonSpecies.random(),
@@ -411,7 +414,7 @@ open class PokemonProperties {
                 } else {
                     PokemonSpecies.getByIdentifier(it.asIdentifierDefaultingNamespace())
                 }
-            } catch (e: ResourceLocationException) {
+            } catch (e: IdentifierException) {
                 null
             }
         }?.let { pokemon.species = it }
@@ -462,7 +465,7 @@ open class PokemonProperties {
             when (type) {
                 OriginalTrainerType.PLAYER -> {
                     when (ot.length) {
-                        in 3..16 -> server()?.profileCache?.get(ot)?.get()?.id // OT is a Username
+                        in 3..16 -> server()?.services()?.nameToIdCache()?.get(ot)?.orElse(null)?.id // OT is a Username
                         36 -> UUID.fromString(ot) // OT is a UUID
                         else -> null // OT is invalid
                     }?.let { uuid -> pokemon.setOriginalTrainer(uuid) }
@@ -536,7 +539,7 @@ open class PokemonProperties {
                 if (pokemon.species != species) {
                     return false
                 }
-            } catch (e: ResourceLocationException) {
+            } catch (e: IdentifierException) {
                 return false
             }
         }
@@ -571,12 +574,14 @@ open class PokemonProperties {
 
             if (!pokemon.heldItem.`is`(result.item)) return@takeIf true
 
-            for (entry in result.components.entrySet()) {
-                val targetPropValue = pokemon.heldItem.get(entry.key)
-                if (targetPropValue != entry.value.get()) {
+            val components = result.components.split()
+            for (entry in components.added()) {
+                val targetPropValue = pokemon.heldItem.get(entry.type())
+                if (targetPropValue != entry.value()) {
                     return@takeIf true
                 }
             }
+            if (components.removed().any { pokemon.heldItem.has(it) }) return@takeIf true
 
             return@takeIf false
         }?.let { return false }
@@ -600,7 +605,7 @@ open class PokemonProperties {
                 if (properties.species != species.resourceIdentifier.toString()) {
                     return false
                 }
-            } catch (_: ResourceLocationException) {}
+            } catch (_: IdentifierException) {}
         }
         nickname?.takeIf { it.string != properties.nickname?.string }?.let { return false }
         form?.takeIf { !it.equals(properties.form, true) }?.let { return false }
@@ -685,7 +690,10 @@ open class PokemonProperties {
         shiny?.let { nbt.putBoolean(DataKeys.POKEMON_SHINY, it) }
         gender?.let { nbt.putString(DataKeys.POKEMON_GENDER, it.name) }
         species?.let { nbt.putString(DataKeys.POKEMON_SPECIES_TEXT, it) }
-        nickname?.let { nbt.putString(DataKeys.POKEMON_NICKNAME, Component.Serializer.toJson(it, registryLookup)) }
+        nickname?.let {
+            val json = ComponentSerialization.CODEC.encodeStart(registryLookup.createSerializationContext(JsonOps.INSTANCE), it).orThrow
+            nbt.putString(DataKeys.POKEMON_NICKNAME, json.toString())
+        }
         form?.let { nbt.putString(DataKeys.POKEMON_FORM_ID, it) }
         friendship?.let { nbt.putInt(DataKeys.POKEMON_FRIENDSHIP, it) }
         fullness?.let { nbt.putInt(DataKeys.POKEMON_FULLNESS, it) }
@@ -716,37 +724,41 @@ open class PokemonProperties {
 
     // TODO Codecs at some point
     fun loadFromNBT(tag: CompoundTag, registryLookup: HolderLookup.Provider): PokemonProperties {
-        originalString = tag.getString(DataKeys.POKEMON_PROPERTIES_ORIGINAL_TEXT)
-        level = if (tag.contains(DataKeys.POKEMON_LEVEL)) tag.getInt(DataKeys.POKEMON_LEVEL) else null
-        shiny = if (tag.contains(DataKeys.POKEMON_SHINY)) tag.getBoolean(DataKeys.POKEMON_SHINY) else null
-        gender = if (tag.contains(DataKeys.POKEMON_GENDER)) Gender.valueOf(tag.getString(DataKeys.POKEMON_GENDER)) else null
-        species = if (tag.contains(DataKeys.POKEMON_SPECIES_TEXT)) tag.getString(DataKeys.POKEMON_SPECIES_TEXT) else null
-        nickname = if (tag.contains(DataKeys.POKEMON_NICKNAME)) Component.Serializer.fromJson(tag.getString(DataKeys.POKEMON_NICKNAME), registryLookup) else null
-        form = if (tag.contains(DataKeys.POKEMON_FORM_ID)) tag.getString(DataKeys.POKEMON_FORM_ID) else null
-        friendship = if (tag.contains(DataKeys.POKEMON_FRIENDSHIP)) tag.getInt(DataKeys.POKEMON_FRIENDSHIP) else null
-        fullness = if (tag.contains(DataKeys.POKEMON_FULLNESS)) tag.getInt(DataKeys.POKEMON_FULLNESS) else null
-        pokeball = if (tag.contains(DataKeys.POKEMON_CAUGHT_BALL)) tag.getString(DataKeys.POKEMON_CAUGHT_BALL) else null
-        nature = if (tag.contains(DataKeys.POKEMON_NATURE)) tag.getString(DataKeys.POKEMON_NATURE) else null
-        ability = if (tag.contains(DataKeys.POKEMON_ABILITY)) tag.getString(DataKeys.POKEMON_ABILITY) else null
-        isAlpha = if (tag.contains(DataKeys.POKEMON_ALPHA)) tag.getBoolean(DataKeys.POKEMON_ALPHA) else null
-        status = if (tag.contains(DataKeys.POKEMON_STATUS_NAME)) tag.getString(DataKeys.POKEMON_STATUS_NAME) else null
-        minPerfectIVs = if (tag.contains(DataKeys.POKEMON_MIN_PERFECT_IVS)) tag.getInt(DataKeys.POKEMON_MIN_PERFECT_IVS) else null
-        ivs = if (tag.contains(DataKeys.POKEMON_IVS)) IVs.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(DataKeys.POKEMON_IVS)).result().getOrNull()?.first else null
-        evs = if (tag.contains(DataKeys.POKEMON_EVS)) EVs.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(DataKeys.POKEMON_EVS)).result().getOrNull()?.first else null
-        type = if (tag.contains(DataKeys.ELEMENTAL_TYPE)) tag.getString(DataKeys.ELEMENTAL_TYPE) else null
-        teraType = if (tag.contains(DataKeys.POKEMON_TERA_TYPE)) tag.getString(DataKeys.POKEMON_TERA_TYPE) else null
-        dmaxLevel = if (tag.contains(DataKeys.POKEMON_DMAX_LEVEL)) tag.getInt(DataKeys.POKEMON_DMAX_LEVEL) else null
-        gmaxFactor = if (tag.contains(DataKeys.POKEMON_GMAX_FACTOR)) tag.getBoolean(DataKeys.POKEMON_GMAX_FACTOR) else null
-        tradeable = if (tag.contains(DataKeys.POKEMON_TRADEABLE)) tag.getBoolean(DataKeys.POKEMON_TRADEABLE) else null
-        originalTrainerType = if (tag.contains(DataKeys.POKEMON_ORIGINAL_TRAINER_TYPE)) OriginalTrainerType.valueOf(tag.getString(DataKeys.POKEMON_ORIGINAL_TRAINER_TYPE)) else null
-        originalTrainer = if (tag.contains(DataKeys.POKEMON_ORIGINAL_TRAINER)) tag.getString(DataKeys.POKEMON_ORIGINAL_TRAINER) else null
-        moves = if (tag.contains(DataKeys.POKEMON_PROPERTIES_MOVES)) tag.getString(DataKeys.POKEMON_PROPERTIES_MOVES).split(",") else null
-        movesetBuilders = if (tag.contains(DataKeys.POKEMON_PROPERTIES_MOVESET_BUILDERS)) tag.getString(DataKeys.POKEMON_PROPERTIES_MOVESET_BUILDERS).split(",").map { it.asIdentifierDefaultingNamespace() } else null
-        heldItem = if (tag.contains(DataKeys.POKEMON_PROPERTIES_HELDITEM)) tag.getString(DataKeys.POKEMON_PROPERTIES_HELDITEM) else null
-        scaleModifier = if (tag.contains(DataKeys.POKEMON_SCALE_MODIFIER)) tag.getFloat(DataKeys.POKEMON_SCALE_MODIFIER) else null
+        originalString = tag.getStringOr(DataKeys.POKEMON_PROPERTIES_ORIGINAL_TEXT, "")
+        level = if (tag.contains(DataKeys.POKEMON_LEVEL)) tag.getIntOr(DataKeys.POKEMON_LEVEL, 0) else null
+        shiny = if (tag.contains(DataKeys.POKEMON_SHINY)) tag.getBooleanOr(DataKeys.POKEMON_SHINY, false) else null
+        gender = if (tag.contains(DataKeys.POKEMON_GENDER)) Gender.valueOf(tag.getStringOr(DataKeys.POKEMON_GENDER, "")) else null
+        species = if (tag.contains(DataKeys.POKEMON_SPECIES_TEXT)) tag.getStringOr(DataKeys.POKEMON_SPECIES_TEXT, "") else null
+        nickname = if (tag.contains(DataKeys.POKEMON_NICKNAME)) {
+            JsonParser.parseString(tag.getStringOr(DataKeys.POKEMON_NICKNAME, "")).takeUnless { it.isJsonNull }?.let {
+                ComponentSerialization.CODEC.parse(registryLookup.createSerializationContext(JsonOps.INSTANCE), it).orThrow.copy()
+            }
+        } else null
+        form = if (tag.contains(DataKeys.POKEMON_FORM_ID)) tag.getStringOr(DataKeys.POKEMON_FORM_ID, "") else null
+        friendship = if (tag.contains(DataKeys.POKEMON_FRIENDSHIP)) tag.getIntOr(DataKeys.POKEMON_FRIENDSHIP, 0) else null
+        fullness = if (tag.contains(DataKeys.POKEMON_FULLNESS)) tag.getIntOr(DataKeys.POKEMON_FULLNESS, 0) else null
+        pokeball = if (tag.contains(DataKeys.POKEMON_CAUGHT_BALL)) tag.getStringOr(DataKeys.POKEMON_CAUGHT_BALL, "") else null
+        nature = if (tag.contains(DataKeys.POKEMON_NATURE)) tag.getStringOr(DataKeys.POKEMON_NATURE, "") else null
+        ability = if (tag.contains(DataKeys.POKEMON_ABILITY)) tag.getStringOr(DataKeys.POKEMON_ABILITY, "") else null
+        isAlpha = if (tag.contains(DataKeys.POKEMON_ALPHA)) tag.getBooleanOr(DataKeys.POKEMON_ALPHA, false) else null
+        status = if (tag.contains(DataKeys.POKEMON_STATUS_NAME)) tag.getStringOr(DataKeys.POKEMON_STATUS_NAME, "") else null
+        minPerfectIVs = if (tag.contains(DataKeys.POKEMON_MIN_PERFECT_IVS)) tag.getIntOr(DataKeys.POKEMON_MIN_PERFECT_IVS, 0) else null
+        ivs = if (tag.contains(DataKeys.POKEMON_IVS)) IVs.CODEC.decode(NbtOps.INSTANCE, tag.getCompoundOrEmpty(DataKeys.POKEMON_IVS)).result().getOrNull()?.first else null
+        evs = if (tag.contains(DataKeys.POKEMON_EVS)) EVs.CODEC.decode(NbtOps.INSTANCE, tag.getCompoundOrEmpty(DataKeys.POKEMON_EVS)).result().getOrNull()?.first else null
+        type = if (tag.contains(DataKeys.ELEMENTAL_TYPE)) tag.getStringOr(DataKeys.ELEMENTAL_TYPE, "") else null
+        teraType = if (tag.contains(DataKeys.POKEMON_TERA_TYPE)) tag.getStringOr(DataKeys.POKEMON_TERA_TYPE, "") else null
+        dmaxLevel = if (tag.contains(DataKeys.POKEMON_DMAX_LEVEL)) tag.getIntOr(DataKeys.POKEMON_DMAX_LEVEL, 0) else null
+        gmaxFactor = if (tag.contains(DataKeys.POKEMON_GMAX_FACTOR)) tag.getBooleanOr(DataKeys.POKEMON_GMAX_FACTOR, false) else null
+        tradeable = if (tag.contains(DataKeys.POKEMON_TRADEABLE)) tag.getBooleanOr(DataKeys.POKEMON_TRADEABLE, false) else null
+        originalTrainerType = if (tag.contains(DataKeys.POKEMON_ORIGINAL_TRAINER_TYPE)) OriginalTrainerType.valueOf(tag.getStringOr(DataKeys.POKEMON_ORIGINAL_TRAINER_TYPE, "")) else null
+        originalTrainer = if (tag.contains(DataKeys.POKEMON_ORIGINAL_TRAINER)) tag.getStringOr(DataKeys.POKEMON_ORIGINAL_TRAINER, "") else null
+        moves = if (tag.contains(DataKeys.POKEMON_PROPERTIES_MOVES)) tag.getStringOr(DataKeys.POKEMON_PROPERTIES_MOVES, "").split(",") else null
+        movesetBuilders = if (tag.contains(DataKeys.POKEMON_PROPERTIES_MOVESET_BUILDERS)) tag.getStringOr(DataKeys.POKEMON_PROPERTIES_MOVESET_BUILDERS, "").split(",").map { it.asIdentifierDefaultingNamespace() } else null
+        heldItem = if (tag.contains(DataKeys.POKEMON_PROPERTIES_HELDITEM)) tag.getStringOr(DataKeys.POKEMON_PROPERTIES_HELDITEM, "") else null
+        scaleModifier = if (tag.contains(DataKeys.POKEMON_SCALE_MODIFIER)) tag.getFloatOr(DataKeys.POKEMON_SCALE_MODIFIER, 0F) else null
         val custom = tag.getList(DataKeys.POKEMON_PROPERTIES_CUSTOM, Tag.TAG_STRING.toInt())
         // This is kinda gross
-        custom.forEach { customProperties.addAll(parse(it.asString).customProperties) }
+        custom.forEach { customProperties.addAll(parse(it.asString().orElse("")).customProperties) }
         updateAspects()
         return this
     }

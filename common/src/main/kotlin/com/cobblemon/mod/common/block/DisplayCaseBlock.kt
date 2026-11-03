@@ -8,9 +8,12 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.LevelReader
 import com.cobblemon.mod.common.block.entity.DisplayCaseBlockEntity
 import com.cobblemon.mod.common.item.PokeBallItem
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.Containers
@@ -29,7 +32,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING
 import net.minecraft.world.level.block.RenderShape
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
-import net.minecraft.world.level.block.state.properties.DirectionProperty
+import net.minecraft.world.level.block.state.properties.EnumProperty
 import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
 
@@ -68,16 +71,9 @@ class DisplayCaseBlock(settings: Properties) : BaseEntityBlock(settings) {
         return DisplayCaseBlockEntity(pos, state)
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         return if (direction == state.getValue(FACING) && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-        else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+        else super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun useWithoutItem(
@@ -95,25 +91,15 @@ class DisplayCaseBlock(settings: Properties) : BaseEntityBlock(settings) {
         return result
     }
 
-    override fun onRemove(
-        state: BlockState,
-        world: Level,
-        pos: BlockPos,
-        newState: BlockState,
-        moved: Boolean
-    ) {
-        val entity = world.getBlockEntity(pos) as DisplayCaseBlockEntity
-        if (!entity.getStack().isEmpty) {
-            Containers.dropContentsOnDestroy(state, newState, world, pos)
-        }
-        super.onRemove(state, world, pos, newState, moved)
+    override fun affectNeighborsAfterRemoval(state: BlockState, level: ServerLevel, pos: BlockPos, movedByPiston: Boolean) {
+        Containers.updateNeighboursAfterDestroy(state, level, pos)
     }
 
     override fun getRenderShape(state: BlockState) = RenderShape.MODEL
 
     override fun getShadeBrightness(state: BlockState, level: BlockGetter, pos: BlockPos): Float = 0.75F
 
-    override fun getAnalogOutputSignal(state: BlockState, world: Level, pos: BlockPos): Int {
+    override fun getAnalogOutputSignal(state: BlockState, world: Level, pos: BlockPos, direction: Direction): Int {
         val stack = (world.getBlockEntity(pos) as DisplayCaseBlockEntity).getStack()
 
         if (stack.isEmpty) return 0
@@ -124,15 +110,10 @@ class DisplayCaseBlock(settings: Properties) : BaseEntityBlock(settings) {
 
     override fun hasAnalogOutputSignal(state: BlockState): Boolean = true
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
     override fun isPathfindable(state: BlockState, type: PathComputationType): Boolean = false
 
     companion object {
-        val CODEC = simpleCodec(::DisplayCaseBlock)
-        val ITEM_DIRECTION = DirectionProperty.create("item_facing")
+        val ITEM_DIRECTION = EnumProperty.create("item_facing", Direction::class.java)
     }
 
 }

@@ -1,7 +1,7 @@
 {
   "values": [
     "minecraft:farmland",
-    "#minecraft:dirt",
+    "#minecraft:substrate_overworld",
     "#minecraft:sand",
     "#c:gravels"
   ]

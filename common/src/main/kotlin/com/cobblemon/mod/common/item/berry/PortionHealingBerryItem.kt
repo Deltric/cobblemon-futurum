@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.item.berry
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle
 import com.cobblemon.mod.common.api.battles.model.actor.BattleActor
 import com.cobblemon.mod.common.api.events.CobblemonEvents
@@ -25,7 +27,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 
@@ -35,7 +37,7 @@ import net.minecraft.world.level.Level
  * @author Hiroku
  * @since August 4th, 2023
  */
-class PortionHealingBerryItem(block: BerryBlock, val canCauseConfusion: Boolean, val portion: () -> ExpressionLike): BerryItem(block), PokemonSelectingItem, HealingSource {
+class PortionHealingBerryItem(properties: Properties, block: BerryBlock, val canCauseConfusion: Boolean, val portion: () -> ExpressionLike): BerryItem(properties, block), PokemonSelectingItem, HealingSource {
     override val bagItem = object : BagItem {
         override val itemName: String get() = "item.cobblemon.${this@PortionHealingBerryItem.berry()!!.identifier.path}"
         override val returnItem = Items.AIR
@@ -53,22 +55,22 @@ class PortionHealingBerryItem(block: BerryBlock, val canCauseConfusion: Boolean,
         player: ServerPlayer,
         stack: ItemStack,
         pokemon: Pokemon
-    ): InteractionResultHolder<ItemStack>? {
+    ): InteractionResult? {
         if (!canUseOnPokemon(stack, pokemon)) {
-            return InteractionResultHolder.fail(stack)
+            return InteractionResult.FAIL
         }
 
         // count these berries as multiple feedings due to the amount they heal
         pokemon.feedPokemon(5)
 
         var amount = Integer.min(pokemon.currentHealth + (genericRuntime.resolveFloat(portion(), pokemon) * pokemon.maxHealth).toInt(), pokemon.maxHealth)
-        CobblemonEvents.POKEMON_HEALED.postThen(PokemonHealedEvent(pokemon, amount, this), { cancelledEvent -> return InteractionResultHolder.fail(stack)}) { event ->
+        CobblemonEvents.POKEMON_HEALED.postThen(PokemonHealedEvent(pokemon, amount, this), { cancelledEvent -> return InteractionResult.FAIL}) { event ->
             amount = event.amount
         }
         pokemon.currentHealth = amount
 
         stack.consume(1, player)
-        return InteractionResultHolder.success(stack)
+        return InteractionResult.SUCCESS
     }
 
     override fun applyToBattlePokemon(player: ServerPlayer, stack: ItemStack, battlePokemon: BattlePokemon) {
@@ -76,7 +78,7 @@ class PortionHealingBerryItem(block: BerryBlock, val canCauseConfusion: Boolean,
         battlePokemon.originalPokemon.feedPokemon(5)
     }
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (user is ServerPlayer) {
             return use(user, user.getItemInHand(hand))
         }

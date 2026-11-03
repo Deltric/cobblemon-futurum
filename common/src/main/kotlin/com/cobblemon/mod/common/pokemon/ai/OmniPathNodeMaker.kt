@@ -165,7 +165,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
     }
 
     private fun getBlockedNode(x: Int, y: Int, z: Int): Node? {
-        val node = this.getNode(x, y, z) ?: return null
+        val node = this.getTraversableNode(x, y, z) ?: return null
         node.type = PathType.BLOCKED
         node.costMalus = -1.0f
         return node
@@ -191,7 +191,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
     }
 
     private fun tryFindFirstGroundNodeBelow(x: Int, y: Int, z: Int): Node? {
-        for (i in y - 1 downTo mob.level().minBuildHeight) {
+        for (i in y - 1 downTo mob.level().minY) {
             if (y - i > mob.maxFallDistance) {
                 return this.getBlockedNode(x, i, z)
             }
@@ -210,7 +210,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
         var y = y
         var node = node
         --y
-        while (y > mob.level().minBuildHeight) {
+        while (y > mob.level().minY) {
             val pathType: PathType = this.getNodeType(this.mob, x, y, z)
             if (pathType != PathType.WATER) {
                 return node
@@ -222,7 +222,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
     }
 
     private fun getNodeAndUpdateCostToMax(x: Int, y: Int, z: Int, pathType: PathType, malus: Float): Node? {
-        val node = this.getNode(x, y, z) ?: super.getNode(x, y, z) ?: return null
+        val node = this.getTraversableNode(x, y, z) ?: super.getNode(x, y, z) ?: return null
         node.type = pathType
         node.costMalus = max(node.costMalus.toDouble(), malus.toDouble()).toFloat()
         return node
@@ -268,7 +268,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
     }
 
     private fun getClosedNode(x: Int, y: Int, z: Int, pathType: PathType): Node? {
-        val node = this.getNode(x, y, z) ?: return null
+        val node = this.getTraversableNode(x, y, z) ?: return null
         node.closed = true
         node.type = pathType
         node.costMalus = pathType.malus
@@ -308,7 +308,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
         ) pos.y.toDouble() + 0.5 else WalkNodeEvaluator.getFloorLevel(blockGetter, pos)
     }
 
-    override fun getNeighbors(successors: Array<Node?>, node: Node): Int {
+    override fun getNeighbors(successors: Array<Node>, node: Node): Int {
         var i = 0
         val map = Maps.newEnumMap<Direction, Node?>(Direction::class.java)
         val upperMap = Maps.newEnumMap<Direction, Node?>(Direction::class.java)
@@ -325,7 +325,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
         for (direction in Direction.entries) {
             var pathNode: Node?
             if (!strictlyWalkPathing) {
-                pathNode = this.getNode(node.x + direction.stepX, node.y + direction.stepY, node.z + direction.stepZ)
+                pathNode = this.getTraversableNode(node.x + direction.stepX, node.y + direction.stepY, node.z + direction.stepZ)
                     ?: continue
             } else {
                 pathNode = findAcceptedNodeWalk(
@@ -352,7 +352,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
             val z = node.z + direction.stepZ + direction2.stepZ
             var pathNode2: Node?
             if (!strictlyWalkPathing) {
-                pathNode2 = this.getNode(x, node.y, z) ?: continue
+                pathNode2 = this.getTraversableNode(x, node.y, z) ?: continue
             } else {
                 pathNode2 = findAcceptedNodeWalk(
                     x,
@@ -377,7 +377,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
             // Upward non-diagonals
             for (direction in Direction.Plane.HORIZONTAL.iterator()) {
                 var pathNode2: Node? = null
-                pathNode2 = getNode(node.x + direction.stepX, node.y + 1, node.z + direction.stepZ) ?: continue
+                pathNode2 = getTraversableNode(node.x + direction.stepX, node.y + 1, node.z + direction.stepZ) ?: continue
 
                 if (upIsOpen && hasNotVisited(pathNode2, node)) {
                     successors[i++] = pathNode2
@@ -389,7 +389,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
             for (direction in Direction.Plane.HORIZONTAL.iterator()) {
                 val direction2 = direction.clockWise
                 var pathNode2: Node? = null
-                pathNode2 = getNode(
+                pathNode2 = getTraversableNode(
                     node.x + direction.stepX + direction2.stepX,
                     node.y + 1,
                     node.z + direction.stepZ + direction2.stepZ
@@ -403,10 +403,10 @@ class OmniPathNodeMaker : NodeEvaluator() {
             val connectingBlockPos = BlockPos.MutableBlockPos()
             // Downward non-diagonals
             for (direction in Direction.Plane.HORIZONTAL.iterator()) {
-                connectingBlockPos.set(node.asBlockPos().offset(direction.normal))
+                connectingBlockPos.set(node.asBlockPos().offset(direction.unitVec3i))
                 val blockState = currentContext.getCachedBlockState(connectingBlockPos)
                 val traversableByTangent = blockState.isPathfindable(PathComputationType.AIR)
-                val pathNode2 = getNode(node.x + direction.stepX, node.y - 1, node.z + direction.stepZ) ?: continue
+                val pathNode2 = getTraversableNode(node.x + direction.stepX, node.y - 1, node.z + direction.stepZ) ?: continue
                 if (hasNotVisited(pathNode2, node) && traversableByTangent) {
                     successors[i++] = pathNode2
                     lowerMap[direction] = pathNode2
@@ -416,7 +416,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
             // Downward diagonals
             for (direction in Direction.Plane.HORIZONTAL.iterator()) {
                 val direction2 = direction.clockWise
-                val pathNode2 = getNode(
+                val pathNode2 = getTraversableNode(
                     node.x + direction.stepX + direction2.stepX,
                     node.y - 1,
                     node.z + direction.stepZ + direction2.stepZ
@@ -485,7 +485,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
         }
     }
 
-    override fun getNode(x: Int, y: Int, z: Int): Node? {
+    private fun getTraversableNode(x: Int, y: Int, z: Int): Node? {
         var nodePenalty = 0F
         var pathNode: Node? = null
 
@@ -592,7 +592,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
 //        if (figuredNode == PathType.OPEN && pos.y >= pfContext.level().getMinBuildHeight() + 1) {
 //            val var10000: PathType = when (getPathType(pfContext, pos.x, pos.y - 1, pos.z)) {
 //                PathType.OPEN, PathType.LAVA, PathType.WALKABLE -> PathType.OPEN
-//                PathType.DAMAGE_OTHER -> PathType.DAMAGE_OTHER
+//                PathType.DAMAGING -> PathType.DAMAGING
 //                PathType.STICKY_HONEY -> PathType.STICKY_HONEY
 //                PathType.POWDER_SNOW -> PathType.DANGER_POWDER_SNOW
 //                PathType.DAMAGE_CAUTIOUS -> PathType.DAMAGE_CAUTIOUS
@@ -641,14 +641,14 @@ class OmniPathNodeMaker : NodeEvaluator() {
         }
         if (PathType.DAMAGE_CAUTIOUS in set) {
             return PathType.DAMAGE_CAUTIOUS
-        } else if (PathType.DANGER_OTHER in set) {
-            return PathType.DANGER_OTHER
+        } else if (PathType.DAMAGING_IN_NEIGHBOR in set) {
+            return PathType.DAMAGING_IN_NEIGHBOR
         }
 
         return if (PathType.UNPASSABLE_RAIL in set) {
             PathType.UNPASSABLE_RAIL
-        } else if (PathType.DAMAGE_OTHER in set) {
-            PathType.DAMAGE_OTHER
+        } else if (PathType.DAMAGING in set) {
+            PathType.DAMAGING
         } else {
             val result = returnedEarlyPathType.firstOrNull()
             if (result != null) {
@@ -707,7 +707,7 @@ class OmniPathNodeMaker : NodeEvaluator() {
                         PathType.LEAVES -> return type
                         PathType.DAMAGE_CAUTIOUS -> return type
                         PathType.UNPASSABLE_RAIL -> return type
-                        PathType.DAMAGE_OTHER -> return type
+                        PathType.DAMAGING -> return type
                         else -> {}
                     }
                     if (mob.getPathfindingMalus(currentType) < 0) {
@@ -736,11 +736,11 @@ class OmniPathNodeMaker : NodeEvaluator() {
         val block = blockState.block
 
         if (blockState.`is`(Blocks.CACTUS) || blockState.`is`(Blocks.SWEET_BERRY_BUSH)) {
-            return PathType.DANGER_OTHER
+            return PathType.DAMAGING_IN_NEIGHBOR
         }
 
         if (isBurningBlock(blockState) && !this.canPathThroughFire && !(blockState.`is`(Blocks.MAGMA_BLOCK) && !isOnGround())) {
-            return PathType.DANGER_FIRE
+            return PathType.FIRE_IN_NEIGHBOR
         }
 
         if (blockState.`is`(Blocks.WITHER_ROSE) || blockState.`is`(Blocks.POINTED_DRIPSTONE)) {

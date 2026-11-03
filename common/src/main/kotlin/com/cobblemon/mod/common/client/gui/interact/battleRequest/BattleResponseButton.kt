@@ -12,7 +12,7 @@ import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
@@ -34,30 +34,26 @@ class BattleResponseButton(
         private val declineIconResource = cobblemonResource("textures/gui/interact/request/icon_decline.png")
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val hovered = (isHovered(pMouseX.toDouble(), pMouseY.toDouble()))
-        blitk(
-                matrixStack = context.pose(),
-                x = x / SCALE,
-                y = y / SCALE,
-                texture = if (accept) acceptButtonResource else declineButtonResource,
-                width = WIDTH,
-                height = HEIGHT,
-                vOffset = if (hovered) HEIGHT else 0,
-                textureHeight = HEIGHT * 2,
-                scale = SCALE
-        )
+        blitk(context = context,
+            x = x / SCALE,
+            y = y / SCALE,
+            texture = if (accept) acceptButtonResource else declineButtonResource,
+            width = WIDTH,
+            height = HEIGHT,
+            vOffset = if (hovered) HEIGHT else 0,
+            textureHeight = HEIGHT * 2,
+            scale = SCALE)
 
-        blitk(
-                matrixStack = context.pose(),
-                x = x / 0.5F + 24,
-                y = y / 0.5F + 7,
-                texture = if (accept) acceptIconResource else declineIconResource,
-                width = 21,
-                height = 26,
-                textureHeight = 26,
-                scale = 0.5F
-        )
+        blitk(context = context,
+            x = x / 0.5F + 24,
+            y = y / 0.5F + 7,
+            texture = if (accept) acceptIconResource else declineIconResource,
+            width = 21,
+            height = 26,
+            textureHeight = 26,
+            scale = 0.5F)
     }
 
     override fun playDownSound(soundManager: SoundManager) {

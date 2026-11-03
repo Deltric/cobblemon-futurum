@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.storage.adapter.conversions
 
+import com.cobblemon.mod.common.util.getUUID
+import com.cobblemon.mod.common.util.getList
 import com.cobblemon.mod.common.api.abilities.Abilities
 import com.cobblemon.mod.common.api.moves.Moves
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
@@ -29,7 +31,7 @@ import java.util.UUID
 import net.minecraft.core.RegistryAccess
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 const val REFORGED_POKEMON_PER_BOX = 30
 class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
@@ -60,7 +62,7 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
         for (x in 0..5) {
             val key = "party$x"
             if (nbt.contains(key)) {
-                result.add(this.translate(nbt.getCompound(key)))
+                result.add(this.translate(nbt.getCompoundOrEmpty(key)))
             }
         }
 
@@ -71,10 +73,10 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
         val result = PCStore(user)
         var box = 0
         while (nbt.contains("BoxNumber$box")) {
-            val storage = nbt.getCompound("BoxNumber$box")
+            val storage = nbt.getCompoundOrEmpty("BoxNumber$box")
             for (x in 0 until REFORGED_POKEMON_PER_BOX) {
                 if (storage.contains("pc$x")) {
-                    val pokemon = this.translate(storage.getCompound("pc$x"))
+                    val pokemon = this.translate(storage.getCompoundOrEmpty("pc$x"))
                     if (!result.add(pokemon)) {
                         result.backupStore.add(pokemon)
                     }
@@ -90,39 +92,39 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
     override fun translate(nbt: CompoundTag) : Pokemon {
         val result = Pokemon()
         result.uuid = nbt.getUUID("UUID")
-        result.species = PokemonSpecies.getByPokedexNumber(nbt.getInt("ndex"))
-            ?: throw IllegalStateException("Failed to read a species with pokedex identifier ${nbt.getInt("ndex")}")
-        PokemonProperties.parse((result.species.forms.find { it.name == nbt.getString("Variant") } ?: result.species.standardForm).name).apply(result)
+        result.species = PokemonSpecies.getByPokedexNumber(nbt.getIntOr("ndex", 0))
+            ?: throw IllegalStateException("Failed to read a species with pokedex identifier ${nbt.getIntOr("ndex", 0)}")
+        PokemonProperties.parse((result.species.forms.find { it.name == nbt.getStringOr("Variant", "") } ?: result.species.standardForm).name).apply(result)
 
-        result.gender = Gender.values()[nbt.getInt("Gender")]
-        result.shiny = this.find(nbt, "IsShiny", CompoundTag::getBoolean) ?:
-                        this.find(nbt, "palette", CompoundTag::getString)?.equals("shiny") ?: false
-        result.level = nbt.getInt("Level")
-        result.addExperience(SidemodExperienceSource("Reforged"), nbt.getInt("EXP"))
-        result.setFriendship(nbt.getInt("Friendship"))
-        Abilities.get(nbt.getString("Ability"))?.let { template ->
+        result.gender = Gender.values()[nbt.getIntOr("Gender", 0)]
+        result.shiny = this.find(nbt, "IsShiny", { tag, key -> tag.getBooleanOr(key, false) }) ?:
+                        this.find(nbt, "palette", { tag, key -> tag.getStringOr(key, "") })?.equals("shiny") ?: false
+        result.level = nbt.getIntOr("Level", 0)
+        result.addExperience(SidemodExperienceSource("Reforged"), nbt.getIntOr("EXP", 0))
+        result.setFriendship(nbt.getIntOr("Friendship", 0))
+        Abilities.get(nbt.getStringOr("Ability", ""))?.let { template ->
             result.updateAbility(template.create(forced = result.form.abilities.none { it.template == template }))
         }
-        result.nature = Natures.getNature(ResourceLocation.parse(ReforgedNatures.entries[nbt.getInt("Nature")].name.lowercase())) ?: Natures.getRandomNature()
-        result.mintedNature = Natures.getNature(ResourceLocation.parse(ReforgedNatures.entries[nbt.getInt("MintNature")].name.lowercase()))
-        result.currentHealth = nbt.getInt("Health")
+        result.nature = Natures.getNature(Identifier.parse(ReforgedNatures.entries[nbt.getIntOr("Nature", 0)].name.lowercase())) ?: Natures.getRandomNature()
+        result.mintedNature = Natures.getNature(Identifier.parse(ReforgedNatures.entries[nbt.getIntOr("MintNature", 0)].name.lowercase()))
+        result.currentHealth = nbt.getIntOr("Health", 0)
 
         // Stats
         val ivs = IVs()
-        ivs[Stats.HP] = nbt.getInt("IVHP")
-        ivs[Stats.ATTACK] = nbt.getInt("IVAttack")
-        ivs[Stats.DEFENCE] = nbt.getInt("IVDefense")
-        ivs[Stats.SPECIAL_ATTACK] = nbt.getInt("IVSpAtt")
-        ivs[Stats.SPECIAL_DEFENCE] = nbt.getInt("IVSpDef")
-        ivs[Stats.SPEED] = nbt.getInt("IVSpeed")
+        ivs[Stats.HP] = nbt.getIntOr("IVHP", 0)
+        ivs[Stats.ATTACK] = nbt.getIntOr("IVAttack", 0)
+        ivs[Stats.DEFENCE] = nbt.getIntOr("IVDefense", 0)
+        ivs[Stats.SPECIAL_ATTACK] = nbt.getIntOr("IVSpAtt", 0)
+        ivs[Stats.SPECIAL_DEFENCE] = nbt.getIntOr("IVSpDef", 0)
+        ivs[Stats.SPEED] = nbt.getIntOr("IVSpeed", 0)
 
         val evs = EVs()
-        evs[Stats.HP] = nbt.getInt("EVHP")
-        evs[Stats.ATTACK] = nbt.getInt("EVAttack")
-        evs[Stats.DEFENCE] = nbt.getInt("EVDefense")
-        evs[Stats.SPECIAL_ATTACK] = nbt.getInt("EVSpecialAttack")
-        evs[Stats.SPECIAL_DEFENCE] = nbt.getInt("EVSpecialDefense")
-        evs[Stats.SPEED] = nbt.getInt("EVSpeed")
+        evs[Stats.HP] = nbt.getIntOr("EVHP", 0)
+        evs[Stats.ATTACK] = nbt.getIntOr("EVAttack", 0)
+        evs[Stats.DEFENCE] = nbt.getIntOr("EVDefense", 0)
+        evs[Stats.SPECIAL_ATTACK] = nbt.getIntOr("EVSpecialAttack", 0)
+        evs[Stats.SPECIAL_DEFENCE] = nbt.getIntOr("EVSpecialDefense", 0)
+        evs[Stats.SPEED] = nbt.getIntOr("EVSpeed", 0)
 
         ivs.forEach { stat ->
             result.setIV(stat.key, stat.value)
@@ -133,9 +135,9 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
 
         for (move in nbt.getList("Moveset", 10)) {
             val compound = move as CompoundTag
-            val id = compound.getString("MoveID").replace(Regex("[-\\s]", RegexOption.IGNORE_CASE), "")
-            val pp = compound.getInt("MovePP")
-            val level = compound.getInt("MovePPLevel")
+            val id = compound.getStringOr("MoveID", "").replace(Regex("[-\\s]", RegexOption.IGNORE_CASE), "")
+            val pp = compound.getIntOr("MovePP", 0)
+            val level = compound.getIntOr("MovePPLevel", 0)
 
             val template = Moves.getByNameOrDummy(id.lowercase())
             result.moveSet.add(template.create(pp, level))
@@ -144,8 +146,8 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
         // TODO - Nicknames and Original Trainer Data
         // result.nickname = this.find(nbt, "Nickname", NbtCompound::getString)
 
-        val ball = this.find(nbt, "CaughtBall", CompoundTag::getString)
-        result.caughtBall = if(ball != null) PokeBalls.getPokeBall(ResourceLocation.parse(ball)) ?: PokeBalls.POKE_BALL else PokeBalls.POKE_BALL
+        val ball = this.find(nbt, "CaughtBall", { tag, key -> tag.getStringOr(key, "") })
+        result.caughtBall = if(ball != null) PokeBalls.getPokeBall(Identifier.parse(ball)) ?: PokeBalls.POKE_BALL else PokeBalls.POKE_BALL
 
         return result
     }

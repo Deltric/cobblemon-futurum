@@ -17,7 +17,7 @@ import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.level.levelgen.placement.PlacementContext
 import net.minecraft.world.level.levelgen.placement.PlacementModifier
 import java.util.*
-import java.util.stream.Stream
+import java.util.function.Consumer
 
 /**
  * A placement modifier that returns a stream of positions underneath the given heightmap. It will start at some
@@ -26,7 +26,7 @@ import java.util.stream.Stream
  * @author Hiroku
  * @since June 4th, 2023
  */
-class BeneathHeightmapPlacementModifier(val heightmap: Heightmap.Types, val offset: Int, val reach: Int?) : PlacementModifier() {
+class BeneathHeightmapPlacementModifier(val heightmap: Heightmap.Types, val offset: Int, val reach: Int?) : PlacementModifier {
     companion object {
         val MODIFIER_CODEC: MapCodec<BeneathHeightmapPlacementModifier> = RecordCodecBuilder.mapCodec { instance ->
             instance
@@ -45,20 +45,18 @@ class BeneathHeightmapPlacementModifier(val heightmap: Heightmap.Types, val offs
         }
     }
 
-    override fun type() = CobblemonPlacementModifierTypes.BENEATH_HEIGHTMAP
+    override fun codec(): MapCodec<BeneathHeightmapPlacementModifier> = MODIFIER_CODEC
 
-    override fun getPositions(context: PlacementContext, random: RandomSource, pos: BlockPos): Stream<BlockPos> {
+    override fun modify(context: PlacementContext, random: RandomSource, pos: BlockPos, output: Consumer<BlockPos>) {
         var z: Int
         val x = pos.x
         val topY = context.getHeight(heightmap, x, pos.z.also { z = it }) + offset
-        val positions = mutableListOf<BlockPos>()
 
         var y = topY
-        while (y > context.minBuildHeight && (reach == null || topY - y < reach)) {
-            positions.add(BlockPos(x, y, z))
+        while (y > context.minY && (reach == null || topY - y < reach)) {
+            output.accept(BlockPos(x, y, z))
             y--
         }
 
-        return positions.stream()
     }
 }

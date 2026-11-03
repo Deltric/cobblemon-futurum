@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "cobblemon:hearty_grains"
-    }
+    "#": "cobblemon:hearty_grains"
   },
   "pattern": [
     "###",

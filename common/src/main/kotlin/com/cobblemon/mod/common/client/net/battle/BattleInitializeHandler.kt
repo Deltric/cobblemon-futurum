@@ -49,7 +49,7 @@ object BattleInitializeHandler : ClientNetworkPacketHandler<BattleInitializePack
             this.wildActor = this.findWildActor()
         }
 
-        Minecraft.getInstance().setScreen(BattleGUI())
+        Minecraft.getInstance().gui.setScreen(BattleGUI())
     }
 
     fun actorFromDTO(actorDTO: BattleInitializePacket.BattleActorDTO, isAlly: Boolean): ClientBattleActor {

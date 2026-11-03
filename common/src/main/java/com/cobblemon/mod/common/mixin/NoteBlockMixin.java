@@ -33,7 +33,7 @@ public abstract class NoteBlockMixin {
             return;
         }
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             final BlockPos instrumentPos = shelfPos.below();
             final SoundEvent soundEvent;
             if (level.getBlockState(instrumentPos).isAir()) {

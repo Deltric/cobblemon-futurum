@@ -15,7 +15,7 @@ import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder
 import net.minecraft.world.entity.ai.behavior.declarative.Trigger
 
 object StopTryingToReachSweetBerryBushTask {
-    fun create(maxTimeToReachItem: Int, disableDuration: Int): BehaviorControl<LivingEntity?> {
+    fun create(maxTimeToReachItem: Int, disableDuration: Int): BehaviorControl<LivingEntity> {
         return BehaviorBuilder.create {
             it.group(
                 it.present(CobblemonMemories.NEARBY_SWEET_BERRY_BUSH),

@@ -32,11 +32,12 @@ import com.cobblemon.mod.common.trade.TradeManager
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.StringTag
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
+import net.minecraft.util.Prediction
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -75,7 +76,7 @@ fun ServerPlayer.openDialogue(activeDialogue: ActiveDialogue) {
     DialogueManager.startDialogue(activeDialogue)
 }
 fun ServerPlayer.extraData(key: String) = Cobblemon.playerDataManager.getGenericData(this).extraData[key]
-fun ServerPlayer.hasKeyItem(key: ResourceLocation) = Cobblemon.playerDataManager.getGenericData(this).keyItems.contains(key)
+fun ServerPlayer.hasKeyItem(key: Identifier) = Cobblemon.playerDataManager.getGenericData(this).keyItems.contains(key)
 fun UUID.getPlayer() = server()?.playerList?.getPlayer(this)
 
 fun ServerPlayer.requestWallpapers() {
@@ -93,7 +94,7 @@ fun ServerPlayer.onLogout(handler: () -> Unit) {
  * @return If the attempt to heal was successful.
  */
 fun ServerPlayer.didSleep(): Boolean {
-    if (sleepTimer != 100 || level().dayTime.toInt() % 24000 != 0 || this.isInBattle()) {
+    if (sleepTimer != 100 || level().overworldClockTime.toInt() % 24000 != 0 || this.isInBattle()) {
         return false
     }
     party().didSleep()
@@ -323,29 +324,29 @@ fun findDirectionForIntercept(p0: Vec3, p1: Vec3, blockPos: BlockPos): Direction
     return minDirection
 }
 
-fun ServerPlayer.raycast(maxDistance: Float, fluidHandling: ClipContext.Fluid?): BlockHitResult {
+fun ServerPlayer.raycast(maxDistance: Float, fluidHandling: ClipContext.Fluid): BlockHitResult {
     val f = xRot
     val g = yRot
     val vec3d = eyePosition
-    val h = Mth.cos(-g * 0.017453292f - 3.1415927f)
-    val i = Mth.sin(-g * 0.017453292f - 3.1415927f)
-    val j = -Mth.cos(-f * 0.017453292f)
-    val k = Mth.sin(-f * 0.017453292f)
+    val h = Mth.cos((-g * 0.017453292f - 3.1415927f).toDouble()).toFloat()
+    val i = Mth.sin((-g * 0.017453292f - 3.1415927f).toDouble()).toFloat()
+    val j = -Mth.cos((-f * 0.017453292f).toDouble()).toFloat()
+    val k = Mth.sin((-f * 0.017453292f).toDouble()).toFloat()
     val l = i * j
     val n = h * j
     val vec3d2 = vec3d.add(l.toDouble() * maxDistance, k.toDouble() * maxDistance, n.toDouble() * maxDistance)
     return level().clip(ClipContext(vec3d, vec3d2, ClipContext.Block.OUTLINE, fluidHandling, this))
 }
 
-fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropHeight: Double, fluidHandling: ClipContext.Fluid?): Vec3? {
+fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropHeight: Double, fluidHandling: ClipContext.Fluid): Vec3? {
     // Crazy math stuff, don't worry about it
     val f = xRot
     val g = yRot
     val vec3d = eyePosition
-    val h = Mth.cos(-g * 0.017453292f - 3.1415927f)
-    val i = Mth.sin(-g * 0.017453292f - 3.1415927f)
-    val j = -Mth.cos(-f * 0.017453292f)
-    val k = Mth.sin(-f * 0.017453292f)
+    val h = Mth.cos((-g * 0.017453292f - 3.1415927f).toDouble()).toFloat()
+    val i = Mth.sin((-g * 0.017453292f - 3.1415927f).toDouble()).toFloat()
+    val j = -Mth.cos((-f * 0.017453292f).toDouble()).toFloat()
+    val k = Mth.sin((-f * 0.017453292f).toDouble()).toFloat()
     val l = i * j
     val n = h * j
     val vec3d2 = vec3d.add(l.toDouble() * maxDistance, k.toDouble() * maxDistance, n.toDouble() * maxDistance)
@@ -383,7 +384,7 @@ fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropH
         }
 
         // If a valid block was found below the player's aim, return the location directly above it
-        return fallLoc?.blockPos?.above()?.center
+        return fallLoc?.blockPos?.above()?.let(Vec3::atCenterOf)
     } else if (result.direction != Direction.UP) {
         // If the player targets the side or bottom of a block, try to find a valid spot in front of / below that block
         val offset: Double = if (result.direction == Direction.DOWN) {
@@ -416,7 +417,7 @@ fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropH
     return null
 }
 
-fun Inventory.usableItems() = offhand + items
+fun Inventory.usableItems() = listOf(getItem(Inventory.SLOT_OFFHAND)) + nonEquipmentItems
 
 /**
  * Utility function meant to emulate the behavior seen across Minecraft when attempting to give items directly to player but there's not enough room for the entire stack.
@@ -436,7 +437,7 @@ fun Player.giveOrDropItemStack(stack: ItemStack, playSound: Boolean = true) {
         }
         this.containerMenu.broadcastChanges()
     } else {
-        this.drop(stack, false)?.let { itemEntity ->
+        this.drop(stack, false, Prediction.SERVER_ONLY)?.let { itemEntity ->
             itemEntity.setNoPickUpDelay()
             itemEntity.setTarget(this.uuid)
         }

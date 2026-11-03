@@ -1,39 +1,43 @@
 {
-  "parent": "cobblemon:recipes/campfire_pot",
-  "criteria": {
-    "has_cooked_rabbit": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:cooked_rabbit"
-          }
+    "parent": "cobblemon:recipes/campfire_pot",
+    "criteria": {
+        "has_cooked_rabbit": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": "minecraft:cooked_rabbit"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_original_recipe": {
+            "conditions": {
+                "recipes": [
+                    "minecraft:rabbit_stew_from_red_mushroom"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:campfire_pot/rabbit_stew_from_red_mushroom_in_campfire_pot"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
+    },
+    "requirements": [
+        [
+            "has_the_recipe",
+            "has_cooked_rabbit",
+            "has_original_recipe"
         ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_original_recipe": {
-      "conditions": {
-        "recipe": "minecraft:rabbit_stew_from_red_mushroom"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:campfire_pot/rabbit_stew_from_red_mushroom_in_campfire_pot"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:campfire_pot/rabbit_stew_from_red_mushroom_in_campfire_pot"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_the_recipe",
-      "has_cooked_rabbit",
-	  "has_original_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:campfire_pot/rabbit_stew_from_red_mushroom_in_campfire_pot"
-    ]
-  }
 }

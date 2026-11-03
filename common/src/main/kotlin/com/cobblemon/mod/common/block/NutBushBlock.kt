@@ -8,9 +8,10 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.entity.InsideBlockEffectApplier
+import net.minecraft.world.level.block.BonemealSource
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.tags.CobblemonBlockTags
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
@@ -18,9 +19,8 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.RandomSource
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
@@ -43,9 +43,7 @@ import net.minecraft.world.phys.shapes.VoxelShape
 
 class NutBushBlock(properties: Properties) : BushBlock(properties), BonemealableBlock {
 
-    override fun codec(): MapCodec<NutBushBlock> = CODEC
-
-    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState): ItemStack {
+    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState, includeData: Boolean): ItemStack {
         return ItemStack(CobblemonItems.GALARICA_NUTS)
     }
 
@@ -70,8 +68,8 @@ class NutBushBlock(properties: Properties) : BushBlock(properties), Bonemealable
         }
     }
 
-    override fun entityInside(state: BlockState, level: Level, pos: BlockPos, entity: Entity) {
-        if (entity is LivingEntity && entity.type !== EntityType.FOX && entity.type !== EntityType.BEE) {
+    override fun entityInside(state: BlockState, level: Level, pos: BlockPos, entity: Entity, effectApplier: InsideBlockEffectApplier, isPrecise: Boolean) {
+        if (entity is LivingEntity && entity.type !== EntityTypes.FOX && entity.type !== EntityTypes.BEE) {
             entity.makeStuckInBlock(state, Vec3(0.8, 0.75, 0.8))
         }
     }
@@ -84,9 +82,9 @@ class NutBushBlock(properties: Properties) : BushBlock(properties), Bonemealable
         player: Player,
         hand: InteractionHand,
         hitResult: BlockHitResult
-    ): ItemInteractionResult {
-        return if (isValidBonemealTarget(level, pos, state) && stack.`is`(Items.BONE_MEAL))
-            ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
+    ): InteractionResult {
+        return if (isValidBonemealTarget(level, pos, state, BonemealSource.INTERACTION) && stack.`is`(Items.BONE_MEAL))
+            InteractionResult.PASS
         else super.useItemOn(stack, state, level, pos, player, hand, hitResult)
     }
 
@@ -105,7 +103,7 @@ class NutBushBlock(properties: Properties) : BushBlock(properties), Bonemealable
             val blockstate = state.setValue(AGE, 1)
             level.setBlock(pos, blockstate, UPDATE_CLIENTS)
             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, blockstate))
-            return InteractionResult.sidedSuccess(level.isClientSide)
+            return if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
         } else {
             return super.useWithoutItem(state, level, pos, player, hitResult)
         }
@@ -115,15 +113,15 @@ class NutBushBlock(properties: Properties) : BushBlock(properties), Bonemealable
         builder.add(AGE)
     }
 
-    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState): Boolean {
+    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         return state.getValue(AGE) < MAX_AGE
     }
 
-    override fun isBonemealSuccess(level: Level, random: RandomSource, pos: BlockPos, state: BlockState): Boolean {
+    override fun isBonemealSuccess(level: Level, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         return true
     }
 
-    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
+    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         level.setBlock(
             pos,
             state.setValue(AGE, (state.getValue(AGE) + 1).coerceAtMost(MAX_AGE)),
@@ -143,7 +141,6 @@ class NutBushBlock(properties: Properties) : BushBlock(properties), Bonemealable
     }
 
     companion object {
-        val CODEC: MapCodec<NutBushBlock> = simpleCodec(::NutBushBlock)
 
         const val MAX_AGE: Int = 3
         val AGE: IntegerProperty = BlockStateProperties.AGE_3

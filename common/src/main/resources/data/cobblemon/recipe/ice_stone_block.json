@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "cobblemon:ice_stone"
-    }
+    "#": "cobblemon:ice_stone"
   },
   "pattern": [
     "###",

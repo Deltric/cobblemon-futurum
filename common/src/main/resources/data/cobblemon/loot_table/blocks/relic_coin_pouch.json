@@ -7,37 +7,34 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:relic_coin",
-          "functions": [
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:relic_coin_pouch",
+            "state": {
+              "natural": "true"
+            }
+          },
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 2,
                 "max": 9
-              }
-            }
-          ],
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:relic_coin_pouch",
-              "properties": {
-                "natural": "true"
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:relic_coin_pouch",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:relic_coin_pouch",
-              "properties": {
-                "natural": "false"
-              }
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:relic_coin_pouch",
+            "state": {
+              "natural": "false"
             }
-          ]
+          }
         }
       ]
     }

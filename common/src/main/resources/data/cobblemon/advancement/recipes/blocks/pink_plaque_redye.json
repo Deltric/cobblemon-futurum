@@ -30,7 +30,9 @@
         },
         "has_the_recipe": {
             "conditions": {
-                "recipe": "cobblemon:pink_plaque_redye"
+                "recipes": [
+                    "cobblemon:pink_plaque_redye"
+                ]
             },
             "trigger": "minecraft:recipe_unlocked"
         }

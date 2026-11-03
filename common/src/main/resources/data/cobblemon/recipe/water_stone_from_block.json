@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "cobblemon:water_stone_block"
-    }
+    "cobblemon:water_stone_block"
   ],
   "result": {
     "count": 9,

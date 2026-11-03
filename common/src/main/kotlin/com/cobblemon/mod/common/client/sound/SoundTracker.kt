@@ -11,7 +11,7 @@ package com.cobblemon.mod.common.client.sound
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.sounds.SoundInstance
 import net.minecraft.core.BlockPos
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.block.entity.BlockEntity
 
@@ -26,22 +26,22 @@ abstract class SoundTracker<T> {
     private val manager = Minecraft.getInstance().soundManager
 
     /** Map of each [T]'s tracked [SoundInstance]s. Instances are not guaranteed to be active. */
-    private val trackedSounds: HashMap<T, HashMap<ResourceLocation, SoundInstance>> = hashMapOf()
+    private val trackedSounds: HashMap<T, HashMap<Identifier, SoundInstance>> = hashMapOf()
 
     /** Checks if there is an existing [SoundInstance] of the same [location] currently playing for [id]. */
-    fun isActive(id: T, location: ResourceLocation) = trackedSounds.get(id)?.get(location)?.let { manager.isActive(it) } == true
+    fun isActive(id: T, location: Identifier) = trackedSounds.get(id)?.get(location)?.let { manager.isActive(it) } == true
 
     fun play(id: T, sound: SoundInstance) {
         if (!sound.canPlaySound()) return //If sound cannot be played, return early
         val tracks = this.trackedSounds.computeIfAbsent(id) { hashMapOf() }
-        tracks.get(sound.location)?.let { existing -> manager.stop(existing) }  // replace anything already playing
-        tracks.put(sound.location, sound)
+        tracks.get(sound.identifier)?.let { existing -> manager.stop(existing) }  // replace anything already playing
+        tracks.put(sound.identifier, sound)
         manager.play(sound)
     }
 
-    fun stop(id: T, sound: SoundInstance) = this.stop(id, sound.location)
+    fun stop(id: T, sound: SoundInstance) = this.stop(id, sound.identifier)
 
-    fun stop(id: T, location: ResourceLocation) {
+    fun stop(id: T, location: Identifier) {
         val emitter = trackedSounds.get(id) ?: return
         val existing = emitter.get(location) ?: return
         manager.stop(existing)

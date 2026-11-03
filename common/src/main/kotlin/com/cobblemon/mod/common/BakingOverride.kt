@@ -8,22 +8,21 @@
 
 package com.cobblemon.mod.common
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.resources.model.BakedModel
-import net.minecraft.client.resources.model.ModelResourceLocation
-import net.minecraft.resources.ResourceLocation
+import com.cobblemon.mod.common.client.CobblemonClient
+import net.minecraft.client.resources.model.geometry.QuadCollection
+import net.minecraft.resources.Identifier
 
 /**
  * Contains information for forcing a model to be baked
  *
  * @param modelLocation The location of the model
- * @param modelIdentifier The identifier that the BakedModel will be registered to
+ * @param modelIdentifier The stable identifier used for the extra-model registration
  */
 data class BakingOverride(
-    val modelLocation: ResourceLocation,
-    val modelIdentifier: ModelResourceLocation
+    val modelLocation: Identifier,
+    val modelIdentifier: Identifier
 ) {
-    fun getModel(): BakedModel {
-        return Minecraft.getInstance().modelManager.getModel(modelIdentifier)
+    fun getModel(): QuadCollection {
+        return CobblemonClient.implementation.getBakingOverride(this)
     }
 }

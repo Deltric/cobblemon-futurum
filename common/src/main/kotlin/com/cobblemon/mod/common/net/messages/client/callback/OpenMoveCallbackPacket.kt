@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.net.messages.client.callback
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.api.callback.MoveSelectDTO
 import com.cobblemon.mod.common.api.net.NetworkPacket
 import com.cobblemon.mod.common.util.cobblemonResource

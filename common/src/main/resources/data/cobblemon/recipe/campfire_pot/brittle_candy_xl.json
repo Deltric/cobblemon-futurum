@@ -3,15 +3,9 @@
   "group": "iv_candy_bad",
   "category": "misc",
   "key": {
-    "Q": {
-      "item": "cobblemon:qualot_berry"
-    },
-    "B": {
-      "item": "cobblemon:enigma_berry"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_xl"
-    }
+    "Q": "cobblemon:qualot_berry",
+    "B": "cobblemon:enigma_berry",
+    "E": "cobblemon:exp_candy_xl"
   },
   "pattern": [
     "QBQ",

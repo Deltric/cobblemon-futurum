@@ -54,7 +54,8 @@ class SnowstormParticleType : ParticleType<SnowstormParticleOptions>(true) {
             z: Double,
             velocityX: Double,
             velocityY: Double,
-            velocityZ: Double
+            velocityZ: Double,
+            random: net.minecraft.util.RandomSource
         ): Particle {
             //Particles with local position move with their emitter
             val isLocal = parameters.effect.space.localPosition

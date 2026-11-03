@@ -1,11 +1,7 @@
 {
   "type": "cobblemon:brewing_stand",
-  "input": {
-    "item": "cobblemon:cheri_berry"
-  },
-  "bottle": {
-    "item": "minecraft:glass_bottle"
-  },
+  "input": "cobblemon:cheri_berry",
+  "bottle": "minecraft:glass_bottle",
   "result": {
     "id": "cobblemon:paralyze_heal"
   }

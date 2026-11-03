@@ -15,7 +15,8 @@ import com.cobblemon.mod.common.platform.events.RenderEvent
  * Maintains a queue of [RenderEventConsumer]s for renders that need to be deferred until the specified [RenderEvent.Stage]
  * occurs in the level renderer.
  *
- * Useful for changing the order of a render.
+ * Callbacks submit already extracted geometry through the native collector.
+ * Do not retain entities, model parts, or other mutable simulation state in callbacks.
  *
  * @author Segfault Guy
  * @since September 11th, 2024

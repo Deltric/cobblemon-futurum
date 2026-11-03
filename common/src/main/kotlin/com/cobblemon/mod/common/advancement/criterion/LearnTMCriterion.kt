@@ -11,21 +11,21 @@ package com.cobblemon.mod.common.advancement.criterion
 import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import java.util.Optional
 
-class LearnTMContext(val tm: ResourceLocation)
+class LearnTMContext(val tm: Identifier)
 
 class LearnTMCriterion(
-    playerCtx: Optional<ContextAwarePredicate>,
+    playerCtx: Optional<Holder<LootItemCondition>>,
     val tm: String
 ) : SimpleCriterionCondition<LearnTMContext>(playerCtx) {
     companion object {
         val CODEC: Codec<LearnTMCriterion> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(LearnTMCriterion::playerCtx),
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(LearnTMCriterion::playerCtx),
             Codec.STRING.optionalFieldOf("tm", "any").forGetter(LearnTMCriterion::tm)
         ).apply(it, ::LearnTMCriterion) }
     }
@@ -38,11 +38,11 @@ class LearnTMCriterion(
 class LearnAllTMContext
 
 class LearnAllTMCriterion(
-    playerCtx: Optional<ContextAwarePredicate>
+    playerCtx: Optional<Holder<LootItemCondition>>
 ) : SimpleCriterionCondition<LearnAllTMContext>(playerCtx) {
     companion object {
         val CODEC: Codec<LearnAllTMCriterion> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(LearnAllTMCriterion::playerCtx)
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(LearnAllTMCriterion::playerCtx)
         ).apply(it, ::LearnAllTMCriterion) }
     }
 

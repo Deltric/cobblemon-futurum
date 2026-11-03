@@ -41,7 +41,7 @@ object OpenPartyMoveCallbackHandler : ClientNetworkPacketHandler<OpenPartyMoveCa
                 title = "".text(),
                 moves = pokemonToMoves[pokemonSelectDTO]!!,
                 onCancel = cancel,
-                onBack = { Minecraft.getInstance().setScreen(PartySelectGUI(partySelectConfiguration)) },
+                onBack = { Minecraft.getInstance().gui.setScreen(PartySelectGUI(partySelectConfiguration)) },
                 onSelect = { gui, moveSelectDTO ->
                     val pokemonIndex = packet.pokemonList.indexOfFirst { it.first == pokemonSelectDTO }
                     val moveIndex = pokemonToMoves[pokemonSelectDTO]!!.indexOf(moveSelectDTO)
@@ -56,9 +56,9 @@ object OpenPartyMoveCallbackHandler : ClientNetworkPacketHandler<OpenPartyMoveCa
             pokemon = pokemonToMoves.keys.toList(),
             onCancel = cancel,
             onBack = cancel,
-            onSelect = { _, it -> Minecraft.getInstance().setScreen(MoveSelectGUI(makeMoveSelectConfiguration(it))) }
+            onSelect = { _, it -> Minecraft.getInstance().gui.setScreen(MoveSelectGUI(makeMoveSelectConfiguration(it))) }
         )
 
-        Minecraft.getInstance().setScreen(PartySelectGUI(partySelectConfiguration))
+        Minecraft.getInstance().gui.setScreen(PartySelectGUI(partySelectConfiguration))
     }
 }

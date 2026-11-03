@@ -22,7 +22,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.toRGB
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -49,45 +49,39 @@ class MoveSlotButton(
         const val HEIGHT = 22
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, pPartialTicks: Float) {
         move?.let {
             isHovered = isMouseOver(mouseX.toDouble(), mouseY.toDouble()) && enabled
             val rgb = it.elementalType.hue.toRGB()
             val alpha = if (enabled) 1.0F else 0.7F
             val matrices = context.pose()
 
-            blitk(
-                matrixStack = matrices,
-                texture = if (enabled) moveResource else moveDisabledResource,
-                x = x,
-                y = y,
-                width = WIDTH,
-                height = HEIGHT,
-                vOffset = if (isHovered) HEIGHT else 0,
-                textureHeight = HEIGHT * 2,
-                red = rgb.first,
-                green = rgb.second,
-                blue = rgb.third
-            )
+            blitk(context = context,
+            texture = if (enabled) moveResource else moveDisabledResource,
+            x = x,
+            y = y,
+            width = WIDTH,
+            height = HEIGHT,
+            vOffset = if (isHovered) HEIGHT else 0,
+            textureHeight = HEIGHT * 2,
+            red = rgb.first,
+            green = rgb.second,
+            blue = rgb.third)
 
-            blitk(
-                matrixStack = matrices,
-                texture = moveOverlayResource,
-                x = x,
-                y = y,
-                width = WIDTH,
-                height = HEIGHT
-            )
+            blitk(context = context,
+            texture = moveOverlayResource,
+            x = x,
+            y = y,
+            width = WIDTH,
+            height = HEIGHT)
 
             if (showOverlayBar) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = moveOverlayBarResource,
-                    x = x + 60,
-                    y = y + 13,
-                    width = 47,
-                    height = 8
-                )
+                blitk(context = context,
+            texture = moveOverlayBarResource,
+            x = x + 60,
+            y = y + 13,
+            width = 47,
+            height = 8)
 
                 if (pp != -1 && ppMax != -1) {
                     var movePPText = lang("ui.moves.pp", pp).bold()

@@ -11,15 +11,17 @@ package com.cobblemon.mod.fabric.data.generator.providers
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.block.TypeGemClusterBlock
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider
-import net.minecraft.advancements.critereon.*
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootSubProvider
+import net.minecraft.advancements.predicates.*
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.component.predicates.DataComponentPredicates
+import net.minecraft.core.component.predicates.EnchantmentsPredicate
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.enchantment.Enchantments
 import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.storage.loot.IntRange
+import net.minecraft.world.level.storage.loot.IntLimit
 import net.minecraft.world.level.storage.loot.LootPool
 import net.minecraft.world.level.storage.loot.LootTable
 import net.minecraft.world.level.storage.loot.entries.AlternativesEntry
@@ -28,18 +30,17 @@ import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount
 import net.minecraft.world.level.storage.loot.functions.ApplyExplosionDecay
 import net.minecraft.world.level.storage.loot.functions.LimitCount
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction
-import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition
+import net.minecraft.world.level.storage.loot.predicates.MatchBlock
 import net.minecraft.world.level.storage.loot.predicates.MatchTool
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders
 import java.util.concurrent.CompletableFuture
 
 class TypeGemsLootTableProvider(
-    dataOutput: FabricDataOutput,
+    dataOutput: FabricPackOutput,
     val registryLookup: CompletableFuture<HolderLookup.Provider>
-) : FabricBlockLootTableProvider(dataOutput, registryLookup) {
+) : FabricBlockLootSubProvider(dataOutput, registryLookup) {
 
-    override fun getName(): String? {
+    override fun getName(): String {
         return "Type Gems Loot Tables"
     }
 
@@ -61,30 +62,34 @@ class TypeGemsLootTableProvider(
                             LootItem.lootTableItem(block).`when`(
                                 MatchTool.toolMatches(
                                     ItemPredicate.Builder.item()
-                                        .withSubPredicate(
-                                            ItemSubPredicates.ENCHANTMENTS,
-                                            ItemEnchantmentsPredicate.enchantments(
-                                                listOf(
-                                                    EnchantmentPredicate(
-                                                        silkTouch,
-                                                        MinMaxBounds.Ints.atLeast(1)
+                                        .withComponents(
+                                            DataComponentMatchers.Builder.components()
+                                                .partial(
+                                                    DataComponentPredicates.ENCHANTMENTS,
+                                                    EnchantmentsPredicate.enchantments(
+                                                        listOf(
+                                                            EnchantmentPredicate(
+                                                                silkTouch,
+                                                                MinMaxBounds.Ints.atLeast(1)
+                                                            )
+                                                        )
                                                     )
                                                 )
-                                            ),
+                                                .build()
                                         )
                                 )
                             ),
                             LootItem.lootTableItem(gem)
                                 .apply(
                                     SetItemCountFunction.setCount(
-                                        UniformGenerator.between(1f, 2f)
+                                        ContextIntProviders.between(1, 2)
                                     )
                                 )
                                 .apply(
                                     ApplyBonusCount.addOreBonusCount(fortune)
                                 )
                                 .apply(
-                                    LimitCount.limitCount(IntRange.upperBound(4))
+                                    LimitCount.limitCount(IntLimit.upperBound(4))
                                 )
                                 .apply(
                                     ApplyExplosionDecay.explosionDecay()
@@ -106,37 +111,41 @@ class TypeGemsLootTableProvider(
                             LootItem.lootTableItem(cluster).`when`(
                                 MatchTool.toolMatches(
                                     ItemPredicate.Builder.item()
-                                        .withSubPredicate(
-                                            ItemSubPredicates.ENCHANTMENTS,
-                                            ItemEnchantmentsPredicate.enchantments(
-                                                listOf(
-                                                    EnchantmentPredicate(
-                                                        silkTouch,
-                                                        MinMaxBounds.Ints.atLeast(1)
+                                        .withComponents(
+                                            DataComponentMatchers.Builder.components()
+                                                .partial(
+                                                    DataComponentPredicates.ENCHANTMENTS,
+                                                    EnchantmentsPredicate.enchantments(
+                                                        listOf(
+                                                            EnchantmentPredicate(
+                                                                silkTouch,
+                                                                MinMaxBounds.Ints.atLeast(1)
+                                                            )
+                                                        )
                                                     )
                                                 )
-                                            ),
+                                                .build()
                                         )
                                 )
                             ),
                             LootItem.lootTableItem(gem).`when`(
-                                LootItemBlockStatePropertyCondition
-                                    .hasBlockStateProperties(cluster)
-                                    .setProperties(
-                                        StatePropertiesPredicate.Builder.properties()
-                                            .hasProperty(TypeGemClusterBlock.STAGE, 3)
-                                    )
+                                MatchBlock.blockMatches(
+                                    lookup.lookupOrThrow(Registries.BLOCK),
+                                    cluster,
+                                    StatePropertiesPredicate.Builder.properties()
+                                        .hasProperty(TypeGemClusterBlock.STAGE, 3)
+                                )
                             )
                                 .apply(
                                     SetItemCountFunction.setCount(
-                                        UniformGenerator.between(2f, 3f)
+                                        ContextIntProviders.between(2, 3)
                                     )
                                 )
                                 .apply(
                                     ApplyBonusCount.addOreBonusCount(fortune)
                                 )
                                 .apply(
-                                    LimitCount.limitCount(IntRange.upperBound(4))
+                                    LimitCount.limitCount(IntLimit.upperBound(4))
                                 )
                                 .apply(
                                     ApplyExplosionDecay.explosionDecay()
@@ -144,7 +153,7 @@ class TypeGemsLootTableProvider(
                             LootItem.lootTableItem(gem)
                                 .apply(
                                     SetItemCountFunction.setCount(
-                                        ConstantValue.exactly(1f)
+                                        ContextIntProviders.exactly(1)
                                     )
                                 )
                                 .apply(

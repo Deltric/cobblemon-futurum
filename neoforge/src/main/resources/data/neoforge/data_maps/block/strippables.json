@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": {
+    "cobblemon:apricorn_wood": {
+      "stripped_block": "cobblemon:stripped_apricorn_wood"
+    },
+    "cobblemon:apricorn_log": {
+      "stripped_block": "cobblemon:stripped_apricorn_log"
+    },
+    "cobblemon:saccharine_wood": {
+      "stripped_block": "cobblemon:stripped_saccharine_wood"
+    },
+    "cobblemon:saccharine_log": {
+      "stripped_block": "cobblemon:stripped_saccharine_log"
+    },
+    "cobblemon:saccharine_log_slathered": {
+      "stripped_block": "cobblemon:stripped_saccharine_log"
+    }
+  }
+}

@@ -12,14 +12,14 @@ import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.PrimitiveCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
-import net.minecraft.world.level.WorldGenLevel
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate
 import java.util.*
 
 class AltitudePredicate(val min: Optional<Int>, val max: Optional<Int>) : BlockPredicate {
     val range = min.orElse(Int.MIN_VALUE)..max.orElse(Int.MAX_VALUE)
 
-    override fun test(world: WorldGenLevel, block: BlockPos) = block.y in range
+    override fun test(world: LevelAccessor, block: BlockPos) = block.y in range
 
     override fun type() = CobblemonBlockPredicates.ALTITUDE
 

@@ -1,0 +1,7 @@
+{
+  "type": "cobblemon:structure",
+  "cobblemon_structures": [
+    "cobblemon:fossils/sandy_den"
+  ],
+  "cobblemon_processors": "cobblemon:fossils/prehistoric_sandy_den"
+}

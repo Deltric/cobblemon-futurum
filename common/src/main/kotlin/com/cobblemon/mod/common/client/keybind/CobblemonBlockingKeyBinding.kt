@@ -9,6 +9,7 @@
 package com.cobblemon.mod.common.client.keybind
 
 import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 
 /**
@@ -19,9 +20,9 @@ import net.minecraft.client.Minecraft
  */
 abstract class CobblemonBlockingKeyBinding(
     name: String,
-    type: InputConstants.Type = InputConstants.Type.KEYSYM,
+    type: InputConstants.Type = InputConstants.Type.KEYBOARD,
     key: Int,
-    category: String
+    category: KeyMapping.Category
 ) : CobblemonKeyBinding(name, type, key, category) {
     var wasDown = false
     var timeDown = 0F
@@ -39,7 +40,7 @@ abstract class CobblemonBlockingKeyBinding(
         } else if (!isDown) {
             wasDown = false
         } else if (wasDown) {
-            timeDown += Minecraft.getInstance().timer.getGameTimeDeltaPartialTick(false)
+            timeDown += Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(false)
         }
     }
 }

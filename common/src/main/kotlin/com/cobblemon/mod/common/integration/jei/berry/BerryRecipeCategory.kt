@@ -18,6 +18,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole
 import mezz.jei.api.recipe.RecipeType
 import mezz.jei.api.recipe.category.IRecipeCategory
 import mezz.jei.api.registration.IRecipeCategoryRegistration
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.crafting.Ingredient
 
@@ -37,8 +39,11 @@ class BerryRecipeCategory(private val registration: IRecipeCategoryRegistration)
         return Component.literal("Berry Mutation")
     }
 
-    override fun getBackground(): IDrawable {
-        return background
+    override fun getWidth() = WIDTH
+    override fun getHeight() = HEIGHT
+
+    override fun draw(recipe: BerryMutationRecipe, recipeSlotsView: IRecipeSlotsView, guiGraphics: GuiGraphicsExtractor, mouseX: Double, mouseY: Double) {
+        background.draw(guiGraphics, 0, 0)
     }
 
     override fun getIcon(): IDrawable {
@@ -47,9 +52,9 @@ class BerryRecipeCategory(private val registration: IRecipeCategoryRegistration)
 
     override fun setRecipe(p0: IRecipeLayoutBuilder, p1: BerryMutationRecipe, p2: IFocusGroup) {
         //These magic numbers are where the items should be positioned on the gui texture
-        p0.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(Ingredient.of(p1.berryOne.defaultInstance))
-        p0.addSlot(RecipeIngredientRole.INPUT, 50, 1).addIngredients(Ingredient.of(p1.berryTwo.defaultInstance))
-        p0.addSlot(RecipeIngredientRole.OUTPUT, 108, 1).addIngredients(Ingredient.of(p1.berryResult.defaultInstance))
+        p0.addSlot(RecipeIngredientRole.INPUT, 1, 1).add(p1.berryOne.defaultInstance)
+        p0.addSlot(RecipeIngredientRole.INPUT, 50, 1).add(p1.berryTwo.defaultInstance)
+        p0.addSlot(RecipeIngredientRole.OUTPUT, 108, 1).add(p1.berryResult.defaultInstance)
     }
 
     companion object {

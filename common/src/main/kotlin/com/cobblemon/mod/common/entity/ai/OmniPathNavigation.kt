@@ -169,16 +169,17 @@ class OmniPathNavigation(val world: Level, val entity: Mob) : GroundPathNavigati
 
     fun findPath(target: BlockPos, distance: Int): Path? = createPath(ImmutableSet.of(target), 8, false, distance)
 
+    @Suppress("RETURN_TYPE_MISMATCH_ON_OVERRIDE")
     override fun createPath(target: BlockPos, distance: Int): Path? {
         var target = target
 
         var blockPos: BlockPos
         if (this.world.getBlockState(target).isAir && !pather.canFly()) {
             blockPos = target.below()
-            while (blockPos.y > this.world.minBuildHeight && this.world.getBlockState(blockPos).isAir) {
+            while (blockPos.y > this.world.minY && this.world.getBlockState(blockPos).isAir) {
                 blockPos = blockPos.below()
             }
-            while (blockPos.y < this.world.maxBuildHeight && this.world.getBlockState(blockPos).isAir) {
+            while (blockPos.y <= this.world.maxY && this.world.getBlockState(blockPos).isAir) {
                 blockPos = blockPos.above()
             }
             target = blockPos
@@ -190,7 +191,7 @@ class OmniPathNavigation(val world: Level, val entity: Mob) : GroundPathNavigati
             findPath(target, distance)
         } else {
             blockPos = target.above()
-            while (blockPos.y < this.world.maxBuildHeight && this.world.getBlockState(blockPos).isSolid) {
+            while (blockPos.y <= this.world.maxY && this.world.getBlockState(blockPos).isSolid) {
                 blockPos = blockPos.above()
             }
             findPath(blockPos, distance)
@@ -237,19 +238,19 @@ class OmniPathNavigation(val world: Level, val entity: Mob) : GroundPathNavigati
             val blockGetter: BlockGetter = level
             if (blockGetter.getFluidState(pos).`is`(FluidTags.WATER)) {
                 val blockPos = pos.below()
-                return level.getBlockState(blockPos).isSolidRender(this.level, blockPos)
+                return level.getBlockState(blockPos).isSolidRender()
             }
         }
         if (pather.canWalkOnWater()) {
             val blockGetter: BlockGetter = level
             if (blockGetter.getFluidState(pos.below()).`is`(FluidTags.WATER)) {
-                return !level.getBlockState(pos).isSolidRender(this.level, pos)
+                return !level.getBlockState(pos).isSolidRender()
             }
         }
         if (pather.canWalkOnLava()) {
             val blockGetter: BlockGetter = level
             if (blockGetter.getFluidState(pos.below()).`is`(FluidTags.LAVA)) {
-                return !level.getBlockState(pos).isSolidRender(this.level, pos)
+                return !level.getBlockState(pos).isSolidRender()
             }
         }
         if (pather.canFly()) {
@@ -272,6 +273,7 @@ class OmniPathNavigation(val world: Level, val entity: Mob) : GroundPathNavigati
         return if ((canFloat()) && blockGetter.getFluidState(blockPos).`is`(FluidTags.WATER)) vec.y + 0.5 else super.getGroundY(vec)
     }
 
+    @Suppress("RETURN_TYPE_MISMATCH_ON_OVERRIDE")
     override fun createPath(entity: Entity, distance: Int): Path? {
         return this.createPath(entity.blockPosition(), distance)
     }

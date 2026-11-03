@@ -1,44 +1,38 @@
 [versions]
 # Kotlin
-kotlin = "2.2.20"
+kotlin = "2.4.20"
 
 # Plugins
-licenser = "0.6.1"
-shadow = "8.1.1"
+licenser = "0.7.5"
+shadow = "9.4.3"
 blossom = "2.1.0"
 idea-ext = "1.1.7"
 versioning = "3.1.0"
 
 # Minecraft Development
-loom = "1.11-SNAPSHOT"
-architectury-plugin = "3.4-SNAPSHOT"
+loom = "1.17.493"
+architectury-plugin = "3.5.170"
 moddev = "1.0.11"
 
 # Common
 molang = "1.1.20"
-jei-api = "19.22.1.316"
+jei-api = "31.0.0.9999"
 
 # Graal
-graal = "22.3.0"
-icu4j = "71.1"
-regex = "22.3.0"
-truffle = "22.3.0"
+graal = "25.0.4.1.1"
 
 # Fabric
-fabric-loader = "0.17.2"
-fabric-api = "0.116.6+1.21.1"
-fabric-kotlin = "1.13.6+kotlin.2.2.20"
-fabric-permissions-api = "0.3.1"
-lambDynamicLights = "4.1.6+1.21.1"
+fabric-loader = "0.19.5"
+fabric-api = "0.160.5+26.3"
+fabric-kotlin = "1.14.1+kotlin.2.4.20"
+fabric-permissions-api = "0.7.0"
+lambDynamicLights = "4.13.0+26.3"
 debugutils-fabric = "1.21.1-1.0.9-fabric"
-mod-menu = "11.0.3"
-c2me-fabric = "0.3.0+alpha.0.320+1.21.1"
+mod-menu = "21.0.0-beta.1"
 
 # NeoForge
-neoforge = "21.1.182"
-neo-kotlin-for-forge = "5.10.0"
+neoforge = "26.3.0.1-beta"
 debugutils-forge = "1.21.1-1.0.9-neoforge"
-c2me-neoforge = "0.3.0+alpha.0.73+1.21.1"
 
 # Data Storage
 mongo = "4.10.2"
@@ -55,49 +49,54 @@ kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", versio
 loom = { group = "dev.architectury", name = "architectury-loom", version.ref = "loom" }
 neoforge-moddev = { group = "net.neoforged", name = "moddev-gradle", version.ref = "moddev" }
 architectury = { group = "architectury-plugin", name = "architectury-plugin.gradle.plugin", version.ref = "architectury-plugin" }
-shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+shadow = { group = "com.gradleup.shadow", name = "shadow-gradle-plugin", version.ref = "shadow" }
 blossom = { group = "net.kyori", name = "blossom", version.ref = "blossom" }
 ideaExt = { group = "org.jetbrains.gradle.plugin.idea-ext", name = "org.jetbrains.gradle.plugin.idea-ext.gradle.plugin", version.ref = "idea-ext"}
-licenser = { group = "gradle.plugin.org.cadixdev.gradle", name = "licenser", version.ref = "licenser" }
+licenser = { group = "net.neoforged.licenser", name = "licenser", version.ref = "licenser" }
 versioning = { group = "net.nemerosa.versioning", name = "net.nemerosa.versioning.gradle.plugin", version.ref = "versioning" }
 
 # Kotlin
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 # Common
-jei-api = { group = "mezz.jei", name = "jei-1.21.1-common-api", version.ref = "jei-api"}
+jei-api = { group = "mezz.jei", name = "jei-26.3-common-api", version.ref = "jei-api"}
 molang = { group = "local.com.bedrockk", name = "molang", version.ref = "molang" }
 
 # Graal
-graal-core = { group = "org.graalvm.js", name = "js", version.ref = "graal" }
-graal-sdk = { group = "org.graalvm.sdk", name = "graal-sdk", version.ref = "graal" }
+graal-polyglot = { group = "org.graalvm.polyglot", name = "polyglot", version.ref = "graal" }
+graal-language = { group = "org.graalvm.js", name = "js-language", version.ref = "graal" }
 graal-regex = { group = "org.graalvm.regex", name = "regex", version.ref = "graal"}
-graal-truffle = { group = "org.graalvm.truffle", name = "truffle-api", version.ref = "graal" }
-icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
+graal-truffle-api = { group = "org.graalvm.truffle", name = "truffle-api", version.ref = "graal" }
+graal-truffle-runtime = { group = "org.graalvm.truffle", name = "truffle-runtime", version.ref = "graal" }
+graal-truffle-compiler = { group = "org.graalvm.truffle", name = "truffle-compiler", version.ref = "graal" }
+graal-collections = { group = "org.graalvm.sdk", name = "collections", version.ref = "graal" }
+graal-nativeimage = { group = "org.graalvm.sdk", name = "nativeimage", version.ref = "graal" }
+graal-word = { group = "org.graalvm.sdk", name = "word", version.ref = "graal" }
+graal-jniutils = { group = "org.graalvm.sdk", name = "jniutils", version.ref = "graal" }
+graal-icu = { group = "org.graalvm.shadowed", name = "icu4j", version.ref = "graal" }
+graal-xz = { group = "org.graalvm.shadowed", name = "xz", version.ref = "graal" }
 
 # Fabric
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
 fabric-kotlin = { group = "net.fabricmc", name = "fabric-language-kotlin", version.ref = "fabric-kotlin" }
 fabric-permissions = { group = "me.lucko", name = "fabric-permissions-api", version.ref = "fabric-permissions-api" }
-adorn-fabric = { group = "maven.modrinth", name = "adorn", version = "QbzMhTAO"}
 lambDynamicLights = { group = "dev.lambdaurora.lambdynamiclights", name = "lambdynamiclights-api", version.ref = "lambDynamicLights"}
-jei-fabric = { group = "mezz.jei", name = "jei-1.21.1-fabric", version.ref = "jei-api"}
+jei-fabric = { group = "mezz.jei", name = "jei-26.3-fabric", version.ref = "jei-api"}
 fabric-debugutils = { group = "maven.modrinth", name = "debugutils", version.ref = "debugutils-fabric"}
 mod-menu = { group = "com.terraformersmc", name = "modmenu", version.ref = "mod-menu" }
-c2me-fabric = { group = "maven.modrinth", name = "c2me-fabric", version.ref = "c2me-fabric" }
 
 # NeoForge
 neoforge-api = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
-neo-kotlin-forge = { group = "thedarkcolour", name = "kotlinforforge-neoforge", version.ref = "neo-kotlin-for-forge" }
 neoforge-debugutils = { group = "maven.modrinth", name = "debugutils", version.ref = "debugutils-forge"}
-jei-neoforge = { group = "mezz.jei", name = "jei-1.21.1-neoforge", version.ref = "jei-api"}
-c2me-neoforge = { group = "maven.modrinth", name = "c2me-neoforge", version.ref = "c2me-neoforge" }
+jei-neoforge = { group = "mezz.jei", name = "jei-26.3-neoforge", version.ref = "jei-api"}
 
 # Data Storage
 mongo-driver-core = { group = "org.mongodb", name = "mongodb-driver-core", version.ref = "mongo" }
 mongo-driver-sync = { group = "org.mongodb", name = "mongodb-driver-sync", version.ref = "mongo" }
+mongo-bson = { group = "org.mongodb", name = "bson", version.ref = "mongo" }
+mongo-bson-record-codec = { group = "org.mongodb", name = "bson-record-codec", version.ref = "mongo" }
 
 # Testing
 junit-fabric = { group = "net.fabricmc", name = "fabric-loader-junit", version.ref = "fabric-loader" }
@@ -109,11 +108,11 @@ classgraph = { group = "io.github.classgraph", name = "classgraph", version.ref 
 [bundles]
 kotlin = [ "kotlin-stdlib", "kotlin-reflect" ]
 fabric = [ "fabric-kotlin", "fabric-permissions" ]
-common-integrations-compileOnly = [ "adorn-fabric", "jei-api" ]
+common-integrations-compileOnly = [ "jei-api" ]
 fabric-integrations-implementation = [ "mod-menu" ]
-fabric-integrations-runtimeOnly = [ "jei-fabric", "c2me-fabric" ]
-neoforge-integrations-runtimeOnly = [ "jei-neoforge", "c2me-neoforge" ]
-mongo = [ "mongo-driver-core", "mongo-driver-sync" ]
+fabric-integrations-runtimeOnly = [ "jei-fabric" ]
+neoforge-integrations-runtimeOnly = [ "jei-neoforge" ]
+mongo = [ "mongo-driver-core", "mongo-driver-sync", "mongo-bson", "mongo-bson-record-codec" ]
 unitTesting = [ "junit-fabric", "junit-params", "mockito-core", "mock-kotlin", "classgraph" ]
 
-graal = [ "graal-core", "graal-sdk", "graal-regex", "graal-truffle", "icu4j" ]
+graal = [ "graal-polyglot", "graal-language", "graal-regex", "graal-truffle-api", "graal-truffle-runtime", "graal-truffle-compiler", "graal-collections", "graal-nativeimage", "graal-word", "graal-jniutils", "graal-icu", "graal-xz" ]

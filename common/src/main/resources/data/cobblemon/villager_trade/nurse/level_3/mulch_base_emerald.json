@@ -1,0 +1,13 @@
+{
+  "wants": {
+    "id": "cobblemon:mulch_base",
+    "count": 4
+  },
+  "gives": {
+    "id": "minecraft:emerald",
+    "count": 2
+  },
+  "max_uses": 16,
+  "xp": 20,
+  "reputation_discount": 0.05
+}

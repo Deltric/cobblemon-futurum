@@ -8,10 +8,9 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
 import com.cobblemon.mod.common.CobblemonBlocks
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.PrimitiveCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import kotlin.collections.getValue
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -63,25 +62,14 @@ class CoinPouchBlock(settings: Properties, val small: Boolean) : HorizontalDirec
         return null
     }
 
-    override fun codec(): MapCodec<out HorizontalDirectionalBlock> {
-        return CODEC
-    }
-
     @Deprecated("Deprecated in Java")
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
 
         return if (direction == state.getValue(FACING) && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-            else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+            else super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
@@ -95,17 +83,12 @@ class CoinPouchBlock(settings: Properties, val small: Boolean) : HorizontalDirec
         return true
     }
 
-    override fun getFluidState(blockState: BlockState): FluidState? {
+    override fun getFluidState(blockState: BlockState): FluidState {
         return if (blockState.getValue(WATERLOGGED)) Fluids.WATER.getSource(false) else super.getFluidState(blockState);
     }
 
     companion object {
         val NATURAL: BooleanProperty = BooleanProperty.create("natural")
-
-        val CODEC: MapCodec<CoinPouchBlock> = RecordCodecBuilder.mapCodec { it.group(
-            propertiesCodec(),
-            PrimitiveCodec.BOOL.fieldOf("small").forGetter(CoinPouchBlock::small)
-        ).apply(it, ::CoinPouchBlock) }
 
         private val SMALL_SHAPE = Shapes.box(0.3125, 0.0, 0.3125, 0.6875, 0.3125, 0.6875)
     }

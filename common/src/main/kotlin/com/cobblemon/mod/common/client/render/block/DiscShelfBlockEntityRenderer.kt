@@ -17,21 +17,22 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LevelRenderer
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.Direction
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.FastColor
+import net.minecraft.resources.Identifier
+import net.minecraft.util.ARGB
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.BlockAndTintGetter
+import net.minecraft.world.level.BlockAndLightGetter
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import org.joml.Matrix4f
 
 class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
-        BlockEntityRenderer<DiscShelfBlockEntity> {
+        GeometryBlockEntityRenderer<DiscShelfBlockEntity>() {
 
     private val slotWidthPixels = 6
     private val slotHeightPixels = 2
@@ -48,11 +49,11 @@ class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
     private val tmOverlayTexture = cobblemonResource("textures/block/disc_shelf/technical_machine_overlay.png")
     private val musicDiscUnknownTexture = cobblemonResource("textures/block/disc_shelf/music_disc_unknown.png")
 
-    override fun render(
+    override fun extractGeometry(
         entity: DiscShelfBlockEntity,
         partialTicks: Float,
         poseStack: PoseStack,
-        buffer: MultiBufferSource,
+        buffer: ModelGeometry.Builder,
         light: Int,
         overlay: Int
     ) {
@@ -65,14 +66,14 @@ class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
             else -> 0f
         }
 
-        val lightGetter = entity.level as? BlockAndTintGetter
+        val lightGetter = entity.level as? BlockAndLightGetter
         val packedLight = lightGetter?.let {
-            LevelRenderer.getLightColor(it, entity.blockPos.relative(facing))
+            net.minecraft.util.LightCoordsUtil.getLightCoords(it, entity.blockPos.relative(facing))
         } ?: if (light != 0) light else 0xF000F0
 
         poseStack.pushPose()
         poseStack.translate(0.5, 0.5, 0.5)
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation))
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation))
         poseStack.translate(-0.5, -0.5, -0.5)
 
         val slotWidth = slotWidthPixels / textureSize
@@ -151,8 +152,8 @@ class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
 
     private fun renderSlotQuad(
             poseStack: PoseStack,
-            buffer: MultiBufferSource,
-            texture: ResourceLocation,
+            buffer: ModelGeometry.Builder,
+            texture: Identifier,
             color: Int,
             light: Int,
             width: Float,
@@ -160,15 +161,15 @@ class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
             tint: Boolean,
             useTextRenderType: Boolean
     ) {
-        val renderType = if (useTextRenderType) RenderType.text(texture) else RenderType.entityCutout(texture)
+        val renderType = if (useTextRenderType) RenderTypes.text(texture) else RenderTypes.entityCutoutCull(texture)
         val consumer: VertexConsumer = buffer.getBuffer(renderType)
         val matrix: Matrix4f = poseStack.last().pose()
 
         val (rBase, gBase, bBase, a) = if (tint) {
             listOf(
-                    FastColor.ARGB32.red(color) / 255f,
-                    FastColor.ARGB32.green(color) / 255f,
-                    FastColor.ARGB32.blue(color) / 255f,
+                    ARGB.red(color) / 255f,
+                    ARGB.green(color) / 255f,
+                    ARGB.blue(color) / 255f,
                     1.0f
             )
         } else listOf(1f, 1f, 1f, 1f)
@@ -186,7 +187,7 @@ class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
                 .setUv1(0, 0).setUv2(light and 0xFFFF, light shr 16).setNormal(0f, 0f, -1f)
     }
 
-    private fun getItemTexture(itemStack: ItemStack): ResourceLocation {
+    private fun getItemTexture(itemStack: ItemStack): Identifier {
         val id = BuiltInRegistries.ITEM.getKey(itemStack.item)
         val resource = cobblemonResource("textures/block/disc_shelf/${id.path}.png")
 

@@ -16,93 +16,24 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Rende
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.VaryingModelRepository
 import com.cobblemon.mod.common.entity.PoseType
 import com.cobblemon.mod.common.util.toHex
-import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.platform.Lighting
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.BufferUploader
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.Tesselator
-import com.mojang.blaze3d.vertex.VertexFormat
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.util.LightCoordsUtil
+import net.minecraft.client.renderer.rendertype.RenderTypes
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.ModelPreviewRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.FormattedCharSequence
-import org.joml.Matrix4f
-import org.joml.Vector3f
-
-@JvmOverloads
-fun blitk(
-    matrixStack: PoseStack,
-    texture: ResourceLocation? = null,
-    x: Number,
-    y: Number,
-    height: Number = 0,
-    width: Number = 0,
-    uOffset: Number = 0,
-    vOffset: Number = 0,
-    textureWidth: Number = width,
-    textureHeight: Number = height,
-    blitOffset: Number = 0,
-    red: Number = 1,
-    green: Number = 1,
-    blue: Number = 1,
-    alpha: Number = 1F,
-    blend: Boolean = true,
-    scale: Float = 1F
-) {
-    RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-    texture?.run { RenderSystem.setShaderTexture(0, this) }
-    if (blend) {
-        RenderSystem.enableBlend()
-        RenderSystem.defaultBlendFunc()
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-    }
-    RenderSystem.setShaderColor(red.toFloat(), green.toFloat(), blue.toFloat(), alpha.toFloat())
-    matrixStack.pushPose()
-    matrixStack.scale(scale, scale, 1F)
-    drawRectangle(
-        matrixStack.last().pose(),
-        x.toFloat(), y.toFloat(), x.toFloat() + width.toFloat(), y.toFloat() + height.toFloat(),
-        blitOffset.toFloat(),
-        uOffset.toFloat() / textureWidth.toFloat(), (uOffset.toFloat() + width.toFloat()) / textureWidth.toFloat(),
-        vOffset.toFloat() / textureHeight.toFloat(), (vOffset.toFloat() + height.toFloat()) / textureHeight.toFloat()
-    )
-    matrixStack.popPose()
-    RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-}
-
-fun drawRectangle(
-    matrix: Matrix4f,
-    x: Float,
-    y: Float,
-    endX: Float,
-    endY: Float,
-    blitOffset: Float,
-    minU: Float,
-    maxU: Float,
-    minV: Float,
-    maxV: Float
-) {
-    val bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX)
-    bufferbuilder.addVertex(matrix, x, endY, blitOffset).setUv(minU, maxV)
-    bufferbuilder.addVertex(matrix, endX, endY, blitOffset).setUv(maxU, maxV)
-    bufferbuilder.addVertex(matrix, endX, y, blitOffset).setUv(maxU, minV)
-    bufferbuilder.addVertex(matrix, x, y, blitOffset).setUv(minU, minV)
-    BufferUploader.drawWithShader(bufferbuilder.buildOrThrow())
-}
 
 @JvmOverloads
 fun drawCenteredText(
-    context: GuiGraphics,
-    font: ResourceLocation? = null,
+    context: GuiGraphicsExtractor,
+    font: Identifier? = null,
     text: Component,
     x: Number,
     y: Number,
@@ -111,13 +42,13 @@ fun drawCenteredText(
 ) {
     val comp = (text as MutableComponent).let { if (font != null) it.font(font) else it }
     val textRenderer = Minecraft.getInstance().font
-    context.drawString(textRenderer, comp, x.toInt() - textRenderer.width(comp) / 2, y.toInt(), colour, shadow)
+    context.text(textRenderer, comp, x.toInt() - textRenderer.width(comp) / 2, y.toInt(), textColour(colour), shadow)
 }
 
 @JvmOverloads
 fun drawText(
-    context: GuiGraphics,
-    font: ResourceLocation? = null,
+    context: GuiGraphicsExtractor,
+    font: Identifier? = null,
     text: MutableComponent,
     x: Number,
     y: Number,
@@ -127,14 +58,14 @@ fun drawText(
     pMouseX: Number? = null,
     pMouseY: Number? = null
 ): Boolean {
-    val comp = if (font == null) text else text.setStyle(text.style.withFont(font))
+    val comp = if (font == null) text else text.font(font)
     val textRenderer = Minecraft.getInstance().font
     var x = x
     val width = textRenderer.width(comp)
     if (centered) {
         x = x.toDouble() - width / 2
     }
-    context.drawString(textRenderer, comp, x.toInt(), y.toInt(), colour, shadow)
+    context.text(textRenderer, comp, x.toInt(), y.toInt(), textColour(colour), shadow)
     var isHovered = false
     if (pMouseY != null && pMouseX != null) {
         if (pMouseX.toInt() >= x.toInt() && pMouseX.toInt() <= x.toInt() + width &&
@@ -148,8 +79,8 @@ fun drawText(
 
 @JvmOverloads
 fun drawTextJustifiedRight(
-    context: GuiGraphics,
-    font: ResourceLocation? = null,
+    context: GuiGraphicsExtractor,
+    font: Identifier? = null,
     text: MutableComponent,
     x: Number,
     y: Number,
@@ -158,12 +89,12 @@ fun drawTextJustifiedRight(
 ) {
     val comp = text.let { if (font != null) it.font(font) else it }
     val font = Minecraft.getInstance().font
-    context.drawString(font, comp, x.toInt() - font.width(comp), y.toInt(), colour, shadow)
+    context.text(font, comp, x.toInt() - font.width(comp), y.toInt(), textColour(colour), shadow)
 }
 
 @JvmOverloads
 fun drawText(
-    context: GuiGraphics,
+    context: GuiGraphicsExtractor,
     text: FormattedCharSequence,
     x: Number,
     y: Number,
@@ -177,32 +108,32 @@ fun drawText(
         val width = textRenderer.width(text)
         tweakedX = tweakedX.toDouble() - width / 2
     }
-    context.drawString(textRenderer, text, tweakedX.toInt(), y.toInt(), colour, shadow)
+    context.text(textRenderer, text, tweakedX.toInt(), y.toInt(), textColour(colour), shadow)
 }
 
 @JvmOverloads
 fun drawString(
-    context: GuiGraphics,
+    context: GuiGraphicsExtractor,
     text: String,
     x: Number,
     y: Number,
     colour: Int,
     shadow: Boolean = true,
-    font: ResourceLocation? = null
+    font: Identifier? = null
 ) {
     val comp = Component.literal(text).also {
         font?.run {
-            it.toFlatList(it.style.withFont(this))
+            it.font(this)
         }
     }
     val textRenderer = Minecraft.getInstance().font
-    context.drawString(textRenderer, comp, x.toInt(), y.toInt(), colour, shadow)
+    context.text(textRenderer, comp, x.toInt(), y.toInt(), textColour(colour), shadow)
 }
 
 @JvmOverloads
 fun drawPosablePortrait(
-    identifier: ResourceLocation,
-    matrixStack: PoseStack,
+    identifier: Identifier,
+    context: GuiGraphicsExtractor,
     scale: Float = 13F,
     contextScale: Float = 1F,
     reversed: Boolean = false,
@@ -219,7 +150,8 @@ fun drawPosablePortrait(
     b: Float = 1F,
     a: Float = 1F
 ) {
-    RenderSystem.applyModelViewMatrix()
+    val matrixStack = PoseStack()
+    val geometry = ModelGeometry.Builder()
     matrixStack.pushPose()
     matrixStack.translate(0.0, PORTRAIT_DIAMETER.toDouble() + 2.0, 0.0)
     matrixStack.scale(scale, scale, -scale)
@@ -232,16 +164,16 @@ fun drawPosablePortrait(
         state.currentModel = model
         val texture = VaryingModelRepository.getTexture(identifier, state)
 
-        val context = RenderContext()
-        model.context = context
-        VaryingModelRepository.getTextureNoSubstitute(identifier, state).let { context.put(RenderContext.TEXTURE, it) }
-        context.put(RenderContext.SCALE, contextScale)
-        context.put(RenderContext.SPECIES, identifier)
-        context.put(RenderContext.ASPECTS, state.currentAspects)
-        context.put(RenderContext.POSABLE_STATE, state)
-        context.put(RenderContext.DO_QUIRKS, doQuirks)
+        val renderContext = RenderContext()
+        model.context = renderContext
+        VaryingModelRepository.getTextureNoSubstitute(identifier, state).let { renderContext.put(RenderContext.TEXTURE, it) }
+        renderContext.put(RenderContext.SCALE, contextScale)
+        renderContext.put(RenderContext.SPECIES, identifier)
+        renderContext.put(RenderContext.ASPECTS, state.currentAspects)
+        renderContext.put(RenderContext.POSABLE_STATE, state)
+        renderContext.put(RenderContext.DO_QUIRKS, doQuirks)
 
-        val renderType = RenderType.entityCutout(texture)
+        val renderType = RenderTypes.entityCutoutCull(texture)
 
         val quaternion1 = Axis.YP.rotationDegrees(-32F * if (reversed) -1F else 1F)
         val quaternion2 = Axis.XP.rotationDegrees(5F)
@@ -258,42 +190,36 @@ fun drawPosablePortrait(
             model.portraitTranslation.z - 4
         )
         matrixStack.scale(model.portraitScale, model.portraitScale, 1 / model.portraitScale)
-        matrixStack.mulPose(quaternion1)
-        matrixStack.mulPose(quaternion2)
+        matrixStack.rotate(quaternion1)
+        matrixStack.rotate(quaternion2)
 
-        val light1 = Vector3f(0.2F, 1.0F, -1.0F)
-        val light2 = Vector3f(0.1F, 0.0F, 8.0F)
-        RenderSystem.setShaderLights(light1, light2)
-        quaternion1.conjugate()
-
-        val immediate = Minecraft.getInstance().renderBuffers().bufferSource()
-        val buffer = immediate.getBuffer(renderType)
-        val packedLight = LightTexture.pack(11, 7)
+        val buffer = geometry.getBuffer(renderType)
+        val packedLight = LightCoordsUtil.pack(11, 7)
 
         val colour = toHex(r, g, b, a)
-        model.withLayerContext(immediate, state, VaryingModelRepository.getLayers(identifier, state)) {
-            model.render(context, matrixStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, colour)
-            immediate.endBatch()
+        model.withLayerContext(geometry, state, VaryingModelRepository.getLayers(identifier, state)) {
+            model.render(renderContext, matrixStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, colour)
         }
 
         model.setDefault()
 
-        Lighting.setupFor3DItems()
     } else {
-        renderSprite(matrixStack, sprite)
+        renderSprite(matrixStack, sprite, geometry)
     }
 
     matrixStack.popPose()
+    ModelPreviewRenderState.extract(context, geometry.build(), ModelPreviewRenderState.LightingMode.PORTRAIT)
 }
 
 fun drawProfile(
-    resourceIdentifier: ResourceLocation,
-    matrixStack: PoseStack,
+    resourceIdentifier: Identifier,
+    context: GuiGraphicsExtractor,
     state: PosableState,
     partialTicks: Float,
     scale: Float = 20F
 ) {
-    RenderSystem.applyModelViewMatrix()
+    val matrixStack = PoseStack()
+    val geometry = ModelGeometry.Builder()
     matrixStack.scale(scale, scale, -scale)
 
     val sprite = VaryingModelRepository.getSprite(resourceIdentifier, state, SpriteType.PROFILE)
@@ -303,16 +229,16 @@ fun drawProfile(
         val model = VaryingModelRepository.getPoser(resourceIdentifier, state)
         val texture = VaryingModelRepository.getTexture(resourceIdentifier, state)
 
-        val context = RenderContext()
-        model.context = context
-        VaryingModelRepository.getTextureNoSubstitute(resourceIdentifier, state).let { context.put(RenderContext.TEXTURE, it) }
-        context.put(RenderContext.SCALE, 1F)
-        context.put(RenderContext.SPECIES, resourceIdentifier)
-        context.put(RenderContext.ASPECTS, state.currentAspects)
-        context.put(RenderContext.POSABLE_STATE, state)
+        val renderContext = RenderContext()
+        model.context = renderContext
+        VaryingModelRepository.getTextureNoSubstitute(resourceIdentifier, state).let { renderContext.put(RenderContext.TEXTURE, it) }
+        renderContext.put(RenderContext.SCALE, 1F)
+        renderContext.put(RenderContext.SPECIES, resourceIdentifier)
+        renderContext.put(RenderContext.ASPECTS, state.currentAspects)
+        renderContext.put(RenderContext.POSABLE_STATE, state)
         state.currentModel = model
 
-        val renderType = RenderType.entityCutout(texture)//model.getLayer(texture)
+        val renderType = RenderTypes.entityCutoutCull(texture)//model.getLayer(texture)
 
         state.setPoseToFirstSuitable(PoseType.PORTRAIT)
         state.updatePartialTicks(partialTicks)
@@ -326,44 +252,34 @@ fun drawProfile(
 //    matrixStack.multiply(rotation)
         val quaternion1 = Axis.YP.rotationDegrees(-32F * if (false) -1F else 1F)
         val quaternion2 = Axis.XP.rotationDegrees(5F)
-        matrixStack.mulPose(quaternion1)
-        matrixStack.mulPose(quaternion2)
-        Lighting.setupForEntityInInventory()
-        val entityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
-        entityRenderDispatcher.setRenderShadow(true)
+        matrixStack.rotate(quaternion1)
+        matrixStack.rotate(quaternion2)
+        val buffer = geometry.getBuffer(renderType)
+        val packedLight = LightCoordsUtil.pack(11, 7)
 
-        val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
-        val buffer = bufferSource.getBuffer(renderType)
-        val light1 = Vector3f(-1F, 1F, 1.0F)
-        val light2 = Vector3f(1.3F, -1F, 1.0F)
-        RenderSystem.setShaderLights(light1, light2)
-        val packedLight = LightTexture.pack(11, 7)
-
-        model.withLayerContext(bufferSource, state, VaryingModelRepository.getLayers(resourceIdentifier, state)) {
-            model.render(context, matrixStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, -0x1)
-            bufferSource.endBatch()
+        model.withLayerContext(geometry, state, VaryingModelRepository.getLayers(resourceIdentifier, state)) {
+            model.render(renderContext, matrixStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, -0x1)
         }
         model.setDefault()
-        entityRenderDispatcher.setRenderShadow(true)
-        Lighting.setupFor3DItems()
     } else {
-        renderSprite(matrixStack, sprite)
+        renderSprite(matrixStack, sprite, geometry)
     }
+    ModelPreviewRenderState.extract(context, geometry.build())
 }
 
-fun renderSprite(matrixStack: PoseStack, sprite: ResourceLocation) {
-    val matrix: PoseStack.Pose = matrixStack.last()
-    matrix.pose().translate(-1f, 0f, 0f)
-
-    RenderSystem.setShaderTexture(0, sprite)
-    RenderSystem.setShader(GameRenderer::getPositionTexShader)
-
-    val buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX)
-
-    buffer.addVertex(matrix, 2f, 0f, 0.0f).setUv(1f, 0f)
-    buffer.addVertex(matrix, 0f, 0f, 0.0f).setUv(0f, 0f)
-    buffer.addVertex(matrix, 0f, 2f, 0.0f).setUv(0f, 1f)
-    buffer.addVertex(matrix, 2f, 2f, 0.0f).setUv(1f, 1f)
-
-    BufferUploader.drawWithShader(buffer.buildOrThrow())
+/** Captures the sprite alternative in the same 3D coordinate system as model previews. */
+fun renderSprite(matrixStack: PoseStack, sprite: Identifier, geometry: ModelGeometry.Builder) {
+    matrixStack.pushPose()
+    matrixStack.translate(-1f, 0f, 0f)
+    val matrix = matrixStack.last()
+    val buffer = geometry.getBuffer(RenderTypes.entityTranslucentEmissive(sprite))
+    for ((x, y, u, v) in arrayOf(
+        floatArrayOf(2f, 0f, 1f, 0f), floatArrayOf(0f, 0f, 0f, 0f),
+        floatArrayOf(0f, 2f, 0f, 1f), floatArrayOf(2f, 2f, 1f, 1f)
+    )) {
+        buffer.addVertex(matrix, x, y, 0f).setColor(-1).setUv(u, v)
+            .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT)
+            .setNormal(matrix, 0f, 0f, 1f)
+    }
+    matrixStack.popPose()
 }

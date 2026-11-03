@@ -150,9 +150,9 @@ open class Move(
 
     companion object {
         fun loadFromNBT(nbt: CompoundTag): Move {
-            val moveName = nbt.getString(DataKeys.POKEMON_MOVESET_MOVENAME)
+            val moveName = nbt.getStringOr(DataKeys.POKEMON_MOVESET_MOVENAME, "")
             val template = Moves.getByNameOrDummy(moveName)
-            return template.create(nbt.getInt(DataKeys.POKEMON_MOVESET_MOVEPP), nbt.getInt(DataKeys.POKEMON_MOVESET_RAISED_PP_STAGES))
+            return template.create(nbt.getIntOr(DataKeys.POKEMON_MOVESET_MOVEPP, 0), nbt.getIntOr(DataKeys.POKEMON_MOVESET_RAISED_PP_STAGES, 0))
         }
 
         fun loadFromJSON(json: JsonObject): Move {

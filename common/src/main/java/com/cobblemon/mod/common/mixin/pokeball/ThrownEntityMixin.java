@@ -15,7 +15,7 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ThrowableProjectile.class)
 public abstract class ThrownEntityMixin extends Entity {
@@ -24,8 +24,8 @@ public abstract class ThrownEntityMixin extends Entity {
         super(type, world);
     }
 
-    @ModifyVariable(method = "tick", at = @At("STORE"), ordinal = 0)
-    private float cobblemon$waterDragModifier(float value) {
+    @ModifyArg(method = "applyInertia", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;scale(D)Lnet/minecraft/world/phys/Vec3;"), index = 0)
+    private double cobblemon$waterDragModifier(double value) {
         if (this.isInWater() && this instanceof WaterDragModifier) {
             return ((WaterDragModifier) this).waterDrag();
         }

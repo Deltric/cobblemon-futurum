@@ -11,22 +11,22 @@ package com.cobblemon.mod.common.advancement.criterion
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.server.level.ServerPlayer
 import java.util.Optional
 
 class LevelUpContext(val level: Int, val pokemon: Pokemon)
 
 class LevelUpCriterion(
-    playerCtx: Optional<ContextAwarePredicate>,
+    playerCtx: Optional<Holder<LootItemCondition>>,
     val level: Int,
     val evolved: Boolean
 ): SimpleCriterionCondition<LevelUpContext>(playerCtx) {
 
     companion object {
         val CODEC: Codec<LevelUpCriterion> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(LevelUpCriterion::playerCtx),
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(LevelUpCriterion::playerCtx),
             Codec.INT.optionalFieldOf("level", 0).forGetter(LevelUpCriterion::level),
             Codec.BOOL.optionalFieldOf("has_evolved", true).forGetter(LevelUpCriterion::evolved)
         ).apply(it, ::LevelUpCriterion) }

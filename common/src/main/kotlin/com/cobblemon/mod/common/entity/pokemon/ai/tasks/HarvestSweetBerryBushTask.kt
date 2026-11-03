@@ -19,7 +19,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.ai.memory.MemoryStatus
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
-import net.minecraft.world.level.GameRules
+import net.minecraft.world.level.gamerules.GameRules
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.CaveVines
@@ -73,8 +73,8 @@ class HarvestSweetBerryBushTask : Behavior<LivingEntity>(
         startTime += 1
         if (startTime == WAIT_TIME) {
             entity as PokemonEntity
-            val world = entity.level()
-            if (!world.gameRules.getRule(GameRules.RULE_MOBGRIEFING).get()) {
+            val world = entity.level() as ServerLevel
+            if (!world.gameRules.get(GameRules.MOB_GRIEFING)) {
                 return
             }
             val blockPos = entity.brain.getMemory(CobblemonMemories.NEARBY_SWEET_BERRY_BUSH).get()

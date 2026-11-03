@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:gold_ingot"
-    },
-    "X": {
-      "tag": "cobblemon:apples"
-    }
+    "#": "minecraft:gold_ingot",
+    "X": "#cobblemon:apples"
   },
   "pattern": [
     "###",

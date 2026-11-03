@@ -21,7 +21,7 @@ import com.cobblemon.mod.common.net.messages.server.npc.SaveNPCPacket
 import com.cobblemon.mod.common.util.asTranslated
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.world.entity.LivingEntity
 
@@ -81,7 +81,7 @@ class NPCEditorScreen(
                 alignRight = true
             ) {
                 SaveNPCPacket(npcId, dto).sendToServer()
-                this.minecraft!!.setScreen(null)
+                this.minecraft!!.gui.setScreen(null)
             }
         )
 
@@ -92,28 +92,26 @@ class NPCEditorScreen(
                 label = lang("ui.entity.behaviour_editor"),
             ) {
                 val entity = this.minecraft!!.level!!.getEntity(npcId) as? LivingEntity ?: return@NPCEditorButton // Unlikely
-                minecraft!!.setScreen(BehaviourEditorScreen(entity = entity, appliedBehaviours = dto.behaviours))
+                minecraft!!.gui.setScreen(BehaviourEditorScreen(entity = entity, appliedBehaviours = dto.behaviours))
             }
         )
 
         addRenderableWidget(ConfigVariableList(leftX + 134, topY + 35, this))
     }
 
-    override fun renderBlurredBackground(delta: Float) {}
+    override fun extractBlurredBackground(context: GuiGraphicsExtractor) {}
 
-    override fun renderMenuBackground(context: GuiGraphics) {}
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) {}
 
     override fun isPauseScreen() = false
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        blitk(
-            matrixStack = context.pose(),
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        blitk(context = context,
             texture = baseResource,
             x = leftX,
             y = topY,
             height = BASE_HEIGHT,
-            width = BASE_WIDTH
-        )
+            width = BASE_WIDTH)
 
         var extendedId = npcId.toString()
         while (extendedId.length < 12) extendedId = "0$extendedId"
@@ -126,6 +124,6 @@ class NPCEditorScreen(
             shadow = true
         )
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
     }
 }

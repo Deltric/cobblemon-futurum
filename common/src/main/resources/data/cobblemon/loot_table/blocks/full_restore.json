@@ -6,54 +6,48 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "cobblemon:full_restore",
+          "modifier": [
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:full_restore",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "2"
-                  }
-                }
-              ],
               "count": 2.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:full_restore",
+                "state": {
+                  "amount": "2"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:full_restore",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "3"
-                  }
-                }
-              ],
               "count": 3.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:full_restore",
+                "state": {
+                  "amount": "3"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:full_restore",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "4"
-                  }
-                }
-              ],
               "count": 4.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:full_restore",
+                "state": {
+                  "amount": "4"
+                }
+              }
             },
             {
-              "function": "minecraft:explosion_decay"
+              "type": "minecraft:explosion_decay"
             }
-          ],
-          "name": "cobblemon:full_restore"
+          ]
         }
       ],
       "rolls": 1.0

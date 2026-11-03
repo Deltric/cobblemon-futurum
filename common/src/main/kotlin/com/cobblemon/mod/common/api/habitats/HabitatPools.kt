@@ -27,7 +27,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.File
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.PackType
@@ -41,7 +41,7 @@ object HabitatPools : JsonDataRegistry<HabitatPool> {
     override val resourcePath = "habitat_pools"
 
     override val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(ResourceLocation::class.java, IdentifierAdapter)
+        .registerTypeAdapter(Identifier::class.java, IdentifierAdapter)
         .registerTypeAdapter(SpawnablePositionType::class.java, RegisteredSpawnablePositionAdapter)
         .registerTypeAdapter(Species::class.java, SpeciesAdapter)
         .registerTypeAdapter(IntRange::class.java, IntRangeAdapter)
@@ -51,10 +51,10 @@ object HabitatPools : JsonDataRegistry<HabitatPool> {
         .setPrettyPrinting()
         .create()
 
-    private val datapacked = mutableMapOf<ResourceLocation, HabitatPool>()
-    private val worldSaved = mutableMapOf<ResourceLocation, HabitatPool>()
+    private val datapacked = mutableMapOf<Identifier, HabitatPool>()
+    private val worldSaved = mutableMapOf<Identifier, HabitatPool>()
 
-    val habitatPoolsById = mutableMapOf<ResourceLocation, HabitatPool>()
+    val habitatPoolsById = mutableMapOf<Identifier, HabitatPool>()
 
     private lateinit var worldSavedPoolsFolder: File
 
@@ -67,7 +67,7 @@ object HabitatPools : JsonDataRegistry<HabitatPool> {
         }
 
         worldSavedPoolsFolder.listFiles { it.endsWith(".json") }.forEach {
-            val identifier = ResourceLocation.parse(it.nameWithoutExtension)
+            val identifier = Identifier.parse(it.nameWithoutExtension)
             val habitat = gson.fromJson<HabitatPool>(it.reader())
             habitat.id = identifier
             habitat.validate()
@@ -77,7 +77,7 @@ object HabitatPools : JsonDataRegistry<HabitatPool> {
         setupHabitatPoolsById()
     }
 
-    override fun reload(data: Map<ResourceLocation, HabitatPool>) {
+    override fun reload(data: Map<Identifier, HabitatPool>) {
         datapacked.clear()
         datapacked.putAll(data)
         data.entries.forEach { (identifier, habitat) ->

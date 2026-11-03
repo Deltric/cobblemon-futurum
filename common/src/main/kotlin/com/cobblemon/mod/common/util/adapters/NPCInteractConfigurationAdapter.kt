@@ -18,14 +18,14 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import java.lang.reflect.Type
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 object NPCInteractConfigurationAdapter : JsonDeserializer<NPCInteractConfiguration> {
     override fun deserialize(json: JsonElement, typeOfT: Type, ctx: JsonDeserializationContext): NPCInteractConfiguration {
         when (json) {
             is JsonPrimitive -> {
                 val config = json.asString
-                val resourceLocation = ResourceLocation.tryParse(config)
+                val resourceLocation = Identifier.tryParse(config)
                 return if (resourceLocation != null) {
                     ScriptNPCInteractionConfiguration().apply { script = resourceLocation }
                 } else {

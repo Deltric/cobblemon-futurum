@@ -13,7 +13,7 @@ import com.cobblemon.mod.common.pokemon.ai.EntityBehaviour;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.animal.Fox;
+import net.minecraft.world.entity.animal.fox.Fox;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;

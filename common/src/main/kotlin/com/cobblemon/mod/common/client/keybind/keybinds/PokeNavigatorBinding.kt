@@ -18,12 +18,12 @@ import com.mojang.blaze3d.platform.InputConstants
 // ToDo PartyOverlay#render needs to be replaced back to this keybind
 object PokeNavigatorBinding : CobblemonPartyLockedKeyBinding(
     "key.cobblemon.pokenavigator",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_N,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {
     override fun onPress() {
-        // Minecraft.getInstance().setScreen(PokeNav())
+        // Minecraft.getInstance().gui.setScreen(PokeNav())
         try {
             Summary.open(CobblemonClient.storage.party.slots, true, CobblemonClient.storage.selectedSlot)
         } catch (e: Exception) {

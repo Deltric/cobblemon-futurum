@@ -14,7 +14,7 @@ import com.mojang.blaze3d.platform.InputConstants
 
 object HidePartyBinding : CobblemonKeyBinding(
     "key.cobblemon.hideparty",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_O,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {

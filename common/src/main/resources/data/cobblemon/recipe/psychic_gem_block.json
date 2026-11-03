@@ -6,9 +6,7 @@
     "##"
   ],
   "key": {
-    "#": {
-      "item": "cobblemon:psychic_gem"
-    }
+    "#": "cobblemon:psychic_gem"
   },
   "result": {
     "id": "cobblemon:psychic_gem_block",

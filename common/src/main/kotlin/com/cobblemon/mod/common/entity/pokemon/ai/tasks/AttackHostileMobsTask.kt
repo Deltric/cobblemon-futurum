@@ -17,7 +17,7 @@ import net.minecraft.world.entity.ai.behavior.declarative.Trigger
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.monster.Creeper
 import net.minecraft.world.entity.monster.Enemy
-import net.minecraft.world.entity.monster.Slime
+import net.minecraft.world.entity.monster.cubemob.Slime
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin
 
 object AttackHostileMobsTask {

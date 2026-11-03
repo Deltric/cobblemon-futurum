@@ -34,7 +34,7 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import org.joml.Quaternionf
@@ -151,7 +151,7 @@ class BattleTargetSelection(
             ArrowDirection.DOWN -> Pair(this.x + TARGET_WIDTH / 2 - 4F, this.y - 7)
         }
 
-        fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+        fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
             val passedSeconds = CobblemonClient.battleOverlay.passedSeconds // This syncs the role throbbers
             val selectConditionOpacity = targetSelection.opacity * if (!selectable) 0.5F else 1F
             val matrices = context.pose()
@@ -159,16 +159,14 @@ class BattleTargetSelection(
             val isHovered = isHovered(mouseX.toDouble(), mouseY.toDouble())
 
             // Render Base tile texture
-            blitk(
-                matrixStack = matrices,
-                texture = if (selectable) targetTileTexture else targetTileTextureDisabled,
-                x = x,
-                y = y,
-                width = TARGET_WIDTH,
-                height = TARGET_HEIGHT,
-                vOffset = if (selectable && isHovered) TARGET_HEIGHT else 0,
-                textureHeight = if (selectable) TARGET_HEIGHT * 2 else TARGET_HEIGHT
-            )
+            blitk(context = context,
+            texture = if (selectable) targetTileTexture else targetTileTextureDisabled,
+            x = x,
+            y = y,
+            width = TARGET_WIDTH,
+            height = TARGET_HEIGHT,
+            vOffset = if (selectable && isHovered) TARGET_HEIGHT else 0,
+            textureHeight = if (selectable) TARGET_HEIGHT * 2 else TARGET_HEIGHT)
 
             // Target Selection Arrows
             if (selectable && isHovered) {
@@ -179,51 +177,45 @@ class BattleTargetSelection(
                     ArrowDirection.UP -> Pair(arrowPosition.first, arrowPosition.second - offset)
                     ArrowDirection.DOWN -> Pair(arrowPosition.first, arrowPosition.second + offset)
                 }
-                blitk(
-                    matrixStack = matrices,
-                    texture = arrowTexture,
-                    x = pos.first * 2,
-                    y = pos.second * 2,
-                    scale = 0.5F,
-                    height = if (arrowDirection == ArrowDirection.LEFT || arrowDirection ==  ArrowDirection.RIGHT) 17 else 10,
-                    width = if (arrowDirection == ArrowDirection.LEFT || arrowDirection ==  ArrowDirection.RIGHT) 10 else 17
-                )
+                blitk(context = context,
+            texture = arrowTexture,
+            x = pos.first * 2,
+            y = pos.second * 2,
+            scale = 0.5F,
+            height = if (arrowDirection == ArrowDirection.LEFT || arrowDirection ==  ArrowDirection.RIGHT) 17 else 10,
+            width = if (arrowDirection == ArrowDirection.LEFT || arrowDirection ==  ArrowDirection.RIGHT) 10 else 17)
             }
 
             // Target name
             if (battlePokemon.hpValue > 0) {
                 // Render Pokémon
-                matrices.pushPose()
-                matrices.translate(x + TARGET_WIDTH - (25 / 2.0) - 2, y + 5.0, 0.0)
-                matrices.scale(2.5F, 2.5F, 1F)
+                matrices.pushMatrix()
+                matrices.translate((x + TARGET_WIDTH - (25 / 2.0) - 2).toFloat(), (y + 5.0).toFloat())
+                matrices.scale((2.5F).toFloat(), (2.5F).toFloat())
                 // Grab aspects for right variant
                 state.currentAspects = battlePokemon.state.currentAspects
-                drawProfilePokemon(
-                    species = battlePokemon.species.resourceIdentifier,
-                    matrixStack = matrices,
-                    rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
-                    state = state,
-                    scale = 4.5F,
-                    partialTicks = delta
-                )
-                matrices.popPose()
+                drawProfilePokemon(species = battlePokemon.species.resourceIdentifier,
+                context = context,
+                rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
+                state = state,
+                scale = 4.5F,
+                partialTicks = delta)
+                matrices.popMatrix()
 
                 // Battle Role Upper
                 val stage = floor((passedSeconds / BattleOverlay.ROLE_CYCLE_SECONDS % 1) * 5)
                 if (!isCurrentPokemon || stage != 4.0) {
-                    blitk(
-                        matrixStack = matrices,
-                        texture = battleRoleUpper,
-                        x = x + 6,
-                        y = y + 1,
-                        width = 27,
-                        height = 3,
-                        textureHeight = 12,
-                        vOffset = if (isCurrentPokemon) stage * 3 else  9,
-                        red = rgb.first,
-                        green = rgb.second,
-                        blue = rgb.third
-                    )
+                    blitk(context = context,
+            texture = battleRoleUpper,
+            x = x + 6,
+            y = y + 1,
+            width = 27,
+            height = 3,
+            textureHeight = 12,
+            vOffset = if (isCurrentPokemon) stage * 3 else  9,
+            red = rgb.first,
+            green = rgb.second,
+            blue = rgb.third)
                 }
 
                 // Target Level
@@ -277,17 +269,15 @@ class BattleTargetSelection(
                 }
 
                 // Lower Battle Role
-                blitk(
-                    matrixStack = matrices,
-                    texture = battleRoleLower,
-                    x = x + 4,
-                    y = y + 29,
-                    width = 82,
-                    height = 3,
-                    red = rgb.first,
-                    green = rgb.second,
-                    blue = rgb.third
-                )
+                blitk(context = context,
+            texture = battleRoleLower,
+            x = x + 4,
+            y = y + 29,
+            width = 82,
+            height = 3,
+            red = rgb.first,
+            green = rgb.second,
+            blue = rgb.third)
 
                 // Actor Display Name
                 drawScaledText(
@@ -323,17 +313,15 @@ class BattleTargetSelection(
         }
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
 
         // Draw Background
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = underlayTexture,
             x = x,
             y = y,
             width = Minecraft.getInstance().window.guiScaledWidth,
-            height = BACKGROUND_HEIGHT
-        )
+            height = BACKGROUND_HEIGHT)
 
         // Draw Title Text
         val text = lang("battle.select_target")
@@ -348,10 +336,13 @@ class BattleTargetSelection(
         )
 
         targetTiles.forEach {
-            it.render(context, mouseX, mouseY, delta)
+            it.extractRenderState(context, mouseX, mouseY, delta)
         }
-        backButton.render(context, mouseX, mouseY, delta)
+        backButton.extractRenderState(context, mouseX, mouseY, delta)
     }
+
+    override fun isActionHovered(mouseX: Double, mouseY: Double): Boolean =
+        targetTiles.any { it.isHovered(mouseX, mouseY) } || backButton.isHovered(mouseX, mouseY)
 
     override fun mousePrimaryClicked(mouseX: Double, mouseY: Double): Boolean {
         val target = targetTiles.find { it.isHovered(mouseX, mouseY) }

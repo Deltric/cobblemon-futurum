@@ -34,17 +34,17 @@ object PartyTutorialToasts {
     val downKey = DownShiftPartyBinding.boundKey()
 
     val upDisplay =
-        if (upKey.type == InputConstants.Type.KEYSYM && upKey.value == InputConstants.KEY_UP)
+        if (upKey.type == InputConstants.Type.KEYBOARD && upKey.value == InputConstants.KEY_UP)
             Component.literal("↑")
         else upKey.displayName
 
     val downDisplay =
-        if (downKey.type == InputConstants.Type.KEYSYM && downKey.value == InputConstants.KEY_DOWN)
+        if (downKey.type == InputConstants.Type.KEYBOARD && downKey.value == InputConstants.KEY_DOWN)
             Component.literal("↓")
         else downKey.displayName
 
     private val toast = CobblemonToast(
-        Mth.createInsecureUUID(),
+        java.util.UUID.randomUUID(),
         listOf(CobblemonItems.POKEDEX_RED.defaultInstance),
         lang("ui.party.party_select_title").red(),
         lang(
@@ -88,7 +88,7 @@ object PartyTutorialToasts {
         val minecraft = Minecraft.getInstance()
         if (!toastAttached) {
             toast.nextVisibility = Toast.Visibility.SHOW
-            minecraft.toasts.addToast(toast)
+            minecraft.gui.toastManager().addToast(toast)
             toastAttached = true
         }
     }

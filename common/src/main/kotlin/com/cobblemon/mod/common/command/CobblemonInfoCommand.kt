@@ -56,8 +56,8 @@ object CobblemonInfoCommand {
                         .append(Component.literal(CobblemonBuildDetails.smallCommitHash()).withStyle {
                             val link = "https://gitlab.com/cable-mc/cobblemon/-/commit/${CobblemonBuildDetails.GIT_COMMIT}"
 
-                            it.withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(link)))
-                                .withClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, link))
+                            it.withHoverEvent(HoverEvent.ShowText(Component.literal(link)))
+                                .withClickEvent(ClickEvent.OpenUrl(java.net.URI.create(link)))
                         })
 
                     message.append(this.NEW_LINE)
@@ -66,7 +66,7 @@ object CobblemonInfoCommand {
                         .append(this.SPACE)
                         .append(CobblemonBuildDetails.BRANCH)
 
-                    ctx.source.sendSystemMessage(message)
+                    ctx.source?.sendSystemMessage(message)
                     0
                 }
             )

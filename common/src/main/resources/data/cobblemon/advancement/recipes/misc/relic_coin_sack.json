@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/misc",
-  "rewards": {
-    "recipes": [
-      "cobblemon:relic_coin_sack"
-    ]
-  },
-  "criteria": {
-    "has_pouch": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:relic_coin_pouch"
-            ]
-          }
+    "parent": "cobblemon:recipes/misc",
+    "rewards": {
+        "recipes": [
+            "cobblemon:relic_coin_sack"
         ]
-      }
     },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "cobblemon:relic_coin_sack"
-      }
-    }
-  },
-  "requirements": [
-    [
-      "has_pouch",
-      "has_the_recipe"
+    "criteria": {
+        "has_pouch": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:relic_coin_pouch"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipes": [
+                    "cobblemon:relic_coin_sack"
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_pouch",
+            "has_the_recipe"
+        ]
     ]
-  ]
 }

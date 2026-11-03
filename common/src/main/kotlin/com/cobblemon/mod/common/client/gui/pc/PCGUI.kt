@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.pc
 
+import net.minecraft.client.input.KeyEvent
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.pokemon.PokemonSortMode
@@ -43,20 +45,20 @@ import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.toAssetPath
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundEvent
 import kotlin.isInitialized
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class PCGUI(
     val pc: ClientPC,
     val party: ClientParty,
     val configuration: PCGUIConfiguration,
     val openOnBox: Int = CobblemonClient.lastPcBoxViewed,
-    val unseenWallpapers: MutableSet<ResourceLocation> = mutableSetOf()
+    val unseenWallpapers: MutableSet<Identifier> = mutableSetOf()
 ) : Screen(Component.translatable("cobblemon.ui.pc.title")), CobblemonRenderable {
 
     companion object {
@@ -128,9 +130,15 @@ class PCGUI(
     var selectPointerOffsetIncrement = false
     var displayOptions = false
 
-    override fun renderBlurredBackground(delta: Float) {}
+    // These controls are rendered over storage but registered after it. Native
+    // screen dispatch chooses the first hovered child even if it rejects a click.
+    internal fun isStorageOverlayHovered(mouseX: Double, mouseY: Double): Boolean =
+        (::wallpaperWidget.isInitialized && wallpaperWidget.isMouseOver(mouseX, mouseY)) ||
+            optionButtons.any { it.isMouseOver(mouseX, mouseY) }
 
-    override fun renderMenuBackground(context: GuiGraphics) {}
+    override fun extractBlurredBackground(context: GuiGraphicsExtractor) {}
+
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) {}
 
     override fun init() {
         val x = (width - BASE_WIDTH) / 2
@@ -268,7 +276,7 @@ class PCGUI(
                     label = "sort_${typeName}"
                 ) {
                     storageWidget.resetSelected()
-                    SortPCBoxPacket(pc.uuid, storageWidget.box, sortType, hasShiftDown()).sendToServer()
+                    SortPCBoxPacket(pc.uuid, storageWidget.box, sortType, Minecraft.getInstance().hasShiftDown()).sendToServer()
                 }.also {
                     it.visible = displayOptions
                     optionButtons.add(it)
@@ -314,46 +322,40 @@ class PCGUI(
         super.init()
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
-        renderBackground(context, mouseX, mouseY, delta)
 
         val x = (width - BASE_WIDTH) / 2
         val y = (height - BASE_HEIGHT) / 2
 
         // Render Portrait Background
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = portraitBackgroundResource,
             x = x + 6,
             y = y + 27,
             width = PORTRAIT_SIZE,
-            height = PORTRAIT_SIZE
-        )
+            height = PORTRAIT_SIZE)
 
         // Render Model Portrait
         if (search.passes(previewPokemon)) {
-            modelWidget?.render(context, mouseX, mouseY, delta)
+            modelWidget?.extractRenderState(context, mouseX, mouseY, delta)
         }
 
         // Render Base Resource
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = baseResource,
-            x = x, y = y,
+            x = x,
+            y = y,
             width = BASE_WIDTH,
-            height = BASE_HEIGHT
-        )
+            height = BASE_HEIGHT)
 
         // Render Info Box
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = if (currentStatIndex > 0) infoBoxStatResource else infoBoxResource,
             x = x + 9,
             y = y + 128,
             width = INFO_BOX_WIDTH,
-            height = INFO_BOX_HEIGHT
-        )
+            height = INFO_BOX_HEIGHT)
 
         val labelX = x + 9 + (INFO_BOX_WIDTH / 2)
         // Render Info Labels
@@ -415,25 +417,21 @@ class PCGUI(
             val status = pokemon.status?.status
             if (pokemon.isFainted() || status != null) {
                 val statusName = if (pokemon.isFainted()) "fnt" else status?.showdownName
-                blitk(
-                    matrixStack = matrices,
-                    texture = cobblemonResource("textures/gui/battle/battle_status_$statusName.png"),
-                    x = x + 34,
-                    y = y + 1,
-                    height = 7,
-                    width = 39,
-                    uOffset = 35,
-                    textureWidth = 74
-                )
+                blitk(context = context,
+            texture = cobblemonResource("textures/gui/battle/battle_status_$statusName.png"),
+            x = x + 34,
+            y = y + 1,
+            height = 7,
+            width = 39,
+            uOffset = 35,
+            textureWidth = 74)
 
-                blitk(
-                    matrixStack = matrices,
-                    texture = cobblemonResource("textures/gui/summary/status_trim.png"),
-                    x = x + 34,
-                    y = y + 2,
-                    height = 6,
-                    width = 3
-                )
+                blitk(context = context,
+            texture = cobblemonResource("textures/gui/summary/status_trim.png"),
+            x = x + 34,
+            y = y + 2,
+            height = 6,
+            width = 3)
 
                 drawScaledText(
                     context = context,
@@ -465,15 +463,13 @@ class PCGUI(
 
             // Poké Ball
             val ballResource = pokemon.caughtBall.name.toAssetPath("textures/item/poke_balls/", ".png")
-            blitk(
-                matrixStack = matrices,
-                texture = ballResource,
-                x = (x + 3.5) / SCALE,
-                y = (y + 12) / SCALE,
-                width = 16,
-                height = 16,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = ballResource,
+            x = (x + 3.5) / SCALE,
+            y = (y + 12) / SCALE,
+            width = 16,
+            height = 16,
+            scale = SCALE)
 
             drawScaledText(
                 context = context,
@@ -503,8 +499,8 @@ class PCGUI(
             val itemX = x + 3
             val itemY = y + 98
             if (!displayedItem.isEmpty) {
-                context.renderItem(displayedItem, itemX, itemY)
-                context.renderItemDecorations(Minecraft.getInstance().font, displayedItem, itemX, itemY)
+                context.item(displayedItem, itemX, itemY)
+                context.itemDecorations(Minecraft.getInstance().font, displayedItem, itemX, itemY)
             }
 
             drawScaledText(
@@ -517,26 +513,22 @@ class PCGUI(
 
             // Shiny Icon
             if (pokemon.shiny) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = Summary.iconShinyResource,
-                    x = (x + 62.5) / SCALE,
-                    y = (y + 28.5) / SCALE,
-                    width = 16,
-                    height = 16,
-                    scale = SCALE
-                )
+                blitk(context = context,
+            texture = Summary.iconShinyResource,
+            x = (x + 62.5) / SCALE,
+            y = (y + 28.5) / SCALE,
+            width = 16,
+            height = 16,
+            scale = SCALE)
             }
 
-            blitk(
-                matrixStack = matrices,
-                texture = if (pokemon.secondaryType != null) typeSpacerDoubleResource else typeSpacerSingleResource,
-                x = (x + 9) / SCALE,
-                y = (y + 118.5) / SCALE,
-                width = TYPE_SPACER_WIDTH,
-                height = TYPE_SPACER_HEIGHT,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = if (pokemon.secondaryType != null) typeSpacerDoubleResource else typeSpacerSingleResource,
+            x = (x + 9) / SCALE,
+            y = (y + 118.5) / SCALE,
+            width = TYPE_SPACER_WIDTH,
+            height = TYPE_SPACER_HEIGHT,
+            scale = SCALE)
 
             TypeIcon(
                 x = x + 40.5,
@@ -643,52 +635,44 @@ class PCGUI(
             }
 
         } else {
-            blitk(
-                matrixStack = matrices,
-                texture = typeSpacerResource,
-                x = (x + 7) / SCALE,
-                y = (y + 118.5) / SCALE,
-                width = TYPE_SPACER_WIDTH,
-                height = TYPE_SPACER_HEIGHT,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = typeSpacerResource,
+            x = (x + 7) / SCALE,
+            y = (y + 118.5) / SCALE,
+            width = TYPE_SPACER_WIDTH,
+            height = TYPE_SPACER_HEIGHT,
+            scale = SCALE)
         }
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = topSpacerResource,
             x = (x + 86.5) / SCALE,
             y = (y + 13) / SCALE,
             width = PC_SPACER_WIDTH,
             height = PC_SPACER_HEIGHT,
-            scale = SCALE
-        )
+            scale = SCALE)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = bottomSpacerResource,
             x = (x + 86.5) / SCALE,
             y = (y + 189) / SCALE,
             width = PC_SPACER_WIDTH,
             height = PC_SPACER_HEIGHT,
-            scale = SCALE
-        )
+            scale = SCALE)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = rightSpacerResource,
             x = (x + 275.5) / SCALE,
             y = (y + 184) / SCALE,
             width = 64,
             height = 24,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         if (!optionButtons.isEmpty() && displayOptions) {
-            for (button in optionButtons) button.showAlt = hasShiftDown()
+            for (button in optionButtons) button.showAlt = Minecraft.getInstance().hasShiftDown()
         }
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
 
         // Item Tooltip
         if (pokemon != null) {
@@ -697,23 +681,23 @@ class PCGUI(
             val itemY = y + 98
             if (!displayedItem.isEmpty) {
                 val itemHovered = mouseX.toFloat() in (itemX.toFloat()..(itemX.toFloat() + 16)) && mouseY.toFloat() in (itemY.toFloat()..(itemY.toFloat() + 16))
-                if (itemHovered) context.renderTooltip(Minecraft.getInstance().font, displayedItem, mouseX, mouseY)
+                if (itemHovered) context.setTooltipForNextFrame(Minecraft.getInstance().font, displayedItem, mouseX, mouseY)
             }
         }
     }
 
     fun closeNormally(unlink: Boolean = true) {
         playSound(CobblemonSounds.PC_OFF)
-        Minecraft.getInstance().setScreen(null)
+        Minecraft.getInstance().gui.setScreen(null)
         if (unlink) {
             UnlinkPlayerFromPCPacket().sendToServer()
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         // Trigger child component function as they will need to check the entire screen click area
-        if (::boxNameWidget.isInitialized) boxNameWidget.mouseClicked(mouseX, mouseY, button)
-        return super.mouseClicked(mouseX, mouseY, button)
+        if (::boxNameWidget.isInitialized) boxNameWidget.mouseClicked(event, doubleClick)
+        return super.mouseClicked(event, doubleClick)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, amount: Double, verticalAmount: Double): Boolean {
@@ -721,7 +705,6 @@ class PCGUI(
             if (pasture.pastureScrollList.isHovered) pasture.pastureScrollList.mouseScrolled(mouseX, mouseY, amount, verticalAmount)
         }
         if (storageWidget.isHovered && mouseX < (storageWidget.x + StorageWidget.SCREEN_WIDTH)) this.storageWidget.box -= verticalAmount.toInt()
-        if (::wallpaperWidget.isInitialized && wallpaperWidget.isHovered) wallpaperWidget.mouseScrolled(mouseX, mouseY, amount, verticalAmount)
 
         val infoBoxX = ((width - BASE_WIDTH) / 2) + 9
         val infoBoxY = ((height - BASE_HEIGHT) / 2) + 128
@@ -735,22 +718,23 @@ class PCGUI(
         return super.mouseScrolled(mouseX, mouseY, amount, verticalAmount)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
         storageWidget.pastureWidget?.let { pasture ->
-            if (pasture.pastureScrollList.isHovered) pasture.pastureScrollList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+            if (pasture.pastureScrollList.isHovered) pasture.pastureScrollList.mouseDragged(event, deltaX, deltaY)
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(event: KeyEvent): Boolean {
+        val keyCode = event.key()
         val boxNameFocused = this::boxNameWidget.isInitialized && boxNameWidget.isFocused
         val filterFocused = this::filterWidget.isInitialized && filterWidget.isFocused
 
-        if (isInventoryKeyPressed(minecraft, keyCode, scanCode) && !boxNameFocused && !filterFocused) {
+        if (isInventoryKeyPressed(minecraft, event) && !boxNameFocused && !filterFocused) {
             saveMarkings(isPreviewInParty ?: false)
             playSound(CobblemonSounds.PC_OFF)
             UnlinkPlayerFromPCPacket().sendToServer()
-            Minecraft.getInstance().setScreen(null)
+            Minecraft.getInstance().gui.setScreen(null)
             return true
         }
 
@@ -777,12 +761,12 @@ class PCGUI(
             }
         } else if (keyCode == InputConstants.KEY_ESCAPE) {
             // Escape from text box
-            if (::boxNameWidget.isInitialized) boxNameWidget.keyPressed(keyCode, scanCode, modifiers)
+            if (::boxNameWidget.isInitialized) boxNameWidget.keyPressed(event)
             this.focused = null
             return true
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 
     /**

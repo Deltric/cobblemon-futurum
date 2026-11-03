@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.net.messages.client.battle
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle
 import com.cobblemon.mod.common.api.battles.model.actor.ActorType

@@ -16,15 +16,14 @@ import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate
 import net.minecraft.world.level.levelgen.placement.PlacementContext
 import net.minecraft.world.level.levelgen.placement.PlacementModifier
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType
-import java.util.stream.Stream
+import java.util.function.Consumer
 
 class LocatePredicatePlacementModifier(
     val predicate: BlockPredicate,
     val maxTries: Int,
     val xzRange: Int,
     val yRange: Int
-) : PlacementModifier() {
+) : PlacementModifier {
     companion object {
         val MODIFIER_CODEC: MapCodec<LocatePredicatePlacementModifier> = RecordCodecBuilder.mapCodec { instance ->
             instance.group(
@@ -38,19 +37,20 @@ class LocatePredicatePlacementModifier(
             }
         }
     }
-    override fun getPositions(
+    override fun modify(
         context: PlacementContext,
         random: RandomSource,
-        pos: BlockPos
-    ): Stream<BlockPos> {
+        pos: BlockPos,
+        output: Consumer<BlockPos>
+    ) {
         for (i in 0..maxTries) {
             val newPos = pos.offset(random.nextIntBetweenInclusive(0, xzRange), random.nextIntBetweenInclusive(-yRange, yRange), random.nextIntBetweenInclusive(0, xzRange))
             if (predicate.test(context.level, newPos)) {
-                return Stream.of(newPos)
+                output.accept(newPos)
+                return
             }
         }
-        return Stream.empty()
     }
 
-    override fun type(): PlacementModifierType<*> = CobblemonPlacementModifierTypes.LOCATE_PREDICATE
+    override fun codec(): MapCodec<LocatePredicatePlacementModifier> = MODIFIER_CODEC
 }

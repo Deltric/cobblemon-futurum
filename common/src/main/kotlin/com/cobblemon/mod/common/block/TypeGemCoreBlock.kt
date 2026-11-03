@@ -16,7 +16,7 @@ import com.cobblemon.mod.common.block.TypeGemClusterBlock.Companion.STUNTED
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
 import net.minecraft.world.level.BlockGetter
@@ -37,26 +37,26 @@ class TypeGemCoreBlock(properties: Properties) : Block(properties) {
         // Upper safety check to prevent infinite loops
         const val MAX_FORCE_GROW_ATTEMPTS = 64
 
-        val BLOCK_TO_CLUSTER: Map<ResourceLocation, Block> by lazy {
+        val BLOCK_TO_CLUSTER: Map<Identifier, Block> by lazy {
             mapOf(
-                ResourceLocation.parse("cobblemon:normal_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_NORMAL,
-                ResourceLocation.parse("cobblemon:fire_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FIRE,
-                ResourceLocation.parse("cobblemon:water_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_WATER,
-                ResourceLocation.parse("cobblemon:electric_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_ELECTRIC,
-                ResourceLocation.parse("cobblemon:grass_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_GRASS,
-                ResourceLocation.parse("cobblemon:ice_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_ICE,
-                ResourceLocation.parse("cobblemon:fighting_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FIGHTING,
-                ResourceLocation.parse("cobblemon:poison_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_POISON,
-                ResourceLocation.parse("cobblemon:ground_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_GROUND,
-                ResourceLocation.parse("cobblemon:flying_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FLYING,
-                ResourceLocation.parse("cobblemon:psychic_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_PSYCHIC,
-                ResourceLocation.parse("cobblemon:bug_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_BUG,
-                ResourceLocation.parse("cobblemon:rock_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_ROCK,
-                ResourceLocation.parse("cobblemon:ghost_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_GHOST,
-                ResourceLocation.parse("cobblemon:dragon_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_DRAGON,
-                ResourceLocation.parse("cobblemon:dark_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_DARK,
-                ResourceLocation.parse("cobblemon:steel_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_STEEL,
-                ResourceLocation.parse("cobblemon:fairy_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FAIRY
+                Identifier.parse("cobblemon:normal_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_NORMAL,
+                Identifier.parse("cobblemon:fire_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FIRE,
+                Identifier.parse("cobblemon:water_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_WATER,
+                Identifier.parse("cobblemon:electric_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_ELECTRIC,
+                Identifier.parse("cobblemon:grass_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_GRASS,
+                Identifier.parse("cobblemon:ice_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_ICE,
+                Identifier.parse("cobblemon:fighting_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FIGHTING,
+                Identifier.parse("cobblemon:poison_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_POISON,
+                Identifier.parse("cobblemon:ground_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_GROUND,
+                Identifier.parse("cobblemon:flying_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FLYING,
+                Identifier.parse("cobblemon:psychic_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_PSYCHIC,
+                Identifier.parse("cobblemon:bug_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_BUG,
+                Identifier.parse("cobblemon:rock_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_ROCK,
+                Identifier.parse("cobblemon:ghost_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_GHOST,
+                Identifier.parse("cobblemon:dragon_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_DRAGON,
+                Identifier.parse("cobblemon:dark_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_DARK,
+                Identifier.parse("cobblemon:steel_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_STEEL,
+                Identifier.parse("cobblemon:fairy_gem_block") to CobblemonBlocks.TYPE_GEM_CLUSTER_FAIRY
             )
         }
 

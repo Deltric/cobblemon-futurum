@@ -1,0 +1,34 @@
+{
+  "type": "cobblemon:random_patch",
+  "tries": 20,
+  "xz_spread": 3,
+  "y_spread": 0,
+  "feature": {
+    "feature": "cobblemon:hearty_grains/hearty_grains",
+    "placement": [
+      {
+        "type": "minecraft:block_predicate_filter",
+        "predicate": {
+          "type": "minecraft:would_survive",
+          "state": {
+            "id": "cobblemon:hearty_grains",
+            "properties": {
+              "waterlogged": "true",
+              "age": "6",
+              "half": "lower"
+            }
+          }
+        }
+      },
+      {
+        "type": "minecraft:block_predicate_filter",
+        "predicate": {
+          "type": "minecraft:matching_fluids",
+          "fluids": [
+            "minecraft:water"
+          ]
+        }
+      }
+    ]
+  }
+}

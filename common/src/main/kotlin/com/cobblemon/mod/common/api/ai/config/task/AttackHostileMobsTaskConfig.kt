@@ -28,6 +28,6 @@ class AttackHostileMobsTaskConfig : SingleTaskConfig {
     }
     
     companion object {
-        val CODEC: Codec<AttackHostileMobsTaskConfig> = Codec.unit(AttackHostileMobsTaskConfig())
+        val CODEC: Codec<AttackHostileMobsTaskConfig> = com.mojang.serialization.MapCodec.unitCodec(AttackHostileMobsTaskConfig())
     }
 }

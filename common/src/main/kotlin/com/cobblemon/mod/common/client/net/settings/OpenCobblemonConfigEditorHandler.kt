@@ -15,6 +15,6 @@ import net.minecraft.client.Minecraft
 
 object OpenCobblemonConfigEditorHandler : ClientNetworkPacketHandler<OpenCobblemonConfigScreenPacket> {
     override fun handle(packet: OpenCobblemonConfigScreenPacket, client: Minecraft) {
-        client.setScreen(CobblemonConfigScreen(Minecraft.getInstance().screen))
+        client.gui.setScreen(CobblemonConfigScreen(Minecraft.getInstance().gui.screen()))
     }
 }

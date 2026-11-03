@@ -20,10 +20,10 @@ import com.cobblemon.mod.common.util.readString
 import com.cobblemon.mod.common.util.writeString
 import com.google.common.collect.HashBiMap
 import com.google.gson.*
-import net.minecraft.advancements.critereon.ItemPredicate
+import net.minecraft.advancements.predicates.ItemPredicate
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.LowerCaseEnumTypeAdapterFactory
+import net.minecraft.resources.Identifier
+import com.cobblemon.mod.common.util.adapters.LowerCaseEnumTypeAdapterFactory
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 
@@ -72,7 +72,7 @@ object CobblemonRequirementAdapter : RequirementAdapter {
 
     val gson: Gson by lazy {
         GsonBuilder()
-            .registerTypeAdapter(ResourceLocation::class.java, IdentifierAdapter)
+            .registerTypeAdapter(Identifier::class.java, IdentifierAdapter)
             .registerTypeAdapter(PokemonProperties::class.java, pokemonPropertiesShortAdapter)
             .registerTypeAdapter(ItemPredicate::class.java, LegacyItemConditionWrapperAdapter)
             .registerTypeAdapter(Requirement::class.java, CobblemonRequirementAdapter)

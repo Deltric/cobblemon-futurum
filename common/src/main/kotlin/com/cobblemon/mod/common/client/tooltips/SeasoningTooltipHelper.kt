@@ -9,7 +9,6 @@
 package com.cobblemon.mod.common.client.tooltips
 
 import com.cobblemon.mod.common.CobblemonItemComponents
-import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.cobblemon.mod.common.api.cooking.Flavour
 import com.cobblemon.mod.common.api.cooking.Seasonings
 import com.cobblemon.mod.common.api.fishing.SpawnBait
@@ -45,17 +44,8 @@ val mobEffectHeader by lazy { lang("seasoning_mob_effect_header").gray() }
 val rideBoostSeasoningHeader by lazy { lang("seasoning_ride_boosts_info_header").blue() }
 
 private fun recipeUsesProcessor(stack: ItemStack, processorType: String): Boolean {
-    val level = Minecraft.getInstance().level ?: return false
-    val recipeManager = level.recipeManager
-
-    val allCookingRecipes = recipeManager.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_COOKING) +
-            recipeManager.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_SHAPELESS)
-
-    return allCookingRecipes
-        .any { recipe ->
-            stack.item == recipe.value.result.item &&
-                    recipe.value.seasoningProcessors.any { it.type == processorType }
-        }
+    if (Minecraft.getInstance().level == null) return false
+    return SeasoningRecipeIndex.usesProcessor(stack, processorType)
 }
 
 fun itemTakesSeasoningData(stack: ItemStack): Boolean {

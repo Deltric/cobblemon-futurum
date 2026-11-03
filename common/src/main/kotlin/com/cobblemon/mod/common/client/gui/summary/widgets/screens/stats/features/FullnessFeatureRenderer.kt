@@ -14,7 +14,7 @@ import com.cobblemon.mod.common.client.gui.summary.featurerenderers.BarSummarySp
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class FullnessFeatureRenderer(
     val selectedPokemon: Pokemon
@@ -28,20 +28,19 @@ class FullnessFeatureRenderer(
     selectedPokemon.getMaxFullness(),
     selectedPokemon.currentFullness
 ) {
-    override fun render(guiGraphics: GuiGraphics, x: Float, y: Float, pokemon: Pokemon): Boolean {
+    override fun render(guiGraphics: GuiGraphicsExtractor, x: Float, y: Float, pokemon: Pokemon): Boolean {
         renderElement(guiGraphics, x, y, pokemon)
         return true
     }
 
-    override fun renderBar(guiGraphics: GuiGraphics, x: Float, y: Float, barValue: Int, barRatio: Float, barWidth: Int) {
+    override fun renderBar(guiGraphics: GuiGraphicsExtractor, x: Float, y: Float, barValue: Int, barRatio: Float, barWidth: Int) {
         val (red, green, blue) = when {
             barRatio <= 0.33 -> Triple(120F/255F, 200F/255F, 80F/255F) // Green
             barRatio <= 0.66 -> Triple(240F/255F, 200F/255F, 65F/255F) // Yellow
             else -> Triple(230F/255F, 80F/255F, 65F/255F) // Red
         }
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = CobblemonResources.WHITE,
             x = x + 3,
             y = y + 13,
@@ -49,7 +48,6 @@ class FullnessFeatureRenderer(
             width = barWidth,
             red = red,
             green = green,
-            blue = blue
-        )
+            blue = blue)
     }
 }

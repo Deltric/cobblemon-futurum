@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.level.block.BonemealSource
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.block.entity.BerryBlockEntity
@@ -73,17 +74,17 @@ class BugwortBlock(settings: Properties) : CropBlock(settings), BonemealableBloc
 
     // These 3 are still around for the sake of compatibility, vanilla won't trigger it but some mods might
     // We implement applyGrowth & getGrowthAmount for them
-    override fun isValidBonemealTarget(world: LevelReader, pos: BlockPos, state: BlockState) = state.getValue(BugwortBlock.AGE) < BugwortBlock.MATURE_AGE
+    override fun isValidBonemealTarget(world: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource) = state.getValue(BugwortBlock.AGE) < BugwortBlock.MATURE_AGE
 
-    override fun isBonemealSuccess(world: Level, random: RandomSource, pos: BlockPos, state: BlockState) = true
+    override fun isBonemealSuccess(world: Level, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) = true
 
-    override fun performBonemeal(world: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
+    override fun performBonemeal(world: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         world.setBlock(pos, state.setValue(AGE, state.getValue(AGE) + 1), 2)
     }
 
     override fun canSurvive(state: BlockState, world: LevelReader, pos: BlockPos): Boolean {
         val floor = world.getBlockState(pos.below())
-        return (world.getRawBrightness(pos, 0) >= 8 || world.canSeeSky(pos)) && ((this.isWild(state) && (floor.`is`(BlockTags.DIRT) || floor.`is`(Blocks.FARMLAND)) || this.mayPlaceOn(floor, world, pos)))
+        return (world.getRawBrightness(pos, 0) >= 8 || world.canSeeSky(pos)) && ((this.isWild(state) && (floor.`is`(BlockTags.SUBSTRATE_OVERWORLD) || floor.`is`(Blocks.FARMLAND)) || this.mayPlaceOn(floor, world, pos)))
     }
 
     fun isWild(state: BlockState): Boolean = state.getValue(IS_WILD)
@@ -91,7 +92,7 @@ class BugwortBlock(settings: Properties) : CropBlock(settings), BonemealableBloc
         val blockPos = pos!!.below()
         val down = pos.below()
         val floor = world.getBlockState(down)
-        return floor.`is`(BlockTags.DIRT) || floor.`is`(Blocks.FARMLAND)
+        return floor.`is`(BlockTags.SUBSTRATE_OVERWORLD) || floor.`is`(Blocks.FARMLAND)
     }
 
     // TODO after 1.7
@@ -110,7 +111,7 @@ class BugwortBlock(settings: Properties) : CropBlock(settings), BonemealableBloc
 //                world.playSound(null, pos, CobblemonSounds.BERRY_HARVEST, SoundSource.BLOCKS, 0.4F, 1F)
 //                world.setBlock(pos, state.setValue(this.ageProperty, (0).coerceAtMost(this.maxAge)), UPDATE_CLIENTS)
 //                Block.popResource(world, pos, ItemStack(CobblemonItems.BUGWORT, Random.nextInt(2, 4)))
-//                return InteractionResult.sidedSuccess(world.isClientSide)
+//                return if (world.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
 //            }
 //        }
 //        return super.useWithoutItem(state, world, pos, player, hit)

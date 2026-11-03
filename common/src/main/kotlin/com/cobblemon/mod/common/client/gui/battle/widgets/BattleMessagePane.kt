@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.battle.widgets
 
+import com.cobblemon.mod.common.api.gui.scrollAmount
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.client.battle.ClientBattleMessageQueue
@@ -15,7 +17,7 @@ import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.util.FormattedCharSequence
 
@@ -47,10 +49,10 @@ class BattleMessagePane(
         //setRenderBackground(false)
 
         messageQueue.subscribe {
-            val fullyScrolledDown = maxScroll - scrollAmount < 10
+            val fullyScrolledDown = maxScrollAmount() - scrollAmount < 10
             addEntry(BattleMessageLine(this, it))
             if (fullyScrolledDown) {
-                scrollAmount = maxScroll.toDouble()
+                scrollAmount = maxScrollAmount().toDouble()
             }
         }
     }
@@ -85,67 +87,58 @@ class BattleMessagePane(
         return super.getRowLeft() + 4
     }
 
-    override fun renderSelection(guiGraphics: GuiGraphics, top: Int, width: Int, height: Int, outerColor: Int, innerColor: Int) {
-        blitk(
-            matrixStack = guiGraphics.pose(),
+    override fun extractSelection(guiGraphics: GuiGraphicsExtractor, entry: BattleMessageLine, outlineColor: Int) {
+        val top = entry.contentY
+        blitk(context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6,
             y = top - 2,
             height = 10,
             width = 1,
-            alpha = opacity
-        )
+            alpha = opacity)
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6,
             y = top - 2,
             height = 1,
             width = LINE_WIDTH,
-            alpha = opacity
-        )
+            alpha = opacity)
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6,
             y = top + 7,
             height = 1,
             width = LINE_WIDTH,
-            alpha = opacity
-        )
+            alpha = opacity)
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6 + LINE_WIDTH - 1,
             y = top - 2,
             height = 10,
             width = 1,
-            alpha = opacity
-        )
+            alpha = opacity)
     }
 
     override fun getRowWidth(): Int {
         return LINE_WIDTH
     }
 
-    override fun getScrollbarPosition(): Int {
+    override fun scrollBarX(): Int {
         return this.x + 154
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         correctSize()
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = if (expanded) battleMessagePaneFrameExpandedResource else battleMessagePaneFrameResource,
             x = this.x,
             y = appropriateY,
             height = if (expanded) FRAME_EXPANDED_HEIGHT else FRAME_HEIGHT,
             width = FRAME_WIDTH,
-            alpha = opacity
-        )
+            alpha = opacity)
 
         val textBoxHeight = if (expanded) TEXT_BOX_HEIGHT * 2 else TEXT_BOX_HEIGHT
         context.enableScissor(
@@ -154,11 +147,13 @@ class BattleMessagePane(
             this.x + 5 + width,
             appropriateY + 6 + textBoxHeight
         )
-        super.renderWidget(context, mouseX, mouseY, partialTicks)
+        super.extractWidgetRenderState(context, mouseX, mouseY, partialTicks)
         context.disableScissor()
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         val toggleOffsetY = if (expanded) 92 else 46
         if (mouseX > (this.x + 160) && mouseX < (this.x + 160 + EXPAND_TOGGLE_SIZE) && mouseY > (appropriateY + toggleOffsetY) && mouseY < (appropriateY + toggleOffsetY + EXPAND_TOGGLE_SIZE)) {
             expanded = !expanded
@@ -170,43 +165,35 @@ class BattleMessagePane(
             isDragging = true
         }
 
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+        val mouseY = event.y()
         if (scrolling) {
             if (mouseY < this.y) {
                 scrollAmount = 0.0
             } else if (mouseY > bottom) {
-                scrollAmount = maxScroll.toDouble()
+                scrollAmount = maxScrollAmount().toDouble()
             } else {
                 scrollAmount += deltaY
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     private fun updateScrollingState(mouseX: Double, mouseY: Double) {
-        scrolling = mouseX >= this.scrollbarPosition.toDouble()
-                && mouseX < (this.scrollbarPosition + 3).toDouble()
+        scrolling = mouseX >= this.scrollBarX().toDouble()
+                && mouseX < (this.scrollBarX() + 3).toDouble()
                 && mouseY >= this.y
                 && mouseY < bottom
     }
 
     class BattleMessageLine(val pane: BattleMessagePane, val line: FormattedCharSequence) : Entry<BattleMessageLine>() {
         override fun getNarration() = "".text()
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            rowTop: Int,
-            rowLeft: Int,
-            rowWidth: Int,
-            rowHeight: Int,
-            mouseX: Int,
-            mouseY: Int,
-            isHovered: Boolean,
-            partialTicks: Float
-        ) {
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, isHovered: Boolean, partialTicks: Float) {
+            val rowTop = this.contentY
+            val rowLeft = this.contentX
             drawScaledText(
                 context,
                 line,

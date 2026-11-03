@@ -15,10 +15,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -32,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 
 @Mixin(ServerLevel.class)
@@ -44,13 +42,12 @@ public abstract class ServerLevelMixin extends Level implements ServerLevelDuck 
             ResourceKey<Level> dimension,
             RegistryAccess registryAccess,
             Holder<DimensionType> dimensionTypeRegistration,
-            Supplier<ProfilerFiller> profiler,
             boolean isClientSide,
             boolean isDebug,
             long biomeZoomSeed,
             int maxChainedNeighborUpdates
     ) {
-        super(levelData, dimension, registryAccess, dimensionTypeRegistration, profiler, isClientSide, isDebug, biomeZoomSeed, maxChainedNeighborUpdates);
+        super(levelData, dimension, registryAccess, dimensionTypeRegistration, isClientSide, isDebug, biomeZoomSeed, maxChainedNeighborUpdates);
     }
 
     @Shadow
@@ -59,14 +56,14 @@ public abstract class ServerLevelMixin extends Level implements ServerLevelDuck 
     /**
      * Cached to speed up level world key checks every tick.
      */
-    private ResourceLocation cobblemon$levelResourceLocation;
+    private Identifier cobblemon$levelResourceLocation;
 
     @Override
-    public ResourceLocation cobblemon$getLevelResourceLocation() {
+    public Identifier cobblemon$getLevelResourceLocation() {
         if (this.cobblemon$levelResourceLocation == null) {
             this.cobblemon$levelResourceLocation = ((MinecraftServerDuck) this.shadow$getServer())
                     .cobblemon$getLevelKey(this)
-                    .map(ResourceKey::location)
+                    .map(ResourceKey::identifier)
                     .orElse(null);
         }
         return this.cobblemon$levelResourceLocation;
@@ -77,14 +74,14 @@ public abstract class ServerLevelMixin extends Level implements ServerLevelDuck 
         final ServerLevel serverLevel = (ServerLevel) (Object) this;
         if (ci.getReturnValue().isEmpty()) {
             // Search for Pokemon with the ability Lightning Rod and redirect to them
-            AABB aABB = AABB.encapsulatingFullBlocks(blockPos, new BlockPos(blockPos.atY(serverLevel.getMaxBuildHeight()))).inflate(64.0);
+            AABB aABB = AABB.encapsulatingFullBlocks(blockPos, blockPos.atY(serverLevel.getMaxY() + 1)).inflate(64.0);
             List<LivingEntity> list = serverLevel.getEntitiesOfClass(LivingEntity.class, aABB, (livingEntity) -> livingEntity != null
                     && livingEntity.isAlive()
                     && livingEntity instanceof PokemonEntity
                     && ((PokemonEntity) livingEntity).getBeamMode() == 0
                     && ((PokemonEntity) livingEntity).getPokemon().getAbility().getName().equals("lightningrod"));
             if (!list.isEmpty()) {
-                ci.setReturnValue(Optional.of((list.get(serverLevel.random.nextInt(list.size()))).blockPosition()));
+                ci.setReturnValue(Optional.of((list.get(serverLevel.getRandom().nextInt(list.size()))).blockPosition()));
             }
         }
     }

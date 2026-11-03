@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.dialogue.widgets
 
+import net.minecraft.client.input.KeyEvent
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.gui.drawCenteredText
 import com.cobblemon.mod.common.api.text.text
@@ -18,10 +20,9 @@ import com.cobblemon.mod.common.net.messages.server.dialogue.InputToDialoguePack
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
-import org.lwjgl.glfw.GLFW
 
 class DialogueTextInputWidget(
     val dialogueScreen: DialogueScreen,
@@ -43,23 +44,23 @@ class DialogueTextInputWidget(
         isFocused = true
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (!dialogueScreen.renderInput()) {
-            return false
-        }
-        if (dialogueScreen.dialogueDTO.dialogueInput.inputType != DialogueInputDTO.InputType.TEXT || dialogueScreen.waitingForServerUpdate) {
-            return false
-        }
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        if (!isMouseOver(event.x(), event.y())) return false
 
-        return if (mouseX.toInt() in x..(x + width) && mouseY.toInt() in y..(y + height)) {
-            isFocused = true
-            true
-        } else {
-            false
-        }
+        isFocused = true
+        return true
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean {
+        // The choices occupy this same rectangle. An undisplayed text field must
+        // not be selected ahead of them by the native parent's first-hit routing.
+        return dialogueScreen.renderInput()
+            && dialogueScreen.dialogueDTO.dialogueInput.inputType == DialogueInputDTO.InputType.TEXT
+            && !dialogueScreen.waitingForServerUpdate
+            && super.isMouseOver(mouseX, mouseY)
+    }
+
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (!dialogueScreen.renderInput()) {
             return
         }
@@ -67,17 +68,15 @@ class DialogueTextInputWidget(
             return
         }
         if (cursorPosition != value.length) {
-            moveCursorToEnd(Screen.hasShiftDown())
+            moveCursorToEnd(Minecraft.getInstance().hasShiftDown())
         }
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             x = x,
             y = y,
             width = width,
             height = height,
-            texture = cobblemonResource("textures/gui/dialogue/dialogue_text_input.png")
-        )
+            texture = cobblemonResource("textures/gui/dialogue/dialogue_text_input.png"))
 
         drawCenteredText(
             context = context,
@@ -89,10 +88,11 @@ class DialogueTextInputWidget(
         )
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (keyCode == InputConstants.KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+    override fun keyPressed(event: KeyEvent): Boolean {
+        val keyCode = event.key()
+        if (keyCode == InputConstants.KEY_ESCAPE || keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
             this.dialogueScreen.sendToServer(InputToDialoguePacket(dialogueScreen.dialogueDTO.dialogueInput.inputId, value.trim()))
         }
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 }

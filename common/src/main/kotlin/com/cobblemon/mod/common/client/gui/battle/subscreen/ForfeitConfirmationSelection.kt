@@ -21,7 +21,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.battleLang
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class ForfeitConfirmationSelection(
     battleGUI: BattleGUI,
@@ -53,6 +53,9 @@ class ForfeitConfirmationSelection(
         declineButton = BattleResponseButton(xPos + 57, yPos + 18, false) {}
     }
 
+    override fun isActionHovered(mouseX: Double, mouseY: Double): Boolean =
+        acceptButton.isHovered(mouseX, mouseY) || declineButton.isHovered(mouseX, mouseY)
+
     override fun mousePrimaryClicked(mouseX: Double, mouseY: Double): Boolean {
         if (declineButton.isHovered(mouseX, mouseY) || acceptButton.isHovered(mouseX, mouseY)) {
             if (declineButton.isHovered(mouseX, mouseY)) {
@@ -74,21 +77,19 @@ class ForfeitConfirmationSelection(
         return false
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (opacity <= 0.05F) return
 
         val xPos = (Minecraft.getInstance().window.guiScaledWidth / 2) - (WIDTH / 2)
         val yPos = (Minecraft.getInstance().window.guiScaledHeight / 2) - (HEIGHT / 2)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = backgroundResource,
             x = xPos,
             y = yPos,
             alpha = opacity,
             width = WIDTH,
-            height = HEIGHT
-        )
+            height = HEIGHT)
 
         drawScaledText(
             context = context,
@@ -100,7 +101,7 @@ class ForfeitConfirmationSelection(
             shadow = true
         )
 
-        acceptButton.render(context, mouseX, mouseY, delta)
-        declineButton.render(context, mouseX, mouseY, delta)
+        acceptButton.extractRenderState(context, mouseX, mouseY, delta)
+        declineButton.extractRenderState(context, mouseX, mouseY, delta)
     }
 }

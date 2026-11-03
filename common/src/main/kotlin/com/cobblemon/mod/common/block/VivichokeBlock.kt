@@ -9,7 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.CobblemonItems
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.ItemLike
@@ -35,12 +34,7 @@ class VivichokeBlock(settings: Properties) : CropBlock(settings) {
 
     override fun getBaseSeedId(): ItemLike = CobblemonItems.VIVICHOKE_SEEDS
 
-    override fun codec(): MapCodec<out CropBlock> {
-        return CODEC
-    }
-
     companion object {
-        val CODEC = simpleCodec(::VivichokeBlock)
 
         private val STAGE_0_SHAPE = box(6.0, -1.0, 6.0, 10.0, 2.0, 10.0)
         private val STAGE_1_SHAPE = box(6.0, -1.0, 6.0, 10.0, 5.0, 10.0)

@@ -11,6 +11,9 @@ package com.cobblemon.mod.common.block.campfirepot
 import com.cobblemon.mod.common.CobblemonItemComponents
 import com.cobblemon.mod.common.CobblemonSounds
 import net.minecraft.sounds.SoundSource
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.core.Holder
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.CraftingContainer
 import net.minecraft.world.inventory.Slot
@@ -31,7 +34,10 @@ class CookingPotResultSlot(
         val menu = player.containerMenu
         if (menu is CookingPotMenu) {
             menu.broadcastChanges()
-            player.playNotifySound(CobblemonSounds.CAMPFIRE_POT_TAKE_ITEM, SoundSource.MASTER, 1.0f, 1.0f)
+            if (player is ServerPlayer) {
+                player.connection.send(ClientboundSoundPacket(Holder.direct(CobblemonSounds.CAMPFIRE_POT_TAKE_ITEM), SoundSource.MASTER,
+                    player.x, player.y, player.z, 1F, 1F, player.random.nextLong()))
+            }
         }
 
         super.onTake(player, stack)

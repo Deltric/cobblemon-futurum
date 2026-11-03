@@ -1,4 +1,4 @@
-image: amazoncorretto:21
+image: amazoncorretto:25
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -181,8 +181,8 @@ deploy_artifacts:
   script:
     - yum install -y findutils
     - echo "Collecting artifacts..."
-    - find neoforge/build/libs/ -type f -name "*.jar" | grep -vE "dev-shadow|sources|javadoc" | xargs -I {} mv {} ./
-    - find fabric/build/libs/ -type f -name "*.jar" | grep -vE "dev-shadow|sources|javadoc" | xargs -I {} mv {} ./
+    - find neoforge/build/libs/ -type f -name "*.jar" | grep -vE "dev-|bundled|sources|javadoc" | xargs -I {} mv {} ./
+    - find fabric/build/libs/ -type f -name "*.jar" | grep -vE "dev-|bundled|sources|javadoc" | xargs -I {} mv {} ./
     - for f in *.jar; do mv "$f" "$(echo "$f" | sed s/+/b$CI_PIPELINE_IID+/)"; done
   artifacts:
     paths:

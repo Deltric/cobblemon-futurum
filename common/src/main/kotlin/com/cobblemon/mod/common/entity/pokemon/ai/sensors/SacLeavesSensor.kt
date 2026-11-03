@@ -53,7 +53,7 @@ class SacLeavesSensor : Sensor<PokemonEntity>(120) {
             if (isValidLeafBlock(state)) {
                 val distance = pos.distSqr(Vec3i(centerPos.x, centerPos.y, centerPos.z))
                 if (distance < shortestDist) {
-                    leavesPos = BlockPos(pos)
+                    leavesPos = pos.immutable()
                     shortestDist = distance
                 }
             }

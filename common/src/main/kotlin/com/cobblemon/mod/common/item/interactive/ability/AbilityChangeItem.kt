@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.item.interactive.ability
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.api.abilities.PotentialAbility
 import com.cobblemon.mod.common.api.interaction.PokemonEntityInteraction
 import com.cobblemon.mod.common.api.item.ability.AbilityChanger
@@ -22,8 +24,9 @@ import net.minecraft.world.item.Items
 import net.minecraft.world.item.Rarity
 
 open class AbilityChangeItem<T : PotentialAbility>(
+    properties: Properties,
     val changer: AbilityChanger<T>
-) : CobblemonItem(Properties().apply {
+) : CobblemonItem(properties.apply {
     when(changer) {
         AbilityChanger.HIDDEN_ABILITY -> rarity(Rarity.EPIC)
         AbilityChanger.COMMON_ABILITY -> rarity(Rarity.RARE)

@@ -16,28 +16,28 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.PackType
 
 object CobblemonPartyCompositions : JsonDataRegistry<PartyComposition> {
-    override val id: ResourceLocation = cobblemonResource("party_compositions")
+    override val id: Identifier = cobblemonResource("party_compositions")
     override val type = PackType.SERVER_DATA
     override val typeToken: TypeToken<PartyComposition> = TypeToken.get(PartyComposition::class.java)
     override val resourcePath: String = "party_compositions"
     override val observable = SimpleObservable<CobblemonPartyCompositions>()
     override val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(ResourceLocation::class.java, IdentifierAdapter)
+        .registerTypeAdapter(Identifier::class.java, IdentifierAdapter)
         .setPrettyPrinting()
         .create()
 
-    val partyCompositions = mutableMapOf<ResourceLocation, PartyComposition>()
+    val partyCompositions = mutableMapOf<Identifier, PartyComposition>()
 
     override fun sync(player: ServerPlayer) {
         // probably worth syncing which exist, yeah. the deeper details probably not. I'll get to this eventually.
     }
 
-    override fun reload(data: Map<ResourceLocation, PartyComposition>) {
+    override fun reload(data: Map<Identifier, PartyComposition>) {
         data.entries.forEach { it.value.id = it.key }
         partyCompositions.clear()
         partyCompositions.putAll(data)

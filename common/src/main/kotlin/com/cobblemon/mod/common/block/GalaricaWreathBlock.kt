@@ -9,8 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.util.rotateShape
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.BlockGetter
@@ -23,9 +21,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 
 class GalaricaWreathBlock(properties: Properties) : SixFaceRotationalBlock(properties) {
     companion object {
-        val CODEC: MapCodec<GalaricaWreathBlock> = RecordCodecBuilder.mapCodec {
-            it.group(propertiesCodec()).apply(it, ::GalaricaWreathBlock)
-        }
 
         val FLOOR_NORTH = Shapes.box(0.125, 0.0, 0.125, 0.875, 0.25, 0.875)
         val WALL_NORTH = Shapes.box(0.125, 0.125, 0.75, 0.875, 0.875, 1.0)
@@ -39,8 +34,6 @@ class GalaricaWreathBlock(properties: Properties) : SixFaceRotationalBlock(prope
             .setValue(WATERLOGGED, false)
         )
     }
-
-    override fun codec(): MapCodec<GalaricaWreathBlock> = CODEC
 
     override fun getShape(state: BlockState, blockGetter: BlockGetter, pos: BlockPos, collisionContext: CollisionContext): VoxelShape {
         val direction = state.getValue(FACING)

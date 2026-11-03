@@ -2,7 +2,7 @@
   "replace": false,
   "values": [
     "#minecraft:small_flowers",
-    "#minecraft:tall_flowers",
+    "#cobblemon:tall_flowers",
     "minecraft:chorus_flower",
     "minecraft:dead_bush",
     "minecraft:honey_bottle",

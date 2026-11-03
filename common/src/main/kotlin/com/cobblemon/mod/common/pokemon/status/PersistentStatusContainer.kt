@@ -14,7 +14,7 @@ import com.google.gson.JsonObject
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Container that stores all status details
@@ -62,8 +62,8 @@ class PersistentStatusContainer(
 
         @Deprecated("Use the Codec instead", ReplaceWith("PersistentStatusContainer.CODEC"))
         fun loadFromNBT(nbt: CompoundTag): PersistentStatusContainer? {
-            val statusId = nbt.getString(DataKeys.POKEMON_STATUS_NAME)
-            val activeSeconds = nbt.getInt(DataKeys.POKEMON_STATUS_TIMER)
+            val statusId = nbt.getStringOr(DataKeys.POKEMON_STATUS_NAME, "")
+            val activeSeconds = nbt.getIntOr(DataKeys.POKEMON_STATUS_TIMER, 0)
 
             // Missing status id
             if (statusId.isEmpty()) {
@@ -71,7 +71,7 @@ class PersistentStatusContainer(
             }
 
             // Return null if status doesn't exist
-            val status = Statuses.getStatus(ResourceLocation.parse(statusId)) ?: return null
+            val status = Statuses.getStatus(Identifier.parse(statusId)) ?: return null
             // Return null if not a persistent status
             if (status !is PersistentStatus) return null
             return PersistentStatusContainer(status, activeSeconds)
@@ -88,7 +88,7 @@ class PersistentStatusContainer(
             }
 
             // Return null if status doesn't exist
-            val status = Statuses.getStatus(ResourceLocation.parse(statusId)) ?: return null
+            val status = Statuses.getStatus(Identifier.parse(statusId)) ?: return null
             // Return null if not a persistent status
             if (status !is PersistentStatus) return null
             return PersistentStatusContainer(status, activeSeconds)

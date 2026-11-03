@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.riding
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.bedrockk.molang.Expression
 import com.cobblemon.mod.common.api.net.Encodable
 import com.cobblemon.mod.common.entity.PoseType
@@ -41,7 +43,7 @@ data class Seat(
             return Seat(
                 buffer.readNullable { buffer.readString() } ?: "",
                 buffer.readNullable { buffer.readString().asExpression() },
-                buffer.readNullable { buffer.readList { SeatPoseAnimations.decode(buffer) } },
+                buffer.readNullable { buffer.readList { SeatPoseAnimations.decode(buffer) }.toMutableList() },
                 buffer.readBoolean()
             )
         }
@@ -61,7 +63,7 @@ class SeatPoseAnimations {
         fun decode(buffer: RegistryFriendlyByteBuf) : SeatPoseAnimations {
             val animations = SeatPoseAnimations()
             animations.poseTypes.addAll(buffer.readList { buffer.readString().let { PoseType.valueOf(it) } })
-            animations.animations = buffer.readList { RidingAnimation.decode(buffer) }
+            animations.animations = buffer.readList { RidingAnimation.decode(buffer) }.toMutableList()
             return animations
         }
     }

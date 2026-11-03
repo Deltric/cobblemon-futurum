@@ -8,8 +8,8 @@
 
 package com.cobblemon.mod.common.duck;
 
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 
 public interface RecipeAwareSlot {
-	void setRecipeManager(RecipeManager recipeManager);
+	void setRecipeLevel(Level level);
 }

@@ -9,9 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.block.entity.SweetIncenseBlockEntity
-import com.mojang.serialization.Codec
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
@@ -25,13 +22,13 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.SimpleWaterloggedBlock
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
@@ -41,7 +38,10 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 
-class SweetIncenseBlock(properties: Properties) : BaseEntityBlock(properties), SimpleWaterloggedBlock {
+class SweetIncenseBlock(
+    properties: Properties,
+    private val blockEntityType: () -> BlockEntityType<SweetIncenseBlockEntity>
+) : BaseEntityBlock(properties), SimpleWaterloggedBlock {
 
     companion object {
         val LIT: BooleanProperty = BlockStateProperties.LIT
@@ -59,10 +59,6 @@ class SweetIncenseBlock(properties: Properties) : BaseEntityBlock(properties), S
         builder.add(LIT, WATERLOGGED)
     }
 
-    override fun getLightBlock(state: BlockState, level: BlockGetter, pos: BlockPos): Int {
-        return super.getLightBlock(state, level, pos)
-    }
-
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState {
         return this.defaultBlockState()
                 .setValue(LIT, false)
@@ -70,22 +66,7 @@ class SweetIncenseBlock(properties: Properties) : BaseEntityBlock(properties), S
     }
 
     override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
-        return SweetIncenseBlockEntity(pos, state)
-    }
-
-    val CODEC: MapCodec<SweetIncenseBlock> = RecordCodecBuilder.mapCodec { instance ->
-        instance.group(
-                Codec.BOOL.fieldOf("lit").forGetter { it.defaultBlockState().getValue(LIT) },
-                propertiesCodec()
-        ).apply(instance) { lit, properties ->
-            SweetIncenseBlock(properties).apply {
-                registerDefaultState(this.defaultBlockState().setValue(LIT, lit))
-            }
-        }
-    }
-
-    override fun codec(): MapCodec<out SweetIncenseBlock> {
-        return CODEC
+        return SweetIncenseBlockEntity(blockEntityType(), pos, state)
     }
 
     override fun getRenderShape(state: BlockState) = RenderShape.MODEL
@@ -98,18 +79,18 @@ class SweetIncenseBlock(properties: Properties) : BaseEntityBlock(properties), S
             player: Player,
             hand: InteractionHand,
             hit: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         val heldItem = player.getItemInHand(hand)
 
         return if (!state.getValue(LIT) && (heldItem.`is`(Items.FLINT_AND_STEEL) || heldItem.`is`(Items.FIRE_CHARGE))) {
             level.setBlock(pos, state.setValue(LIT, true), 3)
             level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0f, 1.0f)
-            ItemInteractionResult.sidedSuccess(level.isClientSide)
+            if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
         } else if (state.getValue(LIT)) {
             level.setBlock(pos, state.setValue(LIT, false), 3)
-            ItemInteractionResult.sidedSuccess(level.isClientSide)
+            if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
         } else {
-            ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            InteractionResult.TRY_WITH_EMPTY_HAND
         }
     }
 

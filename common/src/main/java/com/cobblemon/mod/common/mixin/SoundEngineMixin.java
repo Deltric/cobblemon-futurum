@@ -21,7 +21,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -45,14 +45,14 @@ public abstract class SoundEngineMixin implements SoundEngineDuck {
     @Shadow
     private boolean loaded;
 
-    @Shadow
+    @Shadow @Final
     private Multimap<SoundSource, SoundInstance> instanceBySource;
 
     @Shadow @Final
     private Map<SoundInstance, ChannelAccess.ChannelHandle> instanceToChannel;
 
     @Shadow
-    protected abstract void stop(SoundInstance sound);
+    public abstract void stop(SoundInstance sound);
 
     @Shadow
     public abstract boolean isActive(SoundInstance sound);
@@ -71,39 +71,39 @@ public abstract class SoundEngineMixin implements SoundEngineDuck {
 
     /** Resumes the SoundInstance(s) queried by id and/or category. */
     @Override
-    public void resumeSounds(@Nullable ResourceLocation id, @Nullable SoundSource category) {
+    public void resumeSounds(@Nullable Identifier id, @Nullable SoundSource category) {
         if (category != null) {
             this.instanceBySource.get(category).forEach((sound) -> {
-                if (id == null || sound.getLocation().equals(id)) resume(sound);
+                if (id == null || sound.getIdentifier().equals(id)) resume(sound);
             });
         } else if (id == null) {
             this.instanceToChannel.keySet().forEach(this::resume);
         } else {
             this.instanceToChannel.keySet().forEach(sound -> {
-                if (sound.getLocation().equals(id)) resume(sound);
+                if (sound.getIdentifier().equals(id)) resume(sound);
             });
         }
     }
 
     /** Pauses the SoundInstances queried by id and/or category. */
     @Override
-    public void pauseSounds(@Nullable ResourceLocation id, @Nullable SoundSource category) {
+    public void pauseSounds(@Nullable Identifier id, @Nullable SoundSource category) {
         if (category != null) {
             this.instanceBySource.get(category).forEach((sound) -> {
-                if (id == null || sound.getLocation().equals(id)) pause(sound);
+                if (id == null || sound.getIdentifier().equals(id)) pause(sound);
             });
         } else if (id == null) {
             this.instanceToChannel.keySet().forEach(this::pause);
         } else {
             this.instanceToChannel.keySet().forEach(sound -> {
-                if (sound.getLocation().equals(id)) pause(sound);
+                if (sound.getIdentifier().equals(id)) pause(sound);
             });
         }
     }
 
     /** Allows stopping all SoundInstances that belong to a queried category. */
-    @Inject(method = "stop(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/sounds/SoundSource;)V", at = @At("HEAD"), cancellable = true)
-    public void stopSounds(@Nullable ResourceLocation id, @Nullable SoundSource category, CallbackInfo cb) {
+    @Inject(method = "stop(Lnet/minecraft/resources/Identifier;Lnet/minecraft/sounds/SoundSource;)V", at = @At("HEAD"), cancellable = true)
+    public void stopSounds(@Nullable Identifier id, @Nullable SoundSource category, CallbackInfo cb) {
         if (id == null && category != null) {
             this.instanceBySource.get(category).forEach(this::stop);
             cb.cancel();
@@ -116,7 +116,7 @@ public abstract class SoundEngineMixin implements SoundEngineDuck {
      */
     @Inject(method = "calculatePitch", at = @At("HEAD"), cancellable = true)
     private void cobblemon$allowExtendedNoteblockPitch(SoundInstance sound, CallbackInfoReturnable<Float> cir) {
-        if (sound.getLocation().getPath().startsWith("block.note_block.")) {
+        if (sound.getIdentifier().getPath().startsWith("block.note_block.")) {
             cir.setReturnValue(Mth.clamp(sound.getPitch(), 0.5F, 4.0F));
         }
     }

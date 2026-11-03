@@ -12,15 +12,15 @@ import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.server.level.ServerPlayer
 import java.util.Optional
 
 class TradePokemonContext(val traded: Pokemon, val received: Pokemon)
 
 class TradePokemonCriterion(
-    playerCtx: Optional<ContextAwarePredicate>,
+    playerCtx: Optional<Holder<LootItemCondition>>,
     val traded: String,
     val received: String,
     val tradedHeldItem: String,
@@ -29,7 +29,7 @@ class TradePokemonCriterion(
 
     companion object {
         val CODEC: Codec<TradePokemonCriterion> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TradePokemonCriterion::playerCtx),
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(TradePokemonCriterion::playerCtx),
             Codec.STRING.optionalFieldOf("traded", "any").forGetter(TradePokemonCriterion::traded),
             Codec.STRING.optionalFieldOf("received", "any").forGetter(TradePokemonCriterion::received),
             Codec.STRING.optionalFieldOf("traded_held_item", "minecraft:air").forGetter(TradePokemonCriterion::tradedHeldItem),
@@ -38,8 +38,8 @@ class TradePokemonCriterion(
     }
 
     override fun matches(player: ServerPlayer, context: TradePokemonContext): Boolean {
-        val heldItem1 = context.traded.heldItem().item.builtInRegistryHolder().key().location()
-        val heldItem2 = context.received.heldItem().item.builtInRegistryHolder().key().location()
+        val heldItem1 = context.traded.heldItem().item.builtInRegistryHolder().key().identifier()
+        val heldItem2 = context.received.heldItem().item.builtInRegistryHolder().key().identifier()
 
         if (traded != "any" && context.traded.species.resourceIdentifier != traded.asIdentifierDefaultingNamespace()) {
             return false

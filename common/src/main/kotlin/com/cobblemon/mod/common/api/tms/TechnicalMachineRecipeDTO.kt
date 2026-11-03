@@ -8,10 +8,11 @@
 
 package com.cobblemon.mod.common.api.tms
 
+import com.cobblemon.mod.common.util.adapters.RegistryOpsProvider
 import com.google.gson.annotations.SerializedName
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.crafting.Ingredient
 
@@ -19,8 +20,8 @@ import net.minecraft.world.item.crafting.Ingredient
  * DTO used for [TechnicalMachineRecipe] JSON loading because Gson cannot deserialize Minecraft Ingredients.
  */
 data class TechnicalMachineRecipeDTO(
-    val item: ResourceLocation?,
-    val tag: ResourceLocation?,
+    val item: Identifier?,
+    val tag: Identifier?,
     @SerializedName("count") private val _count: Int?,
 ) {
     private val count: Int
@@ -30,12 +31,14 @@ data class TechnicalMachineRecipeDTO(
         val ingredient = when {
             item != null ->
                 Ingredient.of(
-                    BuiltInRegistries.ITEM.get(item)
+                    BuiltInRegistries.ITEM.getValue(item) ?: error("Unknown recipe item: $item")
                 )
 
             tag != null ->
                 Ingredient.of(
-                    TagKey.create(Registries.ITEM, tag)
+                    (RegistryOpsProvider.getRegistryLookupWithDefaultFallback()
+                        ?.lookupOrThrow(Registries.ITEM) ?: BuiltInRegistries.ITEM)
+                        .getOrThrow(TagKey.create(Registries.ITEM, tag))
                 )
 
             else ->

@@ -8,6 +8,15 @@
 
 package com.cobblemon.mod.common.item.crafting
 
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay
+import java.util.Optional
+import com.cobblemon.mod.common.CobblemonItems
+import net.minecraft.world.item.crafting.display.SlotDisplay
+import net.minecraft.world.item.crafting.display.RecipeDisplay
+import net.minecraft.world.item.crafting.PlacementInfo
+import net.minecraft.world.item.ItemStackTemplate
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.CobblemonRecipeSerializers
 import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags
@@ -33,18 +42,22 @@ import net.minecraft.world.level.Level
 class CookingPotShapelessRecipe(
     override val groupName: String,
     override val category: CookingPotBookCategory,
-    override val result: ItemStack,
-    private val ingredients: NonNullList<Ingredient>,
+    override val resultTemplate: ItemStackTemplate,
+    private val inputIngredients: List<Ingredient>,
     override val seasoningTag: TagKey<Item>,
     override val seasoningProcessors: List<SeasoningProcessor>
 ) : Recipe<CraftingInput>, CookingPotRecipeBase {
     override fun getType(): RecipeType<CookingPotShapelessRecipe> = CobblemonRecipeTypes.COOKING_POT_SHAPELESS
     override fun getSerializer() = CobblemonRecipeSerializers.COOKING_POT_SHAPELESS
-    override fun getIngredients() = ingredients
-    override fun canCraftInDimensions(width: Int, height: Int) = width * height >= ingredients.size
+    override val ingredients: List<Optional<Ingredient>> get() = inputIngredients.map { Optional.of(it) }
+    override fun placementInfo(): PlacementInfo = PlacementInfo.create(inputIngredients)
+    override fun display(): List<RecipeDisplay> = listOf(ShapelessCraftingRecipeDisplay(
+        inputIngredients.map(Ingredient::display), SlotDisplay.ItemStackSlotDisplay(resultTemplate),
+        SlotDisplay.ItemSlotDisplay(CobblemonItems.CAMPFIRE_POT_RED)
+    ))
 
     override fun matches(input: CraftingInput, level: Level): Boolean {
-        val remaining = ingredients.toMutableList()
+        val remaining = inputIngredients.toMutableList()
 
         for (item in input.items()) {
             if (item.isEmpty) continue
@@ -60,21 +73,13 @@ class CookingPotShapelessRecipe(
         return remaining.isEmpty()
     }
 
-    class Serializer : RecipeSerializer<CookingPotShapelessRecipe> {
-        companion object {
+    object Serializer {
             private val CODEC: MapCodec<CookingPotShapelessRecipe> = RecordCodecBuilder.mapCodec { instance ->
                 instance.group(
-                    Codec.STRING.optionalFieldOf("group", "").forGetter { it.group },
+                    Codec.STRING.optionalFieldOf("group", "").forGetter { it.groupName },
                     CookingPotBookCategory.CODEC.fieldOf("category").orElse(CookingPotBookCategory.MISC).forGetter { it.category },
-                    ItemStack.STRICT_CODEC.fieldOf("result").forGetter { it.result },
-                    Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").flatXmap({ list ->
-                        val ingredients = list.filter { !it.isEmpty }.toTypedArray()
-                        when {
-                            ingredients.isEmpty() -> DataResult.error { "No ingredients for shapeless recipe" }
-                            ingredients.size > 9 -> DataResult.error { "Too many ingredients for shapeless recipe" }
-                            else -> DataResult.success(NonNullList.of(Ingredient.EMPTY, *ingredients))
-                        }
-                    }, { DataResult.success(it) }).forGetter { it.ingredients },
+                    ItemStackTemplate.CODEC.fieldOf("result").forGetter { it.resultTemplate },
+                    Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter { it.inputIngredients },
                     TagKey.codec(Registries.ITEM).fieldOf("seasoningTag").orElse(CobblemonItemTags.EMPTY).forGetter { recipe -> recipe.seasoningTag },
                     createByStringCodec<SeasoningProcessor>(
                         { SeasoningProcessor.processors[it] },
@@ -92,9 +97,8 @@ class CookingPotShapelessRecipe(
                 val category = buffer.readEnum(CookingPotBookCategory::class.java)
                 val seasoningTag = TagKey.create(Registries.ITEM, buffer.readIdentifier())
                 val size = buffer.readVarInt()
-                val ingredients = NonNullList.withSize(size, Ingredient.EMPTY)
-                ingredients.replaceAll { Ingredient.CONTENTS_STREAM_CODEC.decode(buffer) }
-                val result = ItemStack.STREAM_CODEC.decode(buffer)
+                val ingredients = List(size) { Ingredient.CONTENTS_STREAM_CODEC.decode(buffer) }
+                val result = ItemStackTemplate.STREAM_CODEC.decode(buffer)
                 val seasoningProcessors = buffer.readList {
                     val type = buffer.readString()
                     SeasoningProcessor.processors[type] ?: error("Unknown seasoning processor: $type")
@@ -103,21 +107,19 @@ class CookingPotShapelessRecipe(
             }
 
             private fun toNetwork(buffer: RegistryFriendlyByteBuf, recipe: CookingPotShapelessRecipe) {
-                buffer.writeUtf(recipe.group)
+                buffer.writeUtf(recipe.groupName)
                 buffer.writeEnum(recipe.category)
                 buffer.writeIdentifier(recipe.seasoningTag.location)
-                buffer.writeVarInt(recipe.ingredients.size)
-                recipe.ingredients.forEach { ingredient ->
+                buffer.writeVarInt(recipe.inputIngredients.size)
+                recipe.inputIngredients.forEach { ingredient ->
                     Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient)
                 }
-                ItemStack.STREAM_CODEC.encode(buffer, recipe.result)
+                ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.resultTemplate)
                 buffer.writeCollection(recipe.seasoningProcessors) { _, it ->
                     buffer.writeString(it.type)
                 }
             }
-        }
 
-        override fun codec() = CODEC
-        override fun streamCodec() = STREAM_CODEC
+        val INSTANCE = RecipeSerializer(CODEC, STREAM_CODEC)
     }
 }

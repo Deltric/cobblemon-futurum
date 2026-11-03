@@ -1,0 +1,7 @@
+{
+  "type": "cobblemon:structure",
+  "cobblemon_structures": [
+    "cobblemon:fossils/sunscorched_den"
+  ],
+  "cobblemon_processors": "cobblemon:fossils/prehistoric_sunscorched_den"
+}

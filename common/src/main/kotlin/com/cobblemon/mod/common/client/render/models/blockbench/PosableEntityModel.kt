@@ -11,32 +11,28 @@ package com.cobblemon.mod.common.client.render.models.blockbench
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.RenderContext
 import com.cobblemon.mod.common.entity.PosableEntity
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.rendertype.RenderType
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.model.EntityModel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
- * A wrapping around a [PosableModel] that presents as an [EntityModel]. This is used to continue using
- * the [LivingEntityRenderer] system while still being able to use the [PosableModel] system. Subclasses
- * just lock in the type of [EntityModel].
- *
- * @author Hiroku
- * @since January 5th, 2024
+ * Applies entity-dependent MoLang and animation state during geometry extraction.
+ * Deferred render states contain the resulting vertices; this wrapper never travels
+ * into Minecraft's render submission queue.
  */
 abstract class PosableEntityModel<T : Entity>(
-    renderTypeFunc: (ResourceLocation) -> RenderType = RenderType::entityCutout
-) : EntityModel<T>(renderTypeFunc) {
+    val renderTypeFunc: (Identifier) -> RenderType = RenderTypes::entityCutoutCull
+) {
     val context: RenderContext = RenderContext().also {
         it.put(RenderContext.RENDER_STATE, RenderContext.RenderState.WORLD)
     }
     lateinit var posableModel: PosableModel
 
-    override fun renderToBuffer(
+    fun renderToBuffer(
         stack: PoseStack,
         buffer: VertexConsumer,
         packedLight: Int,
@@ -66,8 +62,8 @@ abstract class PosableEntityModel<T : Entity>(
         }
     }
 
-    // Called by LivingEntityRenderer's render method before calling model.render (which is this.render in this case)
-    override fun setupAnim(
+    // Called during extraction while the live entity and its animation state are available.
+    fun setupAnim(
         entity: T,
         limbSwing: Float,
         limbSwingAmount: Float,

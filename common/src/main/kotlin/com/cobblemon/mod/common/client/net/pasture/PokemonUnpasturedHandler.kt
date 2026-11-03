@@ -23,7 +23,7 @@ import net.minecraft.client.Minecraft
 object PokemonUnpasturedHandler: ClientNetworkPacketHandler<PokemonUnpasturedPacket> {
 
     override fun handle(packet: PokemonUnpasturedPacket, client: Minecraft) {
-        val pastureGuiConfiguration = (Minecraft.getInstance().screen as? PCGUI)?.configuration as? PasturePCGUIConfiguration
+        val pastureGuiConfiguration = (Minecraft.getInstance().gui.screen() as? PCGUI)?.configuration as? PasturePCGUIConfiguration
         pastureGuiConfiguration?.pasturedPokemon?.set(pastureGuiConfiguration.pasturedPokemon.get().filterNot { it.pokemonId == packet.pokemonId })
     }
 }

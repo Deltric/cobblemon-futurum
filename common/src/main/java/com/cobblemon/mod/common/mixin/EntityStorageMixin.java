@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class EntityStorageMixin {
     //Modifies the NBT returned by the vanilla upgradeChunkTag to also incorporate cobblemon fixup stuff
     @ModifyExpressionValue(
-        method = "method_31731(Lnet/minecraft/world/level/ChunkPos;Ljava/util/Optional;)Lnet/minecraft/world/level/entity/ChunkEntities;",
+        method = "lambda$loadEntities$0(Lnet/minecraft/world/level/ChunkPos;Ljava/util/Optional;)Lnet/minecraft/world/level/entity/ChunkEntities;",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;upgradeChunkTag(Lnet/minecraft/nbt/CompoundTag;I)Lnet/minecraft/nbt/CompoundTag;"
@@ -32,7 +32,7 @@ public class EntityStorageMixin {
     public CompoundTag cobblemon$doEntityFix(
         CompoundTag vanillaFixed
     ) {
-        int curVersion = vanillaFixed.contains(VERSION_KEY) ? vanillaFixed.getInt(VERSION_KEY) : 0;
+        int curVersion = vanillaFixed.contains(VERSION_KEY) ? vanillaFixed.getIntOr(VERSION_KEY, 0) : 0;
         CompoundTag newTag =  DataFixTypes.ENTITY_CHUNK.update(CobblemonSchemas.getDATA_FIXER(), vanillaFixed, curVersion, CobblemonSchemas.DATA_VERSION);
         newTag.put(VERSION_KEY, IntTag.valueOf(CobblemonSchemas.DATA_VERSION));
         return newTag;

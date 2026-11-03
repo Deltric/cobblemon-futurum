@@ -8,22 +8,24 @@
 
 package com.cobblemon.mod.common.net.messages.server.storage.pc
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.api.net.NetworkPacket
 import com.cobblemon.mod.common.api.net.UnsplittablePacket
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
-open class PCBoxWallpapersPacket internal constructor(val wallpapers: Set<ResourceLocation>) : NetworkPacket<PCBoxWallpapersPacket>, UnsplittablePacket {
+open class PCBoxWallpapersPacket internal constructor(val wallpapers: Set<Identifier>) : NetworkPacket<PCBoxWallpapersPacket>, UnsplittablePacket {
     override val id = ID
 
     companion object {
         val ID = cobblemonResource("pc_box_wallpapers")
         fun decode(buffer: RegistryFriendlyByteBuf): PCBoxWallpapersPacket =
-            PCBoxWallpapersPacket(buffer.readList { reader -> reader.readResourceLocation() }.toSet())
+            PCBoxWallpapersPacket(buffer.readList { reader -> reader.readIdentifier() }.toSet())
     }
 
     override fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeCollection(wallpapers) { writer, value -> writer.writeResourceLocation(value) }
+        buffer.writeCollection(wallpapers) { writer, value -> writer.writeIdentifier(value) }
     }
 }

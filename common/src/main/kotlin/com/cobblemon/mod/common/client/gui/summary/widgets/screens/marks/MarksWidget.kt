@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.screens.marks
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonNetwork.sendToServer
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.ColourLibrary
@@ -21,7 +22,7 @@ import com.cobblemon.mod.common.net.messages.server.pokemon.update.SetActiveMark
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 
@@ -66,25 +67,25 @@ class MarksWidget(
         addWidget(marksScrollList)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         if (selectedMark !== null && isSelectedMarkHovered(mouseX.toInt(), mouseY.toInt())) {
             selectedMark = null
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(CobblemonSounds.GUI_CLICK, 1.0F))
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         val matrices = context.pose()
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = marksBaseResource,
             x = x,
             y = y,
             width = width,
-            height = height
-        )
+            height = height)
 
         if (selectedMark != null) {
             MarkIcon(
@@ -93,8 +94,8 @@ class MarksWidget(
                 selectedMark!!
             ).render(context, mouseX, mouseY)
 
-            matrices.pushPose()
-            matrices.scale(SCALE, SCALE, 1F)
+            matrices.pushMatrix()
+            matrices.scale((SCALE).toFloat(), (SCALE).toFloat())
             MultiLineLabelK.create(
                 component = selectedMark!!.getDescription(),
                 width = 85 / SCALE,
@@ -107,7 +108,7 @@ class MarksWidget(
                 colour = ColourLibrary.WHITE,
                 shadow = true
             )
-            matrices.popPose()
+            matrices.popMatrix()
         }
 
         // Title
@@ -122,9 +123,9 @@ class MarksWidget(
             )
         }
 
-        marksScrollList.render(context, mouseX, mouseY, partialTicks)
+        marksScrollList.extractRenderState(context, mouseX, mouseY, partialTicks)
         if (hoveredMark !== null && marksScrollList.isMouseOver(mouseX.toDouble(), mouseY.toDouble())) {
-            context.renderTooltip(Minecraft.getInstance().font, hoveredMark!!.getName(), mouseX, mouseY)
+            context.setTooltipForNextFrame(Minecraft.getInstance().font, hoveredMark!!.getName(), mouseX, mouseY)
         }
     }
 

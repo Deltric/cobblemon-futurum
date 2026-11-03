@@ -23,7 +23,6 @@ import com.cobblemon.mod.common.duck.CameraDuck
 import com.cobblemon.mod.common.duck.RidePassenger
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.util.math.geometry.toRadians
-import com.mojang.blaze3d.Blaze3D
 import net.minecraft.client.Camera
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
@@ -62,13 +61,13 @@ object MountedCameraRenderer {
         val delegate = vehicle.delegate as? PokemonClientDelegate ?: return null
 
         val entityPos = Vec3(
-            Mth.lerp(instance.partialTickTime.toDouble(), vehicle.xOld, vehicle.x),
-            Mth.lerp(instance.partialTickTime.toDouble(), vehicle.yOld, vehicle.y),
-            Mth.lerp(instance.partialTickTime.toDouble(), vehicle.zOld, vehicle.z)
+            Mth.lerp((instance as CameraDuck).`cobblemon$getPartialTicks`().toDouble(), vehicle.xOld, vehicle.x),
+            Mth.lerp((instance as CameraDuck).`cobblemon$getPartialTicks`().toDouble(), vehicle.yOld, vehicle.y),
+            Mth.lerp((instance as CameraDuck).`cobblemon$getPartialTicks`().toDouble(), vehicle.zOld, vehicle.z)
         )
 
         // Sets up the pokemon's locators so when the camera and pokemon are calculated for rendering they use the same partialTickTime.
-        MountedPokemonAnimationRenderController.setup(vehicle, instance.partialTickTime)
+        MountedPokemonAnimationRenderController.setup(vehicle, (instance as CameraDuck).`cobblemon$getPartialTicks`())
         val rollable = vehicle as OrientationControllable
         val vehicleController = rollable.getOrientationController()
 
@@ -79,7 +78,7 @@ object MountedCameraRenderer {
         val locator = delegate.locatorStates[locatorName] ?: return null
 
         // Get additional offset from poser and add to the eyeHeight offset
-        val currEyeHeight: Double = Mth.lerp(instance.partialTickTime.toDouble(), eyeHeight, eyeHeightOld)
+        val currEyeHeight: Double = Mth.lerp((instance as CameraDuck).`cobblemon$getPartialTicks`().toDouble(), eyeHeight, eyeHeightOld)
         var offset = Vec3(0.0, currEyeHeight - (driver.bbHeight / 2), 0.0)
         var eyeOffset = Vec3(0.0, currEyeHeight - (driver.bbHeight / 2), 0.0)
 
@@ -98,9 +97,9 @@ object MountedCameraRenderer {
         )
 
         val rotation =
-            if (vehicleController.isActive()) vehicleController.getRenderOrientation(instance.partialTickTime)
+            if (vehicleController.isActive()) vehicleController.getRenderOrientation((instance as CameraDuck).`cobblemon$getPartialTicks`())
             else Quaternionf()
-                .rotateY((Math.PI.toFloat() - Mth.lerp(instance.partialTickTime, vehicle.yRotO, vehicle.yRot).toRadians()))
+                .rotateY((Math.PI.toFloat() - Mth.lerp((instance as CameraDuck).`cobblemon$getPartialTicks`(), vehicle.yRotO, vehicle.yRot).toRadians()))
 
         offset = rotation.transform(Vector3d(offset.x, offset.y, offset.z)).let { Vec3(it.x, it.y, it.z) }
         eyeOffset = rotation.transform(Vector3d(eyeOffset.x, eyeOffset.y, eyeOffset.z)).let { Vec3(it.x, it.y, it.z) }
@@ -126,10 +125,10 @@ object MountedCameraRenderer {
         } */
 
         val offsetDistance = offset.length()
-        val offsetDirection = offset.scale(1 / offsetDistance)
+        val offsetDirection = offset.normalize()
 
         val eyeOffsetDistance = eyeOffset.length()
-        val eyeOffsetDirection = eyeOffset.scale(1 / eyeOffsetDistance)
+        val eyeOffsetDirection = eyeOffset.normalize()
 
         // Use getMaxZoom to calculate clipping
         val maxZoom: Double = getMaxZoom(offsetDistance, offsetDirection, pos, instance)
@@ -145,7 +144,7 @@ object MountedCameraRenderer {
         val cameraDuck = instance as CameraDuck
 
         // Calculate the current frametime
-        val d = Blaze3D.getTime()
+        val d = System.nanoTime() / 1_000_000_000.0
         frameTime = if (lastHandledRotationTime != Double.Companion.MIN_VALUE) d - lastHandledRotationTime else 0.0
         lastHandledRotationTime = d
 
@@ -190,7 +189,7 @@ object MountedCameraRenderer {
         var newRotation = if (isDriving) {
              vehicleController.orientation!!.normal(Matrix3f()).getNormalizedRotation(Quaternionf())
         } else {
-            vehicleController.getRenderOrientation(instance.partialTickTime)
+            vehicleController.getRenderOrientation((instance as CameraDuck).`cobblemon$getPartialTicks`())
         }
 
         // Unroll the current rotation if no roll is requested and not currently freelooking
@@ -211,7 +210,7 @@ object MountedCameraRenderer {
             val pitchDeg = vehicleController.pitch
             // ConsiderPitch to be already 90 if within the deadzone around it.
             val cutoffPitch = min(1.0, (Mth.abs(pitchDeg) / (90.0f - pitchDeadzoneDeg))) * 90.0f * sign(pitchDeg)
-            val lerpRateMod = Mth.cos(Math.toRadians(cutoffPitch).toFloat())
+            val lerpRateMod = kotlin.math.cos(Math.toRadians(cutoffPitch))
 
             // Apply smoothing from the cameras current yaw to the yaw of the velocity
             // vector of the ride
@@ -299,7 +298,7 @@ object MountedCameraRenderer {
                 resetDriverRotations(instance, entity)
                 return false
             }
-            returnTimer += instance.partialTickTime * (1.0f / 20.0f)
+            returnTimer += (instance as CameraDuck).`cobblemon$getPartialTicks`() * (1.0f / 20.0f)
             return true
         } else {
             returnTimer = 1f
@@ -355,6 +354,7 @@ object MountedCameraRenderer {
 
 
     private fun getMaxZoom(maxZoom: Double, directionVector: Vec3, positionVector: Vec3, instance: Camera): Double {
+        val cameraEntity = instance.entity() ?: return maxZoom
         var maxZoom = maxZoom
         for (i in 0 .. 7) {
             val g = ((i and 1) * 2 - 1).toFloat()
@@ -369,7 +369,7 @@ object MountedCameraRenderer {
                     vec32,
                     ClipContext.Block.VISUAL,
                     ClipContext.Fluid.NONE,
-                    instance.entity
+                    cameraEntity
                 )
             )
             if (hitResult.type != HitResult.Type.MISS) {

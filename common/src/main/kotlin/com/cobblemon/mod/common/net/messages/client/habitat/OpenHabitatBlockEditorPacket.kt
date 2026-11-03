@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.net.messages.client.habitat
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.habitats.HabitatPool
 import com.cobblemon.mod.common.api.habitats.HabitatPools
@@ -21,7 +23,7 @@ import com.cobblemon.mod.common.util.readMapK
 import com.cobblemon.mod.common.util.writeMapK
 import net.minecraft.core.BlockPos
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Opens the habitat block editor GUI with information about the habitat pools to choose from as well as the current
@@ -38,7 +40,7 @@ class OpenHabitatBlockEditorPacket(
     val spawnablePositionTypes: List<String>,
     val worldBuckets: List<String>,
     val activatedHabitatBuckets: List<String>,
-    val habitatPools: Map<ResourceLocation, HabitatPool>,
+    val habitatPools: Map<Identifier, HabitatPool>,
     val habitatSettingsDTO: HabitatSettingsDTO
 ) : NetworkPacket<OpenHabitatBlockEditorPacket> {
     companion object {

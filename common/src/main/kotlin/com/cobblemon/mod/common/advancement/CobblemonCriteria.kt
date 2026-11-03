@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.advancement
 
 import com.cobblemon.mod.common.advancement.criterion.*
 import com.cobblemon.mod.common.platform.PlatformRegistry
-import net.minecraft.advancements.CriterionTrigger
+import net.minecraft.advancements.triggers.CriterionTrigger
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries

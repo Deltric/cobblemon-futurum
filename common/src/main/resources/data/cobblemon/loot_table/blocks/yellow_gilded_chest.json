@@ -8,22 +8,20 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:yellow_gilded_chest",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:copy_components",
               "source": "block_entity",
               "include": [
                 "minecraft:custom_name"
-              ]
+              ],
+              "type": "minecraft:copy_components"
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ],
   "random_sequence": "cobblemon:blocks/yellow_gilded_chest"

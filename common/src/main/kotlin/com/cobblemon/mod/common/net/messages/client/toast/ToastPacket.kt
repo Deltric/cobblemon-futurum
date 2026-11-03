@@ -14,13 +14,13 @@ import net.minecraft.network.RegistryFriendlyByteBuf
 import java.util.UUID
 import net.minecraft.world.item.ItemStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class ToastPacket(
     val title: Component,
     val description: Component,
     val icons: List<ItemStack>,
-    val frameTexture: ResourceLocation,
+    val frameTexture: Identifier,
     val progress: Float,
     val progressColor: Int,
     val uuid: UUID,
@@ -28,7 +28,7 @@ class ToastPacket(
     val durationMs: Long? = null
 ) : NetworkPacket<ToastPacket> {
 
-    override val id: ResourceLocation = ID
+    override val id: Identifier = ID
 
     override fun encode(buffer: RegistryFriendlyByteBuf) {
         buffer.writeText(this.title)

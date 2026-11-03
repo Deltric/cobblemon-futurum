@@ -10,10 +10,9 @@ package com.cobblemon.mod.common.client.render.color
 
 import com.cobblemon.mod.common.CobblemonItemComponents
 import com.cobblemon.mod.common.api.cooking.getColourMixFromRideStatBoosts
-import net.minecraft.client.color.item.ItemColor
 import net.minecraft.world.item.ItemStack
 
-object AprijuiceItemColorProvider : ItemColor {
+object AprijuiceItemColorProvider : CobblemonItemColorProvider {
 
     private const val JUICE_INDEX = 1
 
@@ -29,7 +28,7 @@ object AprijuiceItemColorProvider : ItemColor {
                 CookingQuality.HIGH -> ChatFormatting.GREEN.color
             }
 
-            color?.let { return FastColor.ARGB32.opaque(color) }
+            color?.let { return ARGB.opaque(color) }
         }*/
 
         if (layer == JUICE_INDEX) {

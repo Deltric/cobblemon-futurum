@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "cobblemon:nurse/level_2/emerald_medicinal_brew",
+    "cobblemon:nurse/level_2/emerald_blue_mint_leaf",
+    "cobblemon:nurse/level_2/emerald_cyan_mint_leaf",
+    "cobblemon:nurse/level_2/emerald_green_mint_leaf",
+    "cobblemon:nurse/level_2/emerald_pink_mint_leaf",
+    "cobblemon:nurse/level_2/emerald_red_mint_leaf",
+    "cobblemon:nurse/level_2/emerald_white_mint_leaf"
+  ]
+}

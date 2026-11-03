@@ -3,13 +3,17 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:saccharine_boat"
+        "recipes": [
+          "cobblemon:saccharine_boat"
+        ]
       },
       "trigger": "minecraft:recipe_unlocked"
     },
     "in_water": {
       "conditions": {
-        "block": "minecraft:water"
+        "blocks": [
+          "minecraft:water"
+        ]
       },
       "trigger": "minecraft:enter_block"
     }

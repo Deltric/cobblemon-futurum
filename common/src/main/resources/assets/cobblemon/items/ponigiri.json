@@ -1,0 +1,488 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "cobblemon:ponigiri_overlay",
+    "entries": [
+      {
+        "threshold": 0.01,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_potato",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.02,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_beetroot",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.03,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_carrot",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.04,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_dried_kelp",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.05,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_medicinal_leek",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.06,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_red_mushroom",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.07,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_brown_mushroom",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.08,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_pumpkin",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_chicken",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.11,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_cod",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.12,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_mutton",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.13,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_porkchop",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.14,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_rabbit",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.15,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_salmon",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.16,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_beef",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.17,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_egg",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.18,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_poisonous_potato",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.19,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_rotten_flesh",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_golden_carrot",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.21,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_vivichoke",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.22,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_tasty_tail",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.23,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/ponigiri_sweet_berries",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "cobblemon:item/ponigiri",
+      "tints": [
+        {
+          "type": "cobblemon:item",
+          "layer": 0
+        },
+        {
+          "type": "cobblemon:item",
+          "layer": 1
+        },
+        {
+          "type": "cobblemon:item",
+          "layer": 2
+        }
+      ]
+    }
+  }
+}

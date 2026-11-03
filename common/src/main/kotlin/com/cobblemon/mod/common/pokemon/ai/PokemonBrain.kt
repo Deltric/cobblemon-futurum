@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.pokemon.ai
 
+import net.minecraft.world.entity.ai.Brain
 import com.cobblemon.mod.common.CobblemonActivities
 import com.cobblemon.mod.common.CobblemonBehaviours
 import com.cobblemon.mod.common.CobblemonMemories
@@ -33,7 +34,6 @@ import com.cobblemon.mod.common.util.toDF
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSet
 import com.mojang.datafixers.util.Pair
-import com.mojang.serialization.Dynamic
 import net.minecraft.util.TimeUtil
 import net.minecraft.util.valueproviders.UniformInt
 import net.minecraft.world.entity.Entity
@@ -84,7 +84,7 @@ object PokemonBrain {
 //            CobblemonSensors.NPC_BATTLING
     )
 
-    fun applyBrain(entity: PokemonEntity, pokemon: Pokemon, dynamic: Dynamic<*>) {
+    fun applyBrain(entity: PokemonEntity, pokemon: Pokemon, packed: Brain.Packed) {
         /*
          * Something to note here is that if we changed the autoPokemonPresets to be a set of presets rather than
          * the configurations inside the presets, the logic in ApplyPresets would actually result in the top
@@ -99,7 +99,7 @@ object PokemonBrain {
         }
 
         val ctx = BehaviourConfigurationContext()
-        ctx.apply(entity, behaviourConfigurations, dynamic)
+        ctx.apply(entity, behaviourConfigurations, packed)
         entity.behaviours.clear()
         entity.behaviours.addAll(ctx.appliedBehaviours)
 
@@ -115,27 +115,39 @@ object PokemonBrain {
         val brain = entity.brain
         brain.addActivity(
             Activity.CORE,
-            ImmutableList.copyOf(coreTasks(pokemon))
+            ImmutableList.copyOf(coreTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             Activity.IDLE,
-            ImmutableList.copyOf(idleTasks(pokemon))
+            ImmutableList.copyOf(idleTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             CobblemonActivities.BATTLING,
-            ImmutableList.copyOf(battlingTasks())
+            ImmutableList.copyOf(battlingTasks()),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             Activity.FIGHT,
-            ImmutableList.copyOf(fightTasks(pokemon))
+            ImmutableList.copyOf(fightTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             Activity.AVOID,
-            ImmutableList.copyOf(avoidTasks(pokemon))
+            ImmutableList.copyOf(avoidTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             CobblemonActivities.POKEMON_SLEEPING_ACTIVITY,
-            ImmutableList.copyOf(sleepingTasks())
+            ImmutableList.copyOf(sleepingTasks()),
+            emptySet(),
+            emptySet()
         )
 //        brain.addActivityAndRemoveMemoryWhenStopped(
 //            Activity.AVOID,
@@ -155,10 +167,11 @@ object PokemonBrain {
 //            ),
 //            MemoryModuleType.AVOID_TARGET
 //        )
-        brain.addActivityWithConditions(
+        brain.addActivity(
             CobblemonActivities.POKEMON_GROW_CROP,
             ImmutableList.copyOf(growingPlantTasks(pokemon)),
-            ImmutableSet.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_PRESENT))
+            ImmutableSet.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_PRESENT)),
+            emptySet()
         )
 
         brain.setCoreActivities(setOf(Activity.CORE))

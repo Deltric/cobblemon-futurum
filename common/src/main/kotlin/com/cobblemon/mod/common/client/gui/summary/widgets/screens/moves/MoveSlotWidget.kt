@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.screens.moves
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.moves.Move
 import com.cobblemon.mod.common.api.moves.Moves
@@ -24,7 +25,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.math.toRGB
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 
@@ -71,54 +72,46 @@ class MoveSlotWidget(
     }
 
     val elementalType:ElementalType = Moves.getByNameOrDummy(move?.name ?: "").getEffectiveElementalType(pokemon)
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val matrices = context.pose()
         isHovered = pMouseX >= x && pMouseY >= y && pMouseX < x + width && pMouseY < y + height
         if (move != null) {
             val rgb = elementalType.hue.toRGB()
 
             if (movesWidget.selectedMove == move) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = moveSelectedOverlayResource,
-                    x = x - 1,
-                    y = y - 1,
-                    width = MOVE_WIDTH + 2,
-                    height = MOVE_HEIGHT + 2
-                )
+                blitk(context = context,
+            texture = moveSelectedOverlayResource,
+            x = x - 1,
+            y = y - 1,
+            width = MOVE_WIDTH + 2,
+            height = MOVE_HEIGHT + 2)
             }
 
-            blitk(
-                matrixStack = matrices,
-                texture = moveResource,
-                x = x,
-                y = y,
-                width = MOVE_WIDTH,
-                height = MOVE_HEIGHT,
-                vOffset = if (isHovered) MOVE_HEIGHT else 0,
-                textureHeight = MOVE_HEIGHT * 2,
-                red = rgb.first,
-                green = rgb.second,
-                blue = rgb.third
-            )
+            blitk(context = context,
+            texture = moveResource,
+            x = x,
+            y = y,
+            width = MOVE_WIDTH,
+            height = MOVE_HEIGHT,
+            vOffset = if (isHovered) MOVE_HEIGHT else 0,
+            textureHeight = MOVE_HEIGHT * 2,
+            red = rgb.first,
+            green = rgb.second,
+            blue = rgb.third)
 
-            blitk(
-                matrixStack = matrices,
-                texture = moveOverlayResource,
-                x = x,
-                y = y,
-                width = MOVE_WIDTH,
-                height = MOVE_HEIGHT
-            )
+            blitk(context = context,
+            texture = moveOverlayResource,
+            x = x,
+            y = y,
+            width = MOVE_WIDTH,
+            height = MOVE_HEIGHT)
 
-            blitk(
-                matrixStack = matrices,
-                texture = moveOverlayBarResource,
-                x = x + 60,
-                y = y + 13,
-                width = 47,
-                height = 8
-            )
+            blitk(context = context,
+            texture = moveOverlayBarResource,
+            x = x + 60,
+            y = y + 13,
+            width = 47,
+            height = 8)
 
             var movePPText = Component.literal("${move.currentPp}/${move.maxPp}").bold()
 
@@ -152,16 +145,16 @@ class MoveSlotWidget(
             )
 
             // Reorder Buttons
-            moveUpButton.render(context, pMouseX, pMouseY, pPartialTicks)
-            moveDownButton.render(context, pMouseX, pMouseY, pPartialTicks)
+            moveUpButton.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
+            moveDownButton.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
         }
 
         // Switch Move Button
-        switchMoveButton.render(context, pMouseX, pMouseY, pPartialTicks)
+        switchMoveButton.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         if (isHovered) movesWidget.selectMove(move)
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 }

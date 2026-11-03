@@ -6,12 +6,8 @@
         "INI"
     ],
     "key": {
-        "I": {
-            "tag": "c:ingots/iron"
-        },
-        "N": {
-            "tag": "c:nuggets/iron"
-        }
+        "I": "#c:ingots/iron",
+        "N": "#c:nuggets/iron"
     },
     "result": {
         "id": "cobblemon:disc_shelf"

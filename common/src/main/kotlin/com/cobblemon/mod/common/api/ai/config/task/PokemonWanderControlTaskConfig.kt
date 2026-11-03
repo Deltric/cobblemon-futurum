@@ -35,6 +35,7 @@ class PokemonWanderControlTaskConfig : SingleTaskConfig {
         behaviourConfigurationContext.addMemories(CobblemonMemories.WANDER_CONTROL)
 
         return object : OneShot<LivingEntity>() {
+            override fun getRequiredMemories() = setOf(CobblemonMemories.WANDER_CONTROL)
             override fun trigger(serverLevel: ServerLevel, livingEntity: LivingEntity, l: Long): Boolean {
                 if (entity !is PokemonEntity) {
                     return false

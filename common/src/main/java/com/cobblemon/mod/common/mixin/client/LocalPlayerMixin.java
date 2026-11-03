@@ -30,7 +30,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.Input;
+import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -65,7 +65,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
     @Shadow
     private float jumpRidingScale;
 
-    @Shadow public Input input;
+    @Shadow public ClientInput input;
 
     @Shadow private int autoJumpTime;
 
@@ -77,13 +77,15 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
         super(clientLevel, gameProfile);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V"))
+    @Inject(method = "sendChanges", at = @At("TAIL"))
     private void cobblemon$updateRotationMatrixPassenger(CallbackInfo ci) {
+        if (!((LocalPlayer) (Object) this).connection.hasClientLoaded()) return;
         if (!(this.getVehicle() instanceof OrientationControllable controllableVehicle)) return;
         var vehicleController = controllableVehicle.getOrientationController();
-        if (!vehicleController.isActive() || vehicleController.getOrientation() == cobblemon$lastOrientation) return;
-        cobblemon$lastOrientation = vehicleController.getOrientation() != null ? new Matrix3f(vehicleController.getOrientation()) : null;
-        CobblemonNetwork.INSTANCE.sendToServer(new ServerboundUpdateOrientationPacket(this.getVehicle().getId(), vehicleController.getOrientation()));
+        var orientation = vehicleController.getOrientation();
+        if (!vehicleController.isActive() || java.util.Objects.equals(orientation, cobblemon$lastOrientation)) return;
+        cobblemon$lastOrientation = orientation != null ? new Matrix3f(orientation) : null;
+        CobblemonNetwork.INSTANCE.sendToServer(new ServerboundUpdateOrientationPacket(this.getVehicle().getId(), cobblemon$lastOrientation));
     }
 
     @Inject(method = "rideTick", at = @At("HEAD"))
@@ -177,12 +179,11 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
         });
     }
 
-    @Override
-    public void stopRiding() {
-        super.stopRiding();
+    @Inject(method = "removeVehicle", at = @At("TAIL"))
+    private void cobblemon$stopRidingOrientation(CallbackInfo ci) {
         if (Minecraft.getInstance().player != (Object)this) return;
-        if (!(this instanceof OrientationControllable controllableVehicle)) return;
-        controllableVehicle.getOrientationController().setActive(false);
+        this.getOrientationController().setActive(false);
+        cobblemon$lastOrientation = null;
     }
 
     @Inject(method = "getJumpRidingScale", at = @At("HEAD"), cancellable = true)
@@ -202,12 +203,12 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void cobblemon$aiStep(CallbackInfo ci) {
         this.cobblemon$isDoubleJumping = false;
-        this.cobblemon$isJumping = this.input.jumping;
+        this.cobblemon$isJumping = this.input.keyPresses.jump();
     }
 
-    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprinting()Z", shift = At.Shift.BEFORE))
+    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/ClientInput;tick()V", shift = At.Shift.AFTER))
     private void cobblemon$updateDoubleJumping(CallbackInfo ci) {
-        if (!this.cobblemon$isJumping && this.input.jumping && this.autoJumpTime <= 0 && !this.isSwimming()) {
+        if (!this.cobblemon$isJumping && this.input.keyPresses.jump() && this.autoJumpTime <= 0 && !this.isSwimming()) {
             if (this.cobblemon$survivalJumpTriggerTime != 0) {
                 this.cobblemon$isDoubleJumping = true;
                 this.cobblemon$survivalJumpTriggerTime = 0;

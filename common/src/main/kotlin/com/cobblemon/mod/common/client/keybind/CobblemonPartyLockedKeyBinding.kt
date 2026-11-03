@@ -15,6 +15,7 @@ import com.cobblemon.mod.common.client.keybind.keybinds.SummaryBinding
 import com.cobblemon.mod.common.net.messages.server.starter.RequestStarterScreenPacket
 import com.cobblemon.mod.common.util.lang
 import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 
 /**
@@ -24,7 +25,7 @@ abstract class CobblemonPartyLockedKeyBinding(
     name: String,
     type: InputConstants.Type,
     key: Int,
-    category: String
+    category: KeyMapping.Category
 ) : CobblemonKeyBinding(name, type, key, category) {
 
     private var skippedStarterSelectionMessageShown = false
@@ -47,18 +48,18 @@ abstract class CobblemonPartyLockedKeyBinding(
         val startersLocked = CobblemonClient.clientPlayerData.starterLocked
         if (!starterSelected && !havePokemon) {
             if (startersLocked) {
-                Minecraft.getInstance().player?.displayClientMessage(lang("ui.starter.cannotchoose").red(), false)
+                Minecraft.getInstance().gui.hud.chat.addClientSystemMessage(lang("ui.starter.cannotchoose").red())
             } else {
                 RequestStarterScreenPacket().sendToServer()
             }
             return false
         } else if (!startersLocked && !starterSelected && havePokemon) {
             if (!skippedStarterSelectionMessageShown) {
-                Minecraft.getInstance().player?.displayClientMessage(
+                Minecraft.getInstance().gui.hud.chat.addClientSystemMessage(
                     lang(
                         "ui.starter.skippedchoosing",
                         SummaryBinding.boundKey().displayName
-                    ).yellow(), false
+                    ).yellow()
                 )
                 /** Only show the info message about skipping the selection once per MC instance */
                 skippedStarterSelectionMessageShown = true

@@ -12,20 +12,20 @@ import com.cobblemon.mod.common.api.pokemon.PokemonProperties
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.server.level.ServerPlayer
 import java.util.Optional
 
 class PokemonCriterion(
-    playerCtx: Optional<ContextAwarePredicate>,
+    playerCtx: Optional<Holder<LootItemCondition>>,
     val species: String,
     val properties: PokemonProperties
 ): SimpleCriterionCondition<Pokemon>(playerCtx) {
 
     companion object {
         val CODEC: Codec<PokemonCriterion> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(PokemonCriterion::playerCtx),
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(PokemonCriterion::playerCtx),
             Codec.STRING.optionalFieldOf("species", "any").forGetter(PokemonCriterion::species),
             PokemonProperties.CODEC.optionalFieldOf("properties", PokemonProperties()).forGetter(PokemonCriterion::properties)
         ).apply(it, ::PokemonCriterion) }

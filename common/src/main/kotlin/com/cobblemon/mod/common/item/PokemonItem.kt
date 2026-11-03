@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.item
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.CobblemonItemComponents
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties
@@ -20,7 +22,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import org.joml.Vector4f
 
-class PokemonItem : CobblemonItem(Properties().stacksTo(1).component(CobblemonItemComponents.POKEMON_ITEM, null)) {
+class PokemonItem(properties: Properties) : CobblemonItem(properties.stacksTo(1)) {
 
     override fun getName(stack: ItemStack): Component = this.species(stack)?.translatedName ?: super.getName(stack)
 

@@ -1,0 +1,8 @@
+{
+  "type": "cobblemon:structure",
+  "cobblemon_structures": [
+    "cobblemon:ruins/deep_crypt1",
+    "cobblemon:ruins/deep_crypt2"
+  ],
+  "cobblemon_processors": "cobblemon:ruins/deep_crypt_ruins"
+}

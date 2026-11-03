@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.storage.player.client
 
+import com.cobblemon.mod.common.util.readMap
+import com.cobblemon.mod.common.util.writeMap
 import com.cobblemon.mod.common.api.pokedex.AbstractPokedexManager
 import com.cobblemon.mod.common.api.pokedex.SpeciesDexRecord
 import com.cobblemon.mod.common.api.storage.player.PlayerInstancedDataStoreType
@@ -18,10 +20,10 @@ import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cobblemon.mod.common.util.readString
 import com.cobblemon.mod.common.util.writeString
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class ClientPokedexManager(
-    override val speciesRecords: MutableMap<ResourceLocation, SpeciesDexRecord>,
+    override val speciesRecords: MutableMap<Identifier, SpeciesDexRecord>,
 ) : AbstractPokedexManager(), ClientInstancedPlayerData {
     override fun encode(buf: RegistryFriendlyByteBuf) {
         buf.writeMap(
@@ -37,7 +39,7 @@ class ClientPokedexManager(
                 { buf.readString().asIdentifierDefaultingNamespace() },
                 { SpeciesDexRecord().also { it.decode(buf) } }
             )
-            return SetClientPlayerDataPacket(PlayerInstancedDataStoreTypes.POKEDEX, ClientPokedexManager(map))
+            return SetClientPlayerDataPacket(PlayerInstancedDataStoreTypes.POKEDEX, ClientPokedexManager(map.toMutableMap()))
         }
 
         fun runAction(data: ClientInstancedPlayerData) {

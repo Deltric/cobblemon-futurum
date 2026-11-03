@@ -15,22 +15,25 @@ import net.minecraft.world.level.WorldGenLevel
 import net.minecraft.world.level.block.Mirror
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.levelgen.feature.Feature
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext
+import com.mojang.serialization.MapCodec
+import net.minecraft.world.level.chunk.ChunkGenerator
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 
-class CobblemonFeature : Feature<CobblemonFeatureConfiguration>(CobblemonFeatureConfiguration.CODEC) {
-    override fun place(context: FeaturePlaceContext<CobblemonFeatureConfiguration>): Boolean {
-        val randomSource: RandomSource = context.random()
-        val worldGenLevel: WorldGenLevel = context.level()
-        val blockPos: BlockPos = context.origin()
+class CobblemonFeature(val configuration: CobblemonFeatureConfiguration) : Feature {
+    companion object {
+        val CODEC: MapCodec<CobblemonFeature> = CobblemonFeatureConfiguration.CODEC.xmap(::CobblemonFeature, { it.configuration })
+    }
+    override fun codec(): MapCodec<CobblemonFeature> = CODEC
+
+    override fun place(worldGenLevel: WorldGenLevel, chunkGenerator: ChunkGenerator, randomSource: RandomSource, blockPos: BlockPos): Boolean {
         val rotation: Rotation = Rotation.getRandom(randomSource)
-        val cobblemonFeatureConfiguration = context.config()
+        val cobblemonFeatureConfiguration = configuration
 
         val i = randomSource.nextInt(cobblemonFeatureConfiguration.cobblemonStructures.size)
-        val structureTemplateManager: StructureTemplateManager = worldGenLevel.level.server.structureManager
+        val structureTemplateManager: StructureTemplateManager = worldGenLevel.level.server.structureTemplateManager
         val structureTemplate: StructureTemplate =
             structureTemplateManager.getOrCreate(cobblemonFeatureConfiguration.cobblemonStructures[i])
 

@@ -12,115 +12,83 @@ import com.cobblemon.mod.common.api.riding.sound.RideAttenuationModel;
 import com.cobblemon.mod.common.api.riding.sound.RideLoopSound;
 import com.cobblemon.mod.common.client.sound.instances.AlphaCrySoundInstance;
 import com.cobblemon.mod.common.duck.ChannelDuck;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.audio.Channel;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.Consumer;
 
 @Mixin(SoundEngine.class)
 public class FabricSoundEngineMixin {
-    @Inject(method = "play",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V"
-            ),
-            cancellable = true
+    @WrapOperation(
+            method = "play(Lnet/minecraft/client/resources/sounds/SoundInstance;)Lnet/minecraft/client/sounds/SoundEngine$PlayResult;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V", ordinal = 0)
     )
-    private void cobblemon$overrideChannelExecute(
-            SoundInstance sound,
-            CallbackInfo ci,
-            @Local(name = "h") float h,
-            @Local(name = "i") float i,
-            @Local(name = "g") float g,
-            @Local(name = "bl2") boolean bl2,
-            @Local(name = "bl3") boolean bl3,
-            @Local(name = "bl") boolean bl,
-            @Local(name = "vec3") Vec3 vec3,
-            @Local(name = "channelHandle") ChannelAccess.ChannelHandle handle
+    private void cobblemon$configureSoundChannel(
+            ChannelAccess.ChannelHandle handle,
+            Consumer<Channel> configure,
+            Operation<Void> original,
+            @Local(argsOnly = true) SoundInstance instance,
+            @Local(name = "attenuationDistance") float attenuationDistance
     ) {
-        if (!(sound instanceof RideLoopSound rideSound)) return;
-        if (handle == null) return;
-
-        handle.execute((channel) -> {
-            channel.setPitch(i);
-            channel.setVolume(h);
-
-            if (rideSound.getRideAttenuation() == RideAttenuationModel.LINEAR) {
-                channel.linearAttenuation(g);
-            } else if (rideSound.getRideAttenuation() == RideAttenuationModel.EXPONENTIAL){
-                ((ChannelDuck) channel).cobblemon$inverseAttenuation(g);
-            } else {
-                channel.disableAttenuation();
+        if (!(instance instanceof RideLoopSound) && !(instance instanceof AlphaCrySoundInstance)) {
+            original.call(handle, configure);
+            return;
+        }
+        original.call(handle, (Consumer<Channel>) channel -> {
+            // Keep native playback configuration, then apply the custom effects
+            // so native attenuation cannot overwrite them in the next queued task.
+            configure.accept(channel);
+            if (instance instanceof RideLoopSound rideSound) {
+                if (rideSound.getRideAttenuation() == RideAttenuationModel.LINEAR) {
+                    channel.linearAttenuation(attenuationDistance);
+                } else if (rideSound.getRideAttenuation() == RideAttenuationModel.EXPONENTIAL) {
+                    ((ChannelDuck) channel).cobblemon$inverseAttenuation(attenuationDistance);
+                } else {
+                    channel.disableAttenuation();
+                }
+                cobblemon$applyMuffling(channel, rideSound);
             }
-
-            // Apply low pass filter if the rideSound dictate that it should be muffled
-            if (rideSound.getShouldMuffle()) {
-                ((ChannelDuck) channel).cobblemon$applyLowPassFilter(1.0f, rideSound.getMuffleAmount());
-            } else {
-                ((ChannelDuck) channel).cobblemon$clearFilters();
+            if (instance instanceof AlphaCrySoundInstance) {
+                ((ChannelDuck) channel).cobblemon$applyReverb(1.8f, 0.25f, 0.1f, 0.9f);
             }
-
-            channel.setLooping(bl2 && !bl3);
-            channel.setSelfPosition(vec3);
-            channel.setRelative(bl);
         });
     }
 
-    @Inject(method = "play",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V"
-            )
+    @WrapOperation(
+            method = "tickInGameSound()V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V", ordinal = 0)
     )
-    private void cobblemon$applyAlphaReverb(
-            SoundInstance sound,
-            CallbackInfo ci,
-            @Local(name = "channelHandle") ChannelAccess.ChannelHandle handle
+    private void cobblemon$updateRideSoundChannel(
+            ChannelAccess.ChannelHandle handle,
+            Consumer<Channel> update,
+            Operation<Void> original,
+            @Local(name = "instance") TickableSoundInstance instance
     ) {
-        if (!(sound instanceof AlphaCrySoundInstance)) return;
-        if (handle == null) return;
-
-        // TODO: probably not make these values hardcoded? Maybe add to alphaCrySoundInstance?
-        handle.execute(channel ->
-                ((ChannelDuck) channel).cobblemon$applyReverb(1.8f, 0.25f, 0.1f, 0.9f)
-        );
+        if (!(instance instanceof RideLoopSound rideSound)) {
+            original.call(handle, update);
+            return;
+        }
+        original.call(handle, (Consumer<Channel>) channel -> {
+            update.accept(channel);
+            cobblemon$applyMuffling(channel, rideSound);
+        });
     }
 
-    @Inject(
-            method = "tickNonPaused",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V",
-                    ordinal = 0
-            )
-    )
-    private void cobblemon$tickableSoundTick(
-            CallbackInfo ci,
-            @Local(name = "tickableSoundInstance") TickableSoundInstance instance,
-            @Local(name = "channelHandle", ordinal = 0) ChannelAccess.ChannelHandle handle,
-            @Local(name = "f", ordinal = 0) float volume,
-            @Local(name = "g", ordinal = 0) float pitch,
-            @Local(name = "vec3", ordinal = 0) Vec3 vec3
-    ) {
-        if (!(instance instanceof RideLoopSound rideSound)) return;
-
-        handle.execute(channel -> {
-            channel.setVolume(volume);
-            channel.setPitch(pitch);
-            channel.setSelfPosition(vec3);
-
-            // Apply low pass filter if the rideSound dictate that it should be muffled
-            if (rideSound.getShouldMuffle()) {
-                ((ChannelDuck) channel).cobblemon$applyLowPassFilter(1.0f, rideSound.getMuffleAmount());
-            } else {
-                ((ChannelDuck) channel).cobblemon$clearFilters();
-            }
-        });
+    @Unique
+    private static void cobblemon$applyMuffling(Channel channel, RideLoopSound rideSound) {
+        if (rideSound.getShouldMuffle()) {
+            ((ChannelDuck) channel).cobblemon$applyLowPassFilter(1.0f, rideSound.getMuffleAmount());
+        } else {
+            ((ChannelDuck) channel).cobblemon$clearFilters();
+        }
     }
 }

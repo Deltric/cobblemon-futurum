@@ -57,7 +57,6 @@ class HorizontalRotationCarpetBlock(settings: Properties) : CarpetBlock(settings
     }
 
     companion object {
-        val CODEC = simpleCodec(::HorizontalRotationCarpetBlock)
 
         val HITBOX = Shapes.box(0.0, 0.0, 0.0, 1.0, 0.0625, 1.0)
     }

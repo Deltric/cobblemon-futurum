@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:simple_block",
+  "to_place": {
+    "type": "minecraft:weighted",
+    "entries": [
+      {
+        "weight": 6,
+        "data": {
+          "id": "cobblemon:hearty_grains",
+          "properties": {
+            "waterlogged": "true",
+            "age": "6",
+            "half": "lower"
+          }
+        }
+      },
+      {
+        "weight": 3,
+        "data": {
+          "id": "cobblemon:hearty_grains",
+          "properties": {
+            "waterlogged": "true",
+            "age": "5",
+            "half": "lower"
+          }
+        }
+      },
+      {
+        "weight": 3,
+        "data": {
+          "id": "cobblemon:hearty_grains",
+          "properties": {
+            "waterlogged": "true",
+            "age": "4",
+            "half": "lower"
+          }
+        }
+      }
+    ]
+  }
+}

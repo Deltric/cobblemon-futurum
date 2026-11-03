@@ -3,15 +3,9 @@
   "group": "iv_candy",
   "category": "misc",
   "key": {
-    "T": {
-      "item": "cobblemon:tamato_berry"
-    },
-    "H": {
-      "item": "minecraft:honeycomb"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_xl"
-    }
+    "T": "cobblemon:tamato_berry",
+    "H": "minecraft:honeycomb",
+    "E": "cobblemon:exp_candy_xl"
   },
   "pattern": [
     "THT",

@@ -63,7 +63,7 @@ class PollinateFlowerTaskConfig : SingleTaskConfig {
             var hoverPos: Vec3? = null
 
             override fun checkExtraStartConditions(level: ServerLevel, owner: LivingEntity): Boolean {
-                if (level.isNight || level.isRaining || entity.brain.getMemorySafely(CobblemonMemories.HAS_NECTAR).orElse(false)) return false
+                if (level.isDarkOutside || level.isRaining || entity.brain.getMemorySafely(CobblemonMemories.HAS_NECTAR).orElse(false)) return false
                 val optionalBlockPos = entity.brain.getMemorySafely(CobblemonMemories.NEARBY_FLOWER)
                 return optionalBlockPos.isPresent && Vec3.atCenterOf(optionalBlockPos.get()).distanceTo(entity.position()) <= 1.0
             }
@@ -91,20 +91,20 @@ class PollinateFlowerTaskConfig : SingleTaskConfig {
                 if (bl && bl3) {
                     // mimics the wriggling over a flower the vanilla bees do
                     if (hoverPos == null) {
-                        hoverPos = flowerPos.bottomCenter.add(0.0, 0.4, 0.0)
+                        hoverPos = Vec3.atBottomCenterOf(flowerPos).add(0.0, 0.4, 0.0)
                     }
 
                     if (flowerPos != null) {
-                        hoverPos = flowerPos.bottomCenter.add(Vec3((entity.random.nextDouble() * 2.0 - 1.0) * (1.0/5.0), 0.3 + (entity.random.nextDouble() * 2.0 - 1.0) * (1.0/7.0), (entity.random.nextDouble() * 2.0 - 1.0) * (1.0/5.0)))
+                        hoverPos = Vec3.atBottomCenterOf(flowerPos).add(Vec3((entity.random.nextDouble() * 2.0 - 1.0) * (1.0/5.0), 0.3 + (entity.random.nextDouble() * 2.0 - 1.0) * (1.0/7.0), (entity.random.nextDouble() * 2.0 - 1.0) * (1.0/5.0)))
                         entity.getMoveControl()
                             .setWantedPosition(hoverPos!!.x(), hoverPos!!.y(), hoverPos!!.z(), 0.35)
-                        entity.lookControl.setLookAt(flowerPos.bottomCenter.add(0.0,0.5,0.0))
+                        entity.lookControl.setLookAt(Vec3.atBottomCenterOf(flowerPos).add(0.0,0.5,0.0))
                     }
                 } else if (!bl) {
                     entity.getMoveControl()
                         .setWantedPosition(hoverPos!!.x(), hoverPos!!.y(), hoverPos!!.z(), 0.35)
                 }
-                entity.lookControl.setLookAt(flowerPos.bottomCenter.add(0.0,0.5,0.0))
+                entity.lookControl.setLookAt(Vec3.atBottomCenterOf(flowerPos).add(0.0,0.5,0.0))
 
             }
 

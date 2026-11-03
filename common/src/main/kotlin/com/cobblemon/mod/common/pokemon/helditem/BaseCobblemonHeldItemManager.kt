@@ -54,7 +54,7 @@ abstract class BaseCobblemonHeldItemManager : HeldItemManager {
         return null
     }
 
-    override fun nameOf(showdownId: String): Component = this.itemIds[showdownId]?.description ?: Component.literal(showdownId)
+    override fun nameOf(showdownId: String): Component = this.itemIds[showdownId]?.let { ItemStack(it).hoverName } ?: Component.literal(showdownId)
 
     // This is safe to do as any item triggers will only happen if a Pokémon has a valid held item to begin with.
     override fun give(pokemon: BattlePokemon, showdownId: String) {

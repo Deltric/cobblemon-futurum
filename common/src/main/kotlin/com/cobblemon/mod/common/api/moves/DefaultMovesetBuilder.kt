@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.api.moves
 
 import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * This is all you need tbh. A moveset builder that picks moves from up to 4 slots of move selectors.
@@ -23,8 +23,8 @@ class DefaultMovesetBuilder : MovesetBuilder {
         val TYPE = cobblemonResource("default")
     }
 
-    override val type: ResourceLocation = TYPE
-    override var id: ResourceLocation = cobblemonResource("temp") // replaced on load.
+    override val type: Identifier = TYPE
+    override var id: Identifier = cobblemonResource("temp") // replaced on load.
 
     val slot1: List<MoveSelector> = listOf()
     val slot2: List<MoveSelector> = listOf()

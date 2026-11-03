@@ -12,7 +12,7 @@ import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
@@ -36,16 +36,14 @@ class ArrowButton(
         soundManager.play(SimpleSoundInstance.forUI(CobblemonSounds.GUI_CLICK, 1.0F))
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        blitk(
-            matrixStack = context.pose(),
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        blitk(context = context,
             x = x,
             y = y,
             texture = if (isRight) ARROW_RIGHT_RESOURCE else ARROW_LEFT_RESOURCE,
             width = WIDTH,
             height = HEIGHT,
             vOffset = if (isMouseOver(mouseX.toDouble(), mouseY.toDouble())) HEIGHT else 0,
-            textureHeight = HEIGHT * 2
-        )
+            textureHeight = HEIGHT * 2)
     }
 }

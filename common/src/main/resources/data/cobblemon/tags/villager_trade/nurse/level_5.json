@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "cobblemon:nurse/level_5/emerald_antidote",
+    "cobblemon:nurse/level_5/emerald_awakening",
+    "cobblemon:nurse/level_5/emerald_burn_heal",
+    "cobblemon:nurse/level_5/emerald_ice_heal",
+    "cobblemon:nurse/level_5/emerald_paralyze_heal",
+    "cobblemon:nurse/level_5/emerald_vivichoke_dip"
+  ]
+}

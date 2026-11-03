@@ -92,7 +92,7 @@ object EntityMoLangFunctions : AbstractMoLangFunctionHolder<Entity>() {
         functions["is_sprinting"] = { DoubleValue(entity.isSprinting) }
         functions["is_in_water"] = { DoubleValue(entity.isUnderWater) }
         functions["is_in_rain"] = { DoubleValue(entity.isInWaterOrRain && !entity.isInWater) }
-        functions["is_touching_water_or_rain"] = { DoubleValue(entity.isInWaterRainOrBubble) }
+        functions["is_touching_water_or_rain"] = { DoubleValue(entity.isInWaterOrRain) }
         functions["is_touching_water"] = { DoubleValue(entity.isInWater) }
         functions["is_underwater"] = { DoubleValue(entity.getIsSubmerged()) }
         functions["is_in_lava"] = { DoubleValue(entity.isInLava) }
@@ -111,8 +111,8 @@ object EntityMoLangFunctions : AbstractMoLangFunctionHolder<Entity>() {
                     entity
                         .level()
                         .registryAccess()
-                        .registryOrThrow(Registries.DAMAGE_TYPE)
-                        .getHolder(DamageTypes.GENERIC)
+                        .lookupOrThrow(Registries.DAMAGE_TYPE)
+                        .get(DamageTypes.GENERIC)
                         .get(),
                 )
             entity.hurt(source, amount.toFloat())
@@ -134,7 +134,7 @@ object EntityMoLangFunctions : AbstractMoLangFunctionHolder<Entity>() {
                 .asArrayValue(::DoubleValue)
         }
         functions["tags"] = {
-            val tags = entity.tags
+            val tags = entity.entityTags()
             val array = ArrayStruct(hashMapOf())
             tags.forEachIndexed { index, tag -> array.setDirectly("$index", StringValue(tag)) }
             array
@@ -151,7 +151,7 @@ object EntityMoLangFunctions : AbstractMoLangFunctionHolder<Entity>() {
         }
         functions["has_tag"] = { params ->
             val tag = params.getString(0)
-            DoubleValue(entity.tags.contains(tag))
+            DoubleValue(entity.entityTags().contains(tag))
         }
         functions["distance_to_pos"] = { params ->
             val x = params.getDouble(0)
@@ -162,7 +162,7 @@ object EntityMoLangFunctions : AbstractMoLangFunctionHolder<Entity>() {
         functions["type"] = {
             entity
                 .registryAccess()
-                .registry(Registries.ENTITY_TYPE)
+                .lookup(Registries.ENTITY_TYPE)
                 .get()
                 .getKey(entity.type)
                 ?.toString()
@@ -186,7 +186,7 @@ object EntityMoLangFunctions : AbstractMoLangFunctionHolder<Entity>() {
                             range.toDouble(),
                         ),
                     ).filter { blockPosPair ->
-                        blockPosPair.first.blockHolder.let {
+                        blockPosPair.first.typeHolder().let {
                             if (isTag) {
                                 it.`is`(
                                     TagKey.create(

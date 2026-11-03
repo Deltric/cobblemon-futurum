@@ -8,7 +8,9 @@
 
 package com.cobblemon.mod.common
 
-import net.minecraft.client.RecipeBookCategories
+import net.minecraft.world.item.crafting.RecipeBookCategory
+import net.minecraft.resources.Identifier
+import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.world.inventory.RecipeBookType
 
 enum class CobblemonRecipeCategories {
@@ -20,21 +22,26 @@ enum class CobblemonRecipeCategories {
     COOKING_POT_MISC("COBBLEMON_COOKING_POT_MISC");
 
     companion object {
-        val customAggregateCategories: Map<RecipeBookCategories, List<RecipeBookCategories>> = mapOf(
+        fun register(consumer: (Identifier, RecipeBookCategory) -> Unit) {
+            entries.forEach { consumer(cobblemonResource(it.id.removePrefix("COBBLEMON_").lowercase()), it.toVanillaCategory()) }
+        }
+
+        val customAggregateCategories: Map<RecipeBookCategory, List<RecipeBookCategory>> = mapOf(
             COOKING_POT_SEARCH.toVanillaCategory() to listOf(
                 COOKING_POT_FOODS.toVanillaCategory(), COOKING_POT_MISC.toVanillaCategory(), COOKING_POT_MEDICINES.toVanillaCategory(), COOKING_POT_COMPLEX_DISHES.toVanillaCategory()
             )
         )
     }
 
+    private val category = RecipeBookCategory()
     var id: String
 
     constructor(id: String) {
         this.id = id
     }
 
-    fun toVanillaCategory(): RecipeBookCategories {
-        return RecipeBookCategories.valueOf(this.id)
+    fun toVanillaCategory(): RecipeBookCategory {
+        return category
     }
 }
 

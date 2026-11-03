@@ -1,39 +1,43 @@
 {
-  "parent": "cobblemon:recipes/consumables",
-  "criteria": {
-    "has_egg": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:egg"
-          }
+    "parent": "cobblemon:recipes/consumables",
+    "criteria": {
+        "has_egg": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": "minecraft:egg"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:cake_with_moomoo_milk"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        },
+        "has_original_recipe": {
+            "conditions": {
+                "recipes": [
+                    "minecraft:cake"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
+    },
+    "requirements": [
+        [
+            "has_the_recipe",
+            "has_egg",
+            "has_original_recipe"
         ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:cake_with_moomoo_milk"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    },
-    "has_original_recipe": {
-      "conditions": {
-        "recipe": "minecraft:cake"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:cake_with_moomoo_milk"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_the_recipe",
-      "has_egg",
-	  "has_original_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:cake_with_moomoo_milk"
-    ]
-  }
 }

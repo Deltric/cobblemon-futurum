@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/misc",
-  "rewards": {
-    "recipes": [
-      "cobblemon:augurite_axe"
-    ]
-  },
-  "criteria": {
-    "has_augurite": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:black_augurite"
-            ]
-          }
+    "parent": "cobblemon:recipes/misc",
+    "rewards": {
+        "recipes": [
+            "cobblemon:augurite_axe"
         ]
-      }
     },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "cobblemon:augurite_axe"
-      }
-    }
-  },
-  "requirements": [
-    [
-      "has_augurite",
-      "has_the_recipe"
+    "criteria": {
+        "has_augurite": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:black_augurite"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipes": [
+                    "cobblemon:augurite_axe"
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_augurite",
+            "has_the_recipe"
+        ]
     ]
-  ]
 }

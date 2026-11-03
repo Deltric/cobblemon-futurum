@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "cobblemon:item/wearable/kings_rock",
+      "sprite": "cobblemon:block/kings_rock"
+    }
+  ]
+}

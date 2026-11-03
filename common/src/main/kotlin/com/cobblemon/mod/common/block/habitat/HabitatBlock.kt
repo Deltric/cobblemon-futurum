@@ -126,7 +126,7 @@ class HabitatBlock(properties: Properties) : Block(properties), EntityBlock {
         return box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
     }
 
-    override fun getOcclusionShape(state: BlockState, level: BlockGetter, pos: BlockPos): VoxelShape? {
+    override fun getOcclusionShape(state: BlockState): VoxelShape {
         return Shapes.empty()
     }
 
@@ -138,10 +138,10 @@ class HabitatBlock(properties: Properties) : Block(properties), EntityBlock {
         return false
     }
 
-    override fun spawnDestroyParticles(level: Level, player: Player, pos: BlockPos, state: BlockState) {
+    override fun spawnDestroyParticles(level: Level, pos: BlockPos, state: BlockState) {
         val blockEntity = level.getBlockEntity(pos) as? HabitatBlockEntity
         val mimicState = blockEntity?.mimickedState ?: return
-        mimicState.block.spawnDestroyParticles(level, player, pos, mimicState)
+        mimicState.block.spawnDestroyParticles(level, pos, mimicState)
     }
 
     override fun onPlace(state: BlockState, level: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {

@@ -16,7 +16,7 @@ import com.mojang.blaze3d.platform.InputConstants
 
 object RidingFreelookBinding : CobblemonBlockingKeyBinding(
     "key.cobblemon.ridingfreelook",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_LALT,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {

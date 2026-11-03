@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "cobblemon:cast",
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/great_rod_cast"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "cobblemon:item/great_rod"
+    }
+  }
+}

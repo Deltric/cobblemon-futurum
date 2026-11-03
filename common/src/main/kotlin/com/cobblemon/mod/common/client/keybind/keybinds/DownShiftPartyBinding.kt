@@ -16,7 +16,7 @@ import com.mojang.blaze3d.platform.InputConstants
 
 object DownShiftPartyBinding : CobblemonKeyBinding(
     "key.cobblemon.downshiftparty",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_DOWN,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {

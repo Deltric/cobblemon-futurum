@@ -13,7 +13,6 @@ import com.mojang.serialization.MapCodec
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.level.levelgen.placement.PlacementModifier
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType
 
 object CobblemonPlacementModifierTypes {
     @JvmField
@@ -25,8 +24,8 @@ object CobblemonPlacementModifierTypes {
     @JvmField
     val CONDITIONAL_RARITY_FILTER = register("conditional_rarity_filter", ConditionalRarityFilterPlacementModifier.MODIFIER_CODEC)
 
-    fun <T : PlacementModifier> register(id: String, codec: MapCodec<T>): PlacementModifierType<T> {
-        return Registry.register(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE, cobblemonResource(id), PlacementModifierType { codec })
+    fun <T : PlacementModifier> register(id: String, codec: MapCodec<T>): MapCodec<T> {
+        return Registry.register(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE, cobblemonResource(id), codec)
     }
 
     fun touch() = Unit

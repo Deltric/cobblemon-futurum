@@ -1,0 +1,40 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "entries": [
+      {
+        "threshold": 0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/small_flying_gem_bud"
+        }
+      },
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/medium_flying_gem_bud"
+        }
+      },
+      {
+        "threshold": 2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/large_flying_gem_bud"
+        }
+      },
+      {
+        "threshold": 3,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/flying_gem_cluster"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "cobblemon:item/flying_gem_cluster"
+    }
+  }
+}

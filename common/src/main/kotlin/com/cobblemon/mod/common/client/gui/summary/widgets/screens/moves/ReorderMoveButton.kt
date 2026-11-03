@@ -8,11 +8,12 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.screens.moves
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
@@ -36,15 +37,14 @@ class ReorderMoveButton(
         private var blocked = false
     }
 
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, f: Double, g: Double): Boolean {
         return false
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val offsetY = if (isUp) OFFSET_Y_UP else OFFSET_Y_DOWN
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             x = (pX - OFFSET_X) / SCALE,
             y = (pY + offsetY) / SCALE,
             texture = if (isUp) moveReorderUpResource else moveReorderDownResource,
@@ -52,15 +52,14 @@ class ReorderMoveButton(
             height = HEIGHT,
             vOffset = if (isHovered(pMouseX.toDouble(), pMouseY.toDouble(), offsetY.toFloat())) HEIGHT else 0,
             textureHeight = HEIGHT * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
-    override fun onRelease(pMouseX: Double, pMouseY: Double) {
+    override fun onRelease(event: MouseButtonEvent) {
         blocked = false
     }
 
-    override fun onClick(pMouseX: Double, pMouseY: Double) {
+    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
         if (!blocked) {
             blocked = true
             onPress.onPress(this)

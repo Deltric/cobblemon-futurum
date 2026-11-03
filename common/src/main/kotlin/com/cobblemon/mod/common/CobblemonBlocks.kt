@@ -28,7 +28,6 @@ import com.cobblemon.mod.common.block.sign.CobblemonSignBlock
 import com.cobblemon.mod.common.block.sign.CobblemonWallHangingSignBlock
 import com.cobblemon.mod.common.block.sign.CobblemonWallSignBlock
 import com.cobblemon.mod.common.block.tmmachine.TMMachineBlock
-import com.cobblemon.mod.common.mixin.invoker.BlocksInvoker
 import com.cobblemon.mod.common.mixin.invoker.DoorBlockInvoker
 import com.cobblemon.mod.common.mixin.invoker.FireBlockInvoker
 import com.cobblemon.mod.common.mixin.invoker.PressurePlateBlockInvoker
@@ -41,10 +40,11 @@ import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.valueproviders.UniformInt
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockBehaviour
@@ -75,7 +75,7 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     @JvmField
     val FIRE_STONE_ORE = evolutionStoneOre("fire_stone_ore", 10)
     @JvmField
-    val NETHER_FIRE_STONE_ORE = this.create("nether_fire_stone_ore", DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.of().mapColor(MapColor.NETHER).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.NETHER_ORE).lightLevel{10}))
+    val NETHER_FIRE_STONE_ORE = this.create("nether_fire_stone_ore") { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.NETHER).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.NETHER_ORE).lightLevel{10}) }
     @JvmField
     val ICE_STONE_ORE = evolutionStoneOre("ice_stone_ore")
     @JvmField
@@ -83,13 +83,13 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     @JvmField
     val MOON_STONE_ORE = evolutionStoneOre("moon_stone_ore")
     @JvmField
-    val DRIPSTONE_MOON_STONE_ORE = this.create("dripstone_moon_stone_ore", DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.DRIPSTONE_BLOCK)))
+    val DRIPSTONE_MOON_STONE_ORE = this.create("dripstone_moon_stone_ore") { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F).sound(SoundType.DRIPSTONE_BLOCK)) }
     @JvmField
     val SHINY_STONE_ORE = evolutionStoneOre("shiny_stone_ore", 12)
     @JvmField
     val SUN_STONE_ORE = evolutionStoneOre("sun_stone_ore", 2)
     @JvmField
-    val TERRACOTTA_SUN_STONE_ORE = this.create("terracotta_sun_stone_ore", DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F).lightLevel{2}))
+    val TERRACOTTA_SUN_STONE_ORE = this.create("terracotta_sun_stone_ore") { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_ORANGE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F).lightLevel{2}) }
     @JvmField
     val THUNDER_STONE_ORE = evolutionStoneOre("thunder_stone_ore", 6)
     @JvmField
@@ -126,135 +126,127 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     @JvmField
     val STRIPPED_APRICORN_WOOD = log("stripped_apricorn_wood")
     @JvmField
-    val APRICORN_PLANKS = this.create("apricorn_planks",
-        Block(
-            BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).instrument(NoteBlockInstrument.BASS)
+    val APRICORN_PLANKS = this.create("apricorn_planks") { key -> Block(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.DIRT).instrument(NoteBlockInstrument.BASS)
                 .strength(2.0F, 3.0F).sound(SoundType.WOOD)
-        )
-    )
+        ) }
     @JvmField
     val APRICORN_LEAVES = leaves("apricorn_leaves")
     @JvmField
-    val APRICORN_FENCE = this.create("apricorn_fence", FenceBlock(BlockBehaviour.Properties.of().mapColor(APRICORN_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)))
+    val APRICORN_FENCE = this.create("apricorn_fence") { key -> FenceBlock(BlockBehaviour.Properties.of().setId(key).mapColor(APRICORN_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)) }
     @JvmField
-    val APRICORN_FENCE_GATE = this.create("apricorn_fence_gate", FenceGateBlock(APRICORN_WOOD_TYPE, BlockBehaviour.Properties.of().mapColor(APRICORN_PLANKS.defaultMapColor()).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava().forceSolidOn()))
+    val APRICORN_FENCE_GATE = this.create("apricorn_fence_gate") { key -> FenceGateBlock(APRICORN_WOOD_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(APRICORN_PLANKS.defaultMapColor()).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava().forceSolidOn()) }
     @JvmField
-    val APRICORN_BUTTON = this.create("apricorn_button", BlocksInvoker.createWoodenButtonBlock(APRICORN_BLOCK_SET_TYPE))
+    val APRICORN_BUTTON = this.create("apricorn_button") { key -> object : ButtonBlock(APRICORN_BLOCK_SET_TYPE, 30, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_BUTTON).setId(key)) {} }
     @JvmField
-    val APRICORN_PRESSURE_PLATE = this.create("apricorn_pressure_plate", PressurePlateBlockInvoker.`cobblemon$create`(APRICORN_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().mapColor(APRICORN_PLANKS.defaultMapColor()).noCollission().strength(0.5F).sound(SoundType.WOOD)))
+    val APRICORN_PRESSURE_PLATE = this.create("apricorn_pressure_plate") { key -> PressurePlateBlockInvoker.`cobblemon$create`(APRICORN_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(APRICORN_PLANKS.defaultMapColor()).noCollision().strength(0.5F).sound(SoundType.WOOD)) }
     @JvmField
-    val APRICORN_SIGN = this.create("apricorn_sign", CobblemonSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN), APRICORN_WOOD_TYPE))
+    val APRICORN_SIGN = this.create("apricorn_sign") { key -> CobblemonSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN).setId(key), APRICORN_WOOD_TYPE) }
 
     @JvmField //if you wonder why we don't copy of OAK_WALL_SIGN, then I can tell you its because it uses Properties#dropsLike to point to the SIGN loot table, but we cant use that in our setup due to a deeper rooted issue, so falling back to this and writing dedicated (duplicated) loot tables
-    val APRICORN_WALL_SIGN = this.create(
-        "apricorn_wall_sign",
-        CobblemonWallSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN), APRICORN_WOOD_TYPE)
-    )
+    val APRICORN_WALL_SIGN = this.create("apricorn_wall_sign") { key -> CobblemonWallSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN).setId(key), APRICORN_WOOD_TYPE) }
     @JvmField
-    val APRICORN_HANGING_SIGN = this.create(
-        "apricorn_hanging_sign",
-        CobblemonHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN), APRICORN_WOOD_TYPE)
-    )
+    val APRICORN_HANGING_SIGN = this.create("apricorn_hanging_sign") { key -> CobblemonHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN).setId(key), APRICORN_WOOD_TYPE) }
     @JvmField
-    val APRICORN_WALL_HANGING_SIGN = this.create("apricorn_wall_hanging_sign", CobblemonWallHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN), APRICORN_WOOD_TYPE))
+    val APRICORN_WALL_HANGING_SIGN = this.create("apricorn_wall_hanging_sign") { key -> CobblemonWallHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN).setId(key), APRICORN_WOOD_TYPE) }
     @JvmField
-    val APRICORN_SLAB = this.create("apricorn_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)))
+    val APRICORN_SLAB = this.create("apricorn_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)) }
     @JvmField
-    val APRICORN_STAIRS = this.create("apricorn_stairs", StairsBlockInvoker.`cobblemon$create`(APRICORN_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(APRICORN_PLANKS)))
+    val APRICORN_STAIRS = this.create("apricorn_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(APRICORN_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(APRICORN_PLANKS).setId(key)) }
     @JvmField
-    val APRICORN_DOOR = this.create("apricorn_door", DoorBlockInvoker.`cobblemon$create`(APRICORN_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().mapColor(APRICORN_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion()))
+    val APRICORN_DOOR = this.create("apricorn_door") { key -> DoorBlockInvoker.`cobblemon$create`(APRICORN_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(APRICORN_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion()) }
     @JvmField
-    val APRICORN_TRAPDOOR = this.create("apricorn_trapdoor", TrapdoorBlockInvoker.`cobblemon$create`(APRICORN_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion().isValidSpawn { _, _, _, _ -> false }))
+    val APRICORN_TRAPDOOR = this.create("apricorn_trapdoor") { key -> TrapdoorBlockInvoker.`cobblemon$create`(APRICORN_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion().isValidSpawn { _, _, _, _ -> false }) }
 
-    private val PLANT_PROPERTIES = BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY)
+    private fun plantProperties() = BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollision().randomTicks().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.POPPED)
     @JvmField
-    val BLACK_APRICORN_SAPLING = this.create("black_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.BLACK))
+    val BLACK_APRICORN_SAPLING = this.create("black_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.BLACK) }
     @JvmField
-    val BLUE_APRICORN_SAPLING = this.create("blue_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.BLUE))
+    val BLUE_APRICORN_SAPLING = this.create("blue_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.BLUE) }
     @JvmField
-    val GREEN_APRICORN_SAPLING = this.create("green_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.GREEN))
+    val GREEN_APRICORN_SAPLING = this.create("green_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.GREEN) }
     @JvmField
-    val PINK_APRICORN_SAPLING = this.create("pink_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.PINK))
+    val PINK_APRICORN_SAPLING = this.create("pink_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.PINK) }
     @JvmField
-    val RED_APRICORN_SAPLING = this.create("red_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.RED))
+    val RED_APRICORN_SAPLING = this.create("red_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.RED) }
     @JvmField
-    val WHITE_APRICORN_SAPLING = this.create("white_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.WHITE))
+    val WHITE_APRICORN_SAPLING = this.create("white_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.WHITE) }
     @JvmField
-    val YELLOW_APRICORN_SAPLING = this.create("yellow_apricorn_sapling", ApricornSaplingBlock(PLANT_PROPERTIES, Apricorn.YELLOW))
+    val YELLOW_APRICORN_SAPLING = this.create("yellow_apricorn_sapling") { key -> ApricornSaplingBlock(plantProperties().setId(key), Apricorn.YELLOW) }
 
     // Saccharines
     @JvmField
-    val SACCHARINE_LOG = this.create("saccharine_log", SaccharineLogBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava()))
+    val SACCHARINE_LOG = this.create("saccharine_log") { key -> SaccharineLogBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava()) }
     @JvmField
-    val SACCHARINE_LOG_SLATHERED = this.create("saccharine_log_slathered", SaccharineLogSlatheredBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava()))
+    val SACCHARINE_LOG_SLATHERED = this.create("saccharine_log_slathered") { key -> SaccharineLogSlatheredBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava()) }
 
     @JvmField
-    val STRIPPED_SACCHARINE_LOG = this.create("stripped_saccharine_log", RotatedPillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava())) //log("stripped_saccharine_log")
+    val STRIPPED_SACCHARINE_LOG = this.create("stripped_saccharine_log") { key -> RotatedPillarBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava()) } //log("stripped_saccharine_log")
     @JvmField
     val SACCHARINE_WOOD = log("saccharine_wood")
     @JvmField
-    val STRIPPED_SACCHARINE_WOOD = this.create("stripped_saccharine_wood", RotatedPillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava())) //log("stripped_saccharine_log")
+    val STRIPPED_SACCHARINE_WOOD = this.create("stripped_saccharine_wood") { key -> RotatedPillarBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava()) } //log("stripped_saccharine_log")
     @JvmField
-    val SACCHARINE_PLANKS = this.create("saccharine_planks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)))
+    val SACCHARINE_PLANKS = this.create("saccharine_planks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)) }
     @JvmField
-    val SACCHARINE_LEAVES = this.create("saccharine_leaves", SaccharineLeafBlock(
-        BlockBehaviour.Properties.of().mapColor(
+    val SACCHARINE_LEAVES = this.create("saccharine_leaves") { key -> SaccharineLeafBlock(
+        BlockBehaviour.Properties.of().setId(key).mapColor(
             MapColor.PLANT
         ).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()
             .isValidSpawn { _: BlockState?, _: BlockGetter?, _: BlockPos?, entity: EntityType<*>? ->
-                entity === EntityType.OCELOT || entity === EntityType.PARROT
+                entity === EntityTypes.OCELOT || entity === EntityTypes.PARROT
             }.isSuffocating { _: BlockState?, _: BlockGetter?, _: BlockPos? ->
                 false
-            }.isViewBlocking { _: BlockState?, _: BlockGetter?, _: BlockPos? ->
+            }.isViewBlocking { _, _, _, _ ->
                 false
-            }.ignitedByLava().pushReaction(PushReaction.DESTROY)
+            }.ignitedByLava().pushReaction(PushReaction.POPPED)
             .isRedstoneConductor { _: BlockState?, _: BlockGetter?, _: BlockPos? ->
                 false
-            }))
+            }) }
     @JvmField
-    val SACCHARINE_FENCE = this.create("saccharine_fence", FenceBlock(BlockBehaviour.Properties.of().mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)))
+    val SACCHARINE_FENCE = this.create("saccharine_fence") { key -> FenceBlock(BlockBehaviour.Properties.of().setId(key).mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)) }
     @JvmField
-    val SACCHARINE_FENCE_GATE = this.create("saccharine_fence_gate", FenceGateBlock(SACCHARINE_WOOD_TYPE, BlockBehaviour.Properties.of().mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava().forceSolidOn()))
+    val SACCHARINE_FENCE_GATE = this.create("saccharine_fence_gate") { key -> FenceGateBlock(SACCHARINE_WOOD_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava().forceSolidOn()) }
     @JvmField
-    val SACCHARINE_BUTTON = this.create("saccharine_button", BlocksInvoker.createWoodenButtonBlock(BlockSetType.OAK))
+    val SACCHARINE_BUTTON = this.create("saccharine_button") { key -> object : ButtonBlock(BlockSetType.OAK, 30, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_BUTTON).setId(key)) {} }
     @JvmField
-    val SACCHARINE_PRESSURE_PLATE = this.create("saccharine_pressure_plate", PressurePlateBlockInvoker.`cobblemon$create`(SACCHARINE_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).noCollission().strength(0.5F).sound(SoundType.WOOD)))
+    val SACCHARINE_PRESSURE_PLATE = this.create("saccharine_pressure_plate") { key -> PressurePlateBlockInvoker.`cobblemon$create`(SACCHARINE_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).noCollision().strength(0.5F).sound(SoundType.WOOD)) }
     @JvmField
-    val SACCHARINE_SIGN = this.create("saccharine_sign", CobblemonSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN), SACCHARINE_WOOD_TYPE))
+    val SACCHARINE_SIGN = this.create("saccharine_sign") { key -> CobblemonSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN).setId(key), SACCHARINE_WOOD_TYPE) }
     @JvmField
-    val SACCHARINE_WALL_SIGN = this.create("saccharine_wall_sign", CobblemonWallSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN), SACCHARINE_WOOD_TYPE))
+    val SACCHARINE_WALL_SIGN = this.create("saccharine_wall_sign") { key -> CobblemonWallSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SIGN).setId(key), SACCHARINE_WOOD_TYPE) }
     @JvmField
-    val SACCHARINE_HANGING_SIGN = this.create("saccharine_hanging_sign", CobblemonHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN), SACCHARINE_WOOD_TYPE))
+    val SACCHARINE_HANGING_SIGN = this.create("saccharine_hanging_sign") { key -> CobblemonHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN).setId(key), SACCHARINE_WOOD_TYPE) }
     @JvmField
-    val SACCHARINE_WALL_HANGING_SIGN = this.create("saccharine_wall_hanging_sign", CobblemonWallHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN), SACCHARINE_WOOD_TYPE))
+    val SACCHARINE_WALL_HANGING_SIGN = this.create("saccharine_wall_hanging_sign") { key -> CobblemonWallHangingSignBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_HANGING_SIGN).setId(key), SACCHARINE_WOOD_TYPE) }
     @JvmField
-    val SACCHARINE_SLAB = this.create("saccharine_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)))
+    val SACCHARINE_SLAB = this.create("saccharine_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD)) }
     @JvmField
-    val SACCHARINE_STAIRS = this.create("saccharine_stairs", StairsBlockInvoker.`cobblemon$create`(SACCHARINE_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SACCHARINE_PLANKS)))
+    val SACCHARINE_STAIRS = this.create("saccharine_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(SACCHARINE_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SACCHARINE_PLANKS).setId(key)) }
     @JvmField
-    val SACCHARINE_DOOR = this.create("saccharine_door", DoorBlockInvoker.`cobblemon$create`(SACCHARINE_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion()))
+    val SACCHARINE_DOOR = this.create("saccharine_door") { key -> DoorBlockInvoker.`cobblemon$create`(SACCHARINE_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(SACCHARINE_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion()) }
     @JvmField
-    val SACCHARINE_TRAPDOOR = this.create("saccharine_trapdoor", TrapdoorBlockInvoker.`cobblemon$create`(SACCHARINE_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion()))
+    val SACCHARINE_TRAPDOOR = this.create("saccharine_trapdoor") { key -> TrapdoorBlockInvoker.`cobblemon$create`(SACCHARINE_BLOCK_SET_TYPE, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(3.0F).sound(SoundType.WOOD).noOcclusion()) }
     @JvmField
-    val SACCHARINE_SAPLING = this.create("saccharine_sapling", SaplingBlock(SaccharineTreeGrower(), PLANT_PROPERTIES))
+    val SACCHARINE_SAPLING = this.create("saccharine_sapling") { key -> SaplingBlock(SaccharineTreeGrower(), plantProperties().setId(key)) }
 
     @JvmField
-    val MEDICINAL_LEEK = this.create("medicinal_leek", MedicinalLeekBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).ignitedByLava().mapColor(MapColor.CRIMSON_NYLIUM).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MEDICINAL_LEEK_SOUNDS)))
+    val MEDICINAL_LEEK = this.create("medicinal_leek") { key -> MedicinalLeekBlock(BlockBehaviour.Properties.of().setId(key).pushReaction(PushReaction.POPPED).ignitedByLava().mapColor(MapColor.CRIMSON_NYLIUM).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MEDICINAL_LEEK_SOUNDS)) }
 
     // TODO after 1.7
 //    @JvmField
-//    val BUGWORT = this.create("bugwort", BugwortBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).ignitedByLava().mapColor(MapColor.COLOR_PURPLE).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MEDICINAL_LEEK_SOUNDS)))
+//    val BUGWORT = this.create("bugwort", BugwortBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.POPPED).ignitedByLava().mapColor(MapColor.COLOR_PURPLE).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MEDICINAL_LEEK_SOUNDS)))
     @JvmField
-    val ENERGY_ROOT = this.create("energy_root", EnergyRootBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).ignitedByLava().mapColor(MapColor.DIRT).noCollission().randomTicks().instabreak().sound(CobblemonSounds.ENERGY_ROOT_SOUNDS)))
+    val ENERGY_ROOT = this.create("energy_root") { key -> EnergyRootBlock(BlockBehaviour.Properties.of().setId(key).pushReaction(PushReaction.POPPED).ignitedByLava().mapColor(MapColor.DIRT).noCollision().randomTicks().instabreak().sound(CobblemonSounds.ENERGY_ROOT_SOUNDS)) }
     @JvmField
-    val BIG_ROOT = this.create("big_root", BigRootBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).ignitedByLava().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak().sound(CobblemonSounds.BIG_ROOT_SOUNDS)))
+    val BIG_ROOT = this.create("big_root") { key -> BigRootBlock(BlockBehaviour.Properties.of().setId(key).pushReaction(PushReaction.POPPED).ignitedByLava().mapColor(MapColor.PLANT).noCollision().randomTicks().instabreak().sound(CobblemonSounds.BIG_ROOT_SOUNDS)) }
     @JvmField
-    val REVIVAL_HERB = this.create("revival_herb", RevivalHerbBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).mapColor(MapColor.PLANT).ignitedByLava().noCollission().instabreak().sound(CobblemonSounds.REVIVAL_HERB_SOUNDS)))
+    val REVIVAL_HERB = this.create("revival_herb") { key -> RevivalHerbBlock(BlockBehaviour.Properties.of().setId(key).pushReaction(PushReaction.POPPED).mapColor(MapColor.PLANT).ignitedByLava().noCollision().instabreak().sound(CobblemonSounds.REVIVAL_HERB_SOUNDS)) }
 
     @JvmField
-    val POKE_CAKE = this.create("poke_cake", PokeSnackBlock(BlockBehaviour.Properties.of().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY).lightLevel { if (it.getValue(BlockStateProperties.LIT)) 3 else 0 }, false))
+    val POKE_CAKE = this.create("poke_cake") { key -> PokeSnackBlock(BlockBehaviour.Properties.of().setId(key).forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.POPPED).lightLevel { if (it.getValue(BlockStateProperties.LIT)) 3 else 0 }, false) }
     @JvmField
-    val POKE_SNACK = this.create("poke_snack", PokeSnackBlock(BlockBehaviour.Properties.of().forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY).lightLevel { if (it.getValue(BlockStateProperties.LIT)) 3 else 0 }, true))
+    val POKE_SNACK = this.create("poke_snack") { key -> PokeSnackBlock(BlockBehaviour.Properties.of().setId(key).forceSolidOn().strength(0.5F).sound(SoundType.WOOL).pushReaction(PushReaction.POPPED).lightLevel { if (it.getValue(BlockStateProperties.LIT)) 3 else 0 }, true) }
 
     @JvmField
     val TUMBLESTONE_CLUSTER = tumblestoneBlock("tumblestone_cluster", TumblestoneBlock.STAGE_3, 7, 3, null, MapColor.TERRACOTTA_ORANGE)
@@ -284,16 +276,16 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     val SMALL_BUDDING_BLACK_TUMBLESTONE = tumblestoneBlock("small_budding_black_tumblestone", TumblestoneBlock.STAGE_0, 3, 4, MEDIUM_BUDDING_BLACK_TUMBLESTONE, MapColor.TERRACOTTA_BLACK)
 
     @JvmField
-    val TUMBLESTONE_BLOCK = this.create("tumblestone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val TUMBLESTONE_BLOCK = this.create("tumblestone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SKY_TUMBLESTONE_BLOCK = this.create("sky_tumblestone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SKY_TUMBLESTONE_BLOCK = this.create("sky_tumblestone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val BLACK_TUMBLESTONE_BLOCK = this.create("black_tumblestone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val BLACK_TUMBLESTONE_BLOCK = this.create("black_tumblestone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
 
     @JvmField
-    val TYPE_GEM_CORE = this.create("deepslate_crystal_core", TypeGemCoreBlock(BlockBehaviour.Properties.of().strength(4.0F, 10.0F).requiresCorrectToolForDrops().mapColor(MapColor.DEEPSLATE)))
+    val TYPE_GEM_CORE = this.create("deepslate_crystal_core") { key -> TypeGemCoreBlock(BlockBehaviour.Properties.of().setId(key).strength(4.0F, 10.0F).requiresCorrectToolForDrops().mapColor(MapColor.DEEPSLATE)) }
 
-    private val typeGemBlocks = mutableMapOf<ResourceLocation, Block>()
+    private val typeGemBlocks = mutableMapOf<Identifier, Block>()
 
     @JvmField
     val TYPE_GEM_BLOCK_NORMAL = typeGemBlock("normal_gem_block", MapColor.QUARTZ)
@@ -332,7 +324,7 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     @JvmField
     val TYPE_GEM_BLOCK_FAIRY = typeGemBlock("fairy_gem_block", MapColor.COLOR_PINK)
 
-    private val typeGemClusters = mutableMapOf<ResourceLocation, TypeGemClusterBlock>()
+    private val typeGemClusters = mutableMapOf<Identifier, TypeGemClusterBlock>()
 
     @JvmField
     val TYPE_GEM_CLUSTER_NORMAL = typeGemCluster("normal_gem_cluster", TYPE_GEM_BLOCK_NORMAL, cobblemonResource("normal_gem"), MapColor.QUARTZ)
@@ -372,106 +364,106 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     val TYPE_GEM_CLUSTER_FAIRY = typeGemCluster("fairy_gem_cluster", TYPE_GEM_BLOCK_FAIRY, cobblemonResource("fairy_gem"), MapColor.COLOR_PINK)
 
     @JvmField
-    val POLISHED_TUMBLESTONE = this.create("polished_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_TUMBLESTONE = this.create("polished_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val POLISHED_TUMBLESTONE_STAIRS = this.create("polished_tumblestone_stairs", StairsBlockInvoker.`cobblemon$create`(POLISHED_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_TUMBLESTONE)))
+    val POLISHED_TUMBLESTONE_STAIRS = this.create("polished_tumblestone_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(POLISHED_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_TUMBLESTONE).setId(key)) }
     @JvmField
-    val POLISHED_TUMBLESTONE_SLAB = this.create("polished_tumblestone_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_TUMBLESTONE_SLAB = this.create("polished_tumblestone_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val POLISHED_TUMBLESTONE_WALL = this.create("polished_tumblestone_wall", WallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_TUMBLESTONE_WALL = this.create("polished_tumblestone_wall") { key -> WallBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val CHISELED_POLISHED_TUMBLESTONE = this.create("chiseled_polished_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val CHISELED_POLISHED_TUMBLESTONE = this.create("chiseled_polished_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SMOOTH_TUMBLESTONE = this.create("smooth_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SMOOTH_TUMBLESTONE = this.create("smooth_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SMOOTH_TUMBLESTONE_STAIRS = this.create("smooth_tumblestone_stairs", StairsBlockInvoker.`cobblemon$create`(SMOOTH_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SMOOTH_TUMBLESTONE)))
+    val SMOOTH_TUMBLESTONE_STAIRS = this.create("smooth_tumblestone_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(SMOOTH_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SMOOTH_TUMBLESTONE).setId(key)) }
     @JvmField
-    val SMOOTH_TUMBLESTONE_SLAB = this.create("smooth_tumblestone_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SMOOTH_TUMBLESTONE_SLAB = this.create("smooth_tumblestone_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val TUMBLESTONE_BRICKS = this.create("tumblestone_bricks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val TUMBLESTONE_BRICKS = this.create("tumblestone_bricks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val TUMBLESTONE_BRICK_STAIRS = this.create("tumblestone_brick_stairs", StairsBlockInvoker.`cobblemon$create`(TUMBLESTONE_BRICKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(TUMBLESTONE_BRICKS)))
+    val TUMBLESTONE_BRICK_STAIRS = this.create("tumblestone_brick_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(TUMBLESTONE_BRICKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(TUMBLESTONE_BRICKS).setId(key)) }
     @JvmField
-    val TUMBLESTONE_BRICK_SLAB = this.create("tumblestone_brick_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val TUMBLESTONE_BRICK_SLAB = this.create("tumblestone_brick_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val TUMBLESTONE_BRICK_WALL = this.create("tumblestone_brick_wall", WallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val TUMBLESTONE_BRICK_WALL = this.create("tumblestone_brick_wall") { key -> WallBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val CHISELED_TUMBLESTONE_BRICKS = this.create("chiseled_tumblestone_bricks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val CHISELED_TUMBLESTONE_BRICKS = this.create("chiseled_tumblestone_bricks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
 
     @JvmField
-    val POLISHED_SKY_TUMBLESTONE = this.create("polished_sky_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_SKY_TUMBLESTONE = this.create("polished_sky_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val POLISHED_SKY_TUMBLESTONE_STAIRS = this.create("polished_sky_tumblestone_stairs", StairsBlockInvoker.`cobblemon$create`(POLISHED_SKY_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_SKY_TUMBLESTONE)))
+    val POLISHED_SKY_TUMBLESTONE_STAIRS = this.create("polished_sky_tumblestone_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(POLISHED_SKY_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_SKY_TUMBLESTONE).setId(key)) }
     @JvmField
-    val POLISHED_SKY_TUMBLESTONE_SLAB = this.create("polished_sky_tumblestone_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_SKY_TUMBLESTONE_SLAB = this.create("polished_sky_tumblestone_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val POLISHED_SKY_TUMBLESTONE_WALL = this.create("polished_sky_tumblestone_wall", WallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_SKY_TUMBLESTONE_WALL = this.create("polished_sky_tumblestone_wall") { key -> WallBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val CHISELED_POLISHED_SKY_TUMBLESTONE = this.create("chiseled_polished_sky_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val CHISELED_POLISHED_SKY_TUMBLESTONE = this.create("chiseled_polished_sky_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SMOOTH_SKY_TUMBLESTONE = this.create("smooth_sky_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SMOOTH_SKY_TUMBLESTONE = this.create("smooth_sky_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SMOOTH_SKY_TUMBLESTONE_STAIRS = this.create("smooth_sky_tumblestone_stairs", StairsBlockInvoker.`cobblemon$create`(SMOOTH_SKY_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SMOOTH_SKY_TUMBLESTONE)))
+    val SMOOTH_SKY_TUMBLESTONE_STAIRS = this.create("smooth_sky_tumblestone_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(SMOOTH_SKY_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SMOOTH_SKY_TUMBLESTONE).setId(key)) }
     @JvmField
-    val SMOOTH_SKY_TUMBLESTONE_SLAB = this.create("smooth_sky_tumblestone_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SMOOTH_SKY_TUMBLESTONE_SLAB = this.create("smooth_sky_tumblestone_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SKY_TUMBLESTONE_BRICKS = this.create("sky_tumblestone_bricks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SKY_TUMBLESTONE_BRICKS = this.create("sky_tumblestone_bricks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SKY_TUMBLESTONE_BRICK_STAIRS = this.create("sky_tumblestone_brick_stairs", StairsBlockInvoker.`cobblemon$create`(SKY_TUMBLESTONE_BRICKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SKY_TUMBLESTONE_BRICKS)))
+    val SKY_TUMBLESTONE_BRICK_STAIRS = this.create("sky_tumblestone_brick_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(SKY_TUMBLESTONE_BRICKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SKY_TUMBLESTONE_BRICKS).setId(key)) }
     @JvmField
-    val SKY_TUMBLESTONE_BRICK_SLAB = this.create("sky_tumblestone_brick_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SKY_TUMBLESTONE_BRICK_SLAB = this.create("sky_tumblestone_brick_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SKY_TUMBLESTONE_BRICK_WALL = this.create("sky_tumblestone_brick_wall", WallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SKY_TUMBLESTONE_BRICK_WALL = this.create("sky_tumblestone_brick_wall") { key -> WallBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val CHISELED_SKY_TUMBLESTONE_BRICKS = this.create("chiseled_sky_tumblestone_bricks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val CHISELED_SKY_TUMBLESTONE_BRICKS = this.create("chiseled_sky_tumblestone_bricks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
 
     @JvmField
-    val POLISHED_BLACK_TUMBLESTONE = this.create("polished_black_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_BLACK_TUMBLESTONE = this.create("polished_black_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val POLISHED_BLACK_TUMBLESTONE_STAIRS = this.create("polished_black_tumblestone_stairs", StairsBlockInvoker.`cobblemon$create`(POLISHED_BLACK_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_BLACK_TUMBLESTONE)))
+    val POLISHED_BLACK_TUMBLESTONE_STAIRS = this.create("polished_black_tumblestone_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(POLISHED_BLACK_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(POLISHED_BLACK_TUMBLESTONE).setId(key)) }
     @JvmField
-    val POLISHED_BLACK_TUMBLESTONE_SLAB = this.create("polished_black_tumblestone_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_BLACK_TUMBLESTONE_SLAB = this.create("polished_black_tumblestone_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val POLISHED_BLACK_TUMBLESTONE_WALL = this.create("polished_black_tumblestone_wall", WallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val POLISHED_BLACK_TUMBLESTONE_WALL = this.create("polished_black_tumblestone_wall") { key -> WallBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val CHISELED_POLISHED_BLACK_TUMBLESTONE = this.create("chiseled_polished_black_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val CHISELED_POLISHED_BLACK_TUMBLESTONE = this.create("chiseled_polished_black_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SMOOTH_BLACK_TUMBLESTONE = this.create("smooth_black_tumblestone", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SMOOTH_BLACK_TUMBLESTONE = this.create("smooth_black_tumblestone") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val SMOOTH_BLACK_TUMBLESTONE_STAIRS = this.create("smooth_black_tumblestone_stairs", StairsBlockInvoker.`cobblemon$create`(SMOOTH_BLACK_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SMOOTH_BLACK_TUMBLESTONE)))
+    val SMOOTH_BLACK_TUMBLESTONE_STAIRS = this.create("smooth_black_tumblestone_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(SMOOTH_BLACK_TUMBLESTONE.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(SMOOTH_BLACK_TUMBLESTONE).setId(key)) }
     @JvmField
-    val SMOOTH_BLACK_TUMBLESTONE_SLAB = this.create("smooth_black_tumblestone_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val SMOOTH_BLACK_TUMBLESTONE_SLAB = this.create("smooth_black_tumblestone_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val BLACK_TUMBLESTONE_BRICKS = this.create("black_tumblestone_bricks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val BLACK_TUMBLESTONE_BRICKS = this.create("black_tumblestone_bricks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val BLACK_TUMBLESTONE_BRICK_STAIRS = this.create("black_tumblestone_brick_stairs", StairsBlockInvoker.`cobblemon$create`(BLACK_TUMBLESTONE_BRICKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BLACK_TUMBLESTONE_BRICKS)))
+    val BLACK_TUMBLESTONE_BRICK_STAIRS = this.create("black_tumblestone_brick_stairs") { key -> StairsBlockInvoker.`cobblemon$create`(BLACK_TUMBLESTONE_BRICKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(BLACK_TUMBLESTONE_BRICKS).setId(key)) }
     @JvmField
-    val BLACK_TUMBLESTONE_BRICK_SLAB = this.create("black_tumblestone_brick_slab", SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val BLACK_TUMBLESTONE_BRICK_SLAB = this.create("black_tumblestone_brick_slab") { key -> SlabBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val BLACK_TUMBLESTONE_BRICK_WALL = this.create("black_tumblestone_brick_wall", WallBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val BLACK_TUMBLESTONE_BRICK_WALL = this.create("black_tumblestone_brick_wall") { key -> WallBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
     @JvmField
-    val CHISELED_BLACK_TUMBLESTONE_BRICKS = this.create("chiseled_black_tumblestone_bricks", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)))
+    val CHISELED_BLACK_TUMBLESTONE_BRICKS = this.create("chiseled_black_tumblestone_bricks") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_BLACK).strength(1.0F).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM)) }
 
     @JvmField
-    val FIRE_STONE_BLOCK = this.create("fire_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.FIRE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{13}))
+    val FIRE_STONE_BLOCK = this.create("fire_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.FIRE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{13}) }
     @JvmField
-    val WATER_STONE_BLOCK = this.create("water_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.WATER).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)))
+    val WATER_STONE_BLOCK = this.create("water_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WATER).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)) }
     @JvmField
-    val THUNDER_STONE_BLOCK = this.create("thunder_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.GLOW_LICHEN).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{8}))
+    val THUNDER_STONE_BLOCK = this.create("thunder_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.GLOW_LICHEN).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{8}) }
     @JvmField
-    val LEAF_STONE_BLOCK = this.create("leaf_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)))
+    val LEAF_STONE_BLOCK = this.create("leaf_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_GREEN).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)) }
     @JvmField
-    val ICE_STONE_BLOCK = this.create("ice_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.ICE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)))
+    val ICE_STONE_BLOCK = this.create("ice_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.ICE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)) }
     @JvmField
-    val SUN_STONE_BLOCK = this.create("sun_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{5}))
+    val SUN_STONE_BLOCK = this.create("sun_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{5}) }
     @JvmField
-    val MOON_STONE_BLOCK = this.create("moon_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)))
+    val MOON_STONE_BLOCK = this.create("moon_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.DEEPSLATE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)) }
     @JvmField
-    val SHINY_STONE_BLOCK = this.create("shiny_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{15}))
+    val SHINY_STONE_BLOCK = this.create("shiny_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.QUARTZ).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{15}) }
     @JvmField
-    val DAWN_STONE_BLOCK = this.create("dawn_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{15}))
+    val DAWN_STONE_BLOCK = this.create("dawn_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.DIAMOND).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT).lightLevel{15}) }
     @JvmField
-    val DUSK_STONE_BLOCK = this.create("dusk_stone_block", Block(BlockBehaviour.Properties.of().mapColor(MapColor.WARPED_HYPHAE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)))
+    val DUSK_STONE_BLOCK = this.create("dusk_stone_block") { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WARPED_HYPHAE).strength(1.0F).sound(CobblemonSounds.EVOLUTION_STONE_BLOCK_SOUNDS).requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BIT)) }
 
     @JvmField
     val BLACK_APRICORN = apricornBlock("black_apricorn", Apricorn.BLACK)
@@ -489,379 +481,359 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
     val YELLOW_APRICORN = apricornBlock("yellow_apricorn", Apricorn.YELLOW)
 
     @JvmField
-    val BLACK_CAMPFIRE_POT = create("campfire_pot_black",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
-                .strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()
-        )
-    )
+    val BLACK_CAMPFIRE_POT = create("campfire_pot_black") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_BLACK).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
+                .strength(0.5F).pushReaction(PushReaction.IMMOVEABLE).noOcclusion()
+        ) }
     @JvmField
-    val BLUE_CAMPFIRE_POT = create("campfire_pot_blue",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
-                .strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()
-        )
-    )
+    val BLUE_CAMPFIRE_POT = create("campfire_pot_blue") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_BLUE).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
+                .strength(0.5F).pushReaction(PushReaction.IMMOVEABLE).noOcclusion()
+        ) }
     @JvmField
-    val GREEN_CAMPFIRE_POT = create("campfire_pot_green",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
-                .strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()
-        )
-    )
+    val GREEN_CAMPFIRE_POT = create("campfire_pot_green") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_GREEN).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
+                .strength(0.5F).pushReaction(PushReaction.IMMOVEABLE).noOcclusion()
+        ) }
     @JvmField
-    val PINK_CAMPFIRE_POT = create("campfire_pot_pink",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
-                .strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()
-        )
-    )
+    val PINK_CAMPFIRE_POT = create("campfire_pot_pink") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_PINK).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
+                .strength(0.5F).pushReaction(PushReaction.IMMOVEABLE).noOcclusion()
+        ) }
     @JvmField
-    val RED_CAMPFIRE_POT = create("campfire_pot_red",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
-                .strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()
-        )
-    )
+    val RED_CAMPFIRE_POT = create("campfire_pot_red") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_RED).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
+                .strength(0.5F).pushReaction(PushReaction.IMMOVEABLE).noOcclusion()
+        ) }
     @JvmField
-    val WHITE_CAMPFIRE_POT = create("campfire_pot_white",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY)
-                .sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS).strength(0.5F).pushReaction(PushReaction.BLOCK)
+    val WHITE_CAMPFIRE_POT = create("campfire_pot_white") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_LIGHT_GRAY)
+                .sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS).strength(0.5F).pushReaction(PushReaction.IMMOVEABLE)
                 .noOcclusion()
-        )
-    )
+        ) }
     @JvmField
-    val YELLOW_CAMPFIRE_POT = create("campfire_pot_yellow",
-        CampfirePotBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
-                .strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()
-        )
-    )
+    val YELLOW_CAMPFIRE_POT = create("campfire_pot_yellow") { key -> CampfirePotBlock(
+            BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_YELLOW).sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS)
+                .strength(0.5F).pushReaction(PushReaction.IMMOVEABLE).noOcclusion()
+        ) }
 
     @JvmField
-    val HABITAT_BLOCK = this.create(
-        name = "habitat_block",
-        entry = HabitatBlock(
-            properties = BlockBehaviour.Properties.of()
+    val HABITAT_BLOCK = this.create(name = "habitat_block") { key -> HabitatBlock(
+            properties = BlockBehaviour.Properties.of().setId(key)
                 .mapColor(MapColor.STONE)
                 .strength(1.5F, Blocks.OBSIDIAN.explosionResistance)
-                .pushReaction(PushReaction.BLOCK)
-        )
-    )
+                .pushReaction(PushReaction.IMMOVEABLE)
+        ) }
 
 
     @JvmField
-    val CAMPFIRE = create("campfire", CampfireBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.BLOCK).mapColor(MapColor.PODZOL).strength(2.0F).lightLevel{14}, false))
+    val CAMPFIRE = create("campfire") { key -> CampfireBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.IMMOVEABLE).mapColor(MapColor.PODZOL).strength(2.0F).lightLevel{14}, false) }
 
     @JvmField
-    val SOUL_CAMPFIRE = create("soul_campfire", CampfireBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.BLOCK).mapColor(MapColor.PODZOL).strength(2.0F).lightLevel{9}, true))
+    val SOUL_CAMPFIRE = create("soul_campfire") { key -> CampfireBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.IMMOVEABLE).mapColor(MapColor.PODZOL).strength(2.0F).lightLevel{9}, true) }
 
     @JvmField
-    val RELIC_COIN_POUCH = create("relic_coin_pouch", CoinPouchBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.RELIC_COIN_POUCH_SOUNDS).pushReaction(PushReaction.DESTROY).noOcclusion(), true))
+    val RELIC_COIN_POUCH = create("relic_coin_pouch") { key -> CoinPouchBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.RELIC_COIN_POUCH_SOUNDS).pushReaction(PushReaction.POPPED).noOcclusion(), true) }
     @JvmField
-    val RELIC_COIN_SACK = create("relic_coin_sack", CoinPouchBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.RELIC_COIN_SACK_SOUNDS).pushReaction(PushReaction.DESTROY).strength(0.4F).mapColor(MapColor.GOLD), false))
+    val RELIC_COIN_SACK = create("relic_coin_sack") { key -> CoinPouchBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.RELIC_COIN_SACK_SOUNDS).pushReaction(PushReaction.POPPED).strength(0.4F).mapColor(MapColor.GOLD), false) }
 
     @JvmField
-    val GILDED_CHEST = create("gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.RED))
+    val GILDED_CHEST = create("gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.RED) }
     @JvmField
-    val BLUE_GILDED_CHEST = create("blue_gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.BLUE))
+    val BLUE_GILDED_CHEST = create("blue_gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.BLUE) }
     @JvmField
-    val BLACK_GILDED_CHEST = create("black_gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.BLACK))
+    val BLACK_GILDED_CHEST = create("black_gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.BLACK) }
     @JvmField
-    val YELLOW_GILDED_CHEST = create("yellow_gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.YELLOW))
+    val YELLOW_GILDED_CHEST = create("yellow_gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.YELLOW) }
     @JvmField
-    val WHITE_GILDED_CHEST = create("white_gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.WHITE))
+    val WHITE_GILDED_CHEST = create("white_gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.WHITE) }
     @JvmField
-    val GREEN_GILDED_CHEST = create("green_gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.GREEN))
+    val GREEN_GILDED_CHEST = create("green_gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.GREEN) }
     @JvmField
-    val PINK_GILDED_CHEST = create("pink_gilded_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.PINK))
+    val PINK_GILDED_CHEST = create("pink_gilded_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.PINK) }
     @JvmField
-    val GIMMIGHOUL_CHEST = create("gimmighoul_chest", GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.FAKE))
+    val GIMMIGHOUL_CHEST = create("gimmighoul_chest") { key -> GildedChestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CHEST).setId(key).noOcclusion().sound(CobblemonSounds.GILDED_CHEST_SOUNDS), GildedChestBlock.Type.FAKE) }
 
     @JvmField
-    val WHITE_PLAQUE = create("white_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val WHITE_PLAQUE = create("white_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val LIGHT_GRAY_PLAQUE = create("light_gray_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val LIGHT_GRAY_PLAQUE = create("light_gray_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val GRAY_PLAQUE = create("gray_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val GRAY_PLAQUE = create("gray_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val BLACK_PLAQUE = create("black_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val BLACK_PLAQUE = create("black_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val BROWN_PLAQUE = create("brown_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val BROWN_PLAQUE = create("brown_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val RED_PLAQUE = create("red_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val RED_PLAQUE = create("red_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val ORANGE_PLAQUE = create("orange_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val ORANGE_PLAQUE = create("orange_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val YELLOW_PLAQUE = create("yellow_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val YELLOW_PLAQUE = create("yellow_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val LIME_PLAQUE = create("lime_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val LIME_PLAQUE = create("lime_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val GREEN_PLAQUE = create("green_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val GREEN_PLAQUE = create("green_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val CYAN_PLAQUE = create("cyan_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val CYAN_PLAQUE = create("cyan_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val LIGHT_BLUE_PLAQUE = create("light_blue_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val LIGHT_BLUE_PLAQUE = create("light_blue_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val BLUE_PLAQUE = create("blue_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val BLUE_PLAQUE = create("blue_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val PURPLE_PLAQUE = create("purple_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val PURPLE_PLAQUE = create("purple_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val MAGENTA_PLAQUE = create("magenta_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val MAGENTA_PLAQUE = create("magenta_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
     @JvmField
-    val PINK_PLAQUE = create("pink_plaque", PlaqueBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.DESTROY).strength(5.0F)))
+    val PINK_PLAQUE = create("pink_plaque") { key -> PlaqueBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.METAL).noOcclusion().pushReaction(PushReaction.POPPED).strength(5.0F)) }
 
     @JvmField
-    val CLEANSE_TAG = create("cleanse_tag", WallAttachedStackableItemBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.ITEM_BLOCK_PAPER_SMALL_SOUNDS).mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).noOcclusion().noCollission(), WallAttachedStackableItemBlock.WallStackableItemBlockType.TAG))
+    val CLEANSE_TAG = create("cleanse_tag") { key -> WallAttachedStackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.ITEM_BLOCK_PAPER_SMALL_SOUNDS).mapColor(MapColor.NONE).pushReaction(PushReaction.POPPED).noOcclusion().noCollision(), WallAttachedStackableItemBlock.WallStackableItemBlockType.TAG) }
     @JvmField
-    val SPELL_TAG = create("spell_tag", WallAttachedStackableItemBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.ITEM_BLOCK_PAPER_SMALL_SOUNDS).mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).noOcclusion().noCollission(), WallAttachedStackableItemBlock.WallStackableItemBlockType.TAG))
+    val SPELL_TAG = create("spell_tag") { key -> WallAttachedStackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.ITEM_BLOCK_PAPER_SMALL_SOUNDS).mapColor(MapColor.NONE).pushReaction(PushReaction.POPPED).noOcclusion().noCollision(), WallAttachedStackableItemBlock.WallStackableItemBlockType.TAG) }
 
     @JvmField
-    val BLUNDER_POLICY = create("blunder_policy", WallAttachedDirectionalShapeBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.ITEM_BLOCK_PAPER_LARGE_SOUNDS).mapColor(MapColor.NONE).noOcclusion().noCollission(), 14, 12, 1))
+    val BLUNDER_POLICY = create("blunder_policy") { key -> WallAttachedDirectionalShapeBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.ITEM_BLOCK_PAPER_LARGE_SOUNDS).mapColor(MapColor.NONE).noOcclusion().noCollision(), 14, 12, 1) }
     @JvmField
-    val WEAKNESS_POLICY = create("weakness_policy", WallAttachedDirectionalShapeBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.ITEM_BLOCK_PAPER_LARGE_SOUNDS).mapColor(MapColor.NONE).noOcclusion().noCollission(), 14, 12, 1))
+    val WEAKNESS_POLICY = create("weakness_policy") { key -> WallAttachedDirectionalShapeBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.ITEM_BLOCK_PAPER_LARGE_SOUNDS).mapColor(MapColor.NONE).noOcclusion().noCollision(), 14, 12, 1) }
 
     @JvmField
-    val RING_TARGET = create("ring_target", RingTargetBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOD).mapColor(MapColor.NONE).noOcclusion().strength(0.125f)))
+    val RING_TARGET = create("ring_target") { key -> RingTargetBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOD).mapColor(MapColor.NONE).noOcclusion().strength(0.125f)) }
     @JvmField
-    val MAGNET = create("magnet", MagnetBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.NONE).noOcclusion().strength(0.075f)))
+    val MAGNET = create("magnet") { key -> MagnetBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.NONE).noOcclusion().strength(0.075f)) }
     @JvmField
-    val GALARICA_WREATH = create("galarica_wreath", GalaricaWreathBlock(BlockBehaviour.Properties.of().sound(SoundType.AZALEA_LEAVES).mapColor(MapColor.NONE).noOcclusion().noCollission()))
+    val GALARICA_WREATH = create("galarica_wreath") { key -> GalaricaWreathBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.AZALEA_LEAVES).mapColor(MapColor.NONE).noOcclusion().noCollision()) }
 
     @JvmField
-    val FLAME_ORB = create("flame_orb", OrbBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().lightLevel{15}))
+    val FLAME_ORB = create("flame_orb") { key -> OrbBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().lightLevel{15}) }
     @JvmField
-    val TOXIC_ORB = create("toxic_orb", OrbBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion()))
+    val TOXIC_ORB = create("toxic_orb") { key -> OrbBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion()) }
     @JvmField
-    val LIFE_ORB = create("life_orb", OrbBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().lightLevel{7}))
+    val LIFE_ORB = create("life_orb") { key -> OrbBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().lightLevel{7}) }
     @JvmField
-    val LIGHT_BALL = create("light_ball", OrbBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().lightLevel{13}))
+    val LIGHT_BALL = create("light_ball") { key -> OrbBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().lightLevel{13}) }
     @JvmField
-    val SMOKE_BALL = create("smoke_ball", OrbBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion()))
+    val SMOKE_BALL = create("smoke_ball") { key -> OrbBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion()) }
 
     @JvmField
-    val KINGS_ROCK = create("kings_rock", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.CENTERED_6x))
+    val KINGS_ROCK = create("kings_rock") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.TUMBLESTONE_BLOCK_SOUNDS).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.CENTERED_6x) }
 
     @JvmField
-    val GALARICA_CUFF = create("galarica_cuff", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.AZALEA_LEAVES).mapColor(MapColor.NONE).noCollission().noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_10x4))
+    val GALARICA_CUFF = create("galarica_cuff") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.AZALEA_LEAVES).mapColor(MapColor.NONE).noCollision().noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_10x4) }
     @JvmField
-    val UNREMARKABLE_TEACUP = create("unremarkable_teacup", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEACUP))
+    val UNREMARKABLE_TEACUP = create("unremarkable_teacup") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEACUP) }
     @JvmField
-    val MASTERPIECE_TEACUP = create("masterpiece_teacup", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEACUP))
+    val MASTERPIECE_TEACUP = create("masterpiece_teacup") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEACUP) }
     @JvmField
-    val CHIPPED_POT = create("chipped_pot", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEAPOT))
+    val CHIPPED_POT = create("chipped_pot") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEAPOT) }
     @JvmField
-    val CRACKED_POT = create("cracked_pot", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEAPOT))
+    val CRACKED_POT = create("cracked_pot") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DECORATED_POT).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.TEAPOT) }
 
     @JvmField
-    val SACHET = create("sachet", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.POUCH))
+    val SACHET = create("sachet") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.POUCH) }
     @JvmField
-    val METAL_POWDER = create("metal_powder", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.POUCH))
+    val METAL_POWDER = create("metal_powder") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.POUCH) }
     @JvmField
-    val QUICK_POWDER = create("quick_powder", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.POUCH))
+    val QUICK_POWDER = create("quick_powder") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.POUCH) }
     @JvmField
-    val BRIGHT_POWDER = create("bright_powder", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion().lightLevel{3}, DecorativeItemBlock.DecorativeItemBlockType.POUCH))
+    val BRIGHT_POWDER = create("bright_powder") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion().lightLevel{3}, DecorativeItemBlock.DecorativeItemBlockType.POUCH) }
 
     @JvmField
-    val NEVER_MELT_ICE = create("never_melt_ice", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().friction(0.989F), DecorativeItemBlock.DecorativeItemBlockType.NEVERMELT))
+    val NEVER_MELT_ICE = create("never_melt_ice") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.GLASS).mapColor(MapColor.NONE).noOcclusion().friction(0.989F), DecorativeItemBlock.DecorativeItemBlockType.NEVERMELT) }
     @JvmField
-    val SCOPE_LENS = create("scope_lens", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.COPPER).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.SCOPE))
+    val SCOPE_LENS = create("scope_lens") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.COPPER).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.SCOPE) }
     @JvmField
-    val WIDE_LENS = create("wide_lens", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.COPPER).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.WIDE))
+    val WIDE_LENS = create("wide_lens") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.COPPER).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.WIDE) }
     @JvmField
-    val ZOOM_LENS = create("zoom_lens", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.COPPER).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.ZOOM))
+    val ZOOM_LENS = create("zoom_lens") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.COPPER).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.ZOOM) }
 
     @JvmField
-    val ICY_ROCK = create("icy_rock", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x4))
+    val ICY_ROCK = create("icy_rock") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x4) }
     @JvmField
-    val HEAT_ROCK = create("heat_rock", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x4))
+    val HEAT_ROCK = create("heat_rock") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x4) }
     @JvmField
-    val SMOOTH_ROCK = create("smooth_rock", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x4))
+    val SMOOTH_ROCK = create("smooth_rock") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x4) }
     @JvmField
-    val DAMP_ROCK = create("damp_rock", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x6))
+    val DAMP_ROCK = create("damp_rock") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.DEEPSLATE).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.FLATTENED_8x6) }
     @JvmField
-    val DESTINY_KNOT = create("destiny_knot", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.KNOT))
+    val DESTINY_KNOT = create("destiny_knot") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.WOOL).mapColor(MapColor.NONE).noOcclusion(), DecorativeItemBlock.DecorativeItemBlockType.KNOT) }
     @JvmField
-    val LUMINOUS_MOSS = create("luminous_moss", DecorativeItemBlock(BlockBehaviour.Properties.of().sound(SoundType.MOSS).mapColor(MapColor.NONE).noOcclusion().lightLevel{5}, DecorativeItemBlock.DecorativeItemBlockType.CENTERED_8x))
+    val LUMINOUS_MOSS = create("luminous_moss") { key -> DecorativeItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.MOSS).mapColor(MapColor.NONE).noOcclusion().lightLevel{5}, DecorativeItemBlock.DecorativeItemBlockType.CENTERED_8x) }
 
     @JvmField
-    val METRONOME = create("metronome", ActivatableDecorationBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).noOcclusion(), ActivatableDecorationBlock.ActivatableDecorationBlockType.METRONOME))
+    val METRONOME = create("metronome") { key -> ActivatableDecorationBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.NONE).pushReaction(PushReaction.POPPED).noOcclusion(), ActivatableDecorationBlock.ActivatableDecorationBlockType.METRONOME) }
     @JvmField
-    val EJECT_BUTTON = create("eject_button", EjectButtonBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.NONE).pushReaction(PushReaction.DESTROY).noOcclusion().strength(0.125f), 40))
+    val EJECT_BUTTON = create("eject_button") { key -> EjectButtonBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.NONE).pushReaction(PushReaction.POPPED).noOcclusion().strength(0.125f), 40) }
 
     @JvmField
-    val LOADED_DICE = create("loaded_dice", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.DICE))
+    val LOADED_DICE = create("loaded_dice") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.DICE) }
     @JvmField
-    val IRON_BALL = create("iron_ball", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.IRON_BALL))
+    val IRON_BALL = create("iron_ball") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.IRON_BALL) }
     @JvmField
-    val METAL_COAT = create("metal_coat", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.METAL_COAT))
+    val METAL_COAT = create("metal_coat") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.METAL).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.METAL_COAT) }
     @JvmField
-    val UPGRADE = create("upgrade", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.UPGRADE))
+    val UPGRADE = create("upgrade") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.UPGRADE) }
     @JvmField
-    val DUBIOUS_DISC = create("dubious_disc", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.UPGRADE))
+    val DUBIOUS_DISC = create("dubious_disc") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.UPGRADE) }
 
     @JvmField
-    val THROAT_SPRAY = create("throat_spray", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.THROAT_SPRAY))
+    val THROAT_SPRAY = create("throat_spray") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.THROAT_SPRAY) }
 
     @JvmField
-    val FULL_HEAL = create("full_heal", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE))
+    val FULL_HEAL = create("full_heal") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE) }
     @JvmField
-    val ANTIDOTE = create("antidote", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE))
+    val ANTIDOTE = create("antidote") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE) }
     @JvmField
-    val AWAKENING = create("awakening", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE))
+    val AWAKENING = create("awakening") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE) }
     @JvmField
-    val BURN_HEAL = create("burn_heal", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE))
+    val BURN_HEAL = create("burn_heal") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE) }
     @JvmField
-    val ICE_HEAL = create("ice_heal", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE))
+    val ICE_HEAL = create("ice_heal") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE) }
     @JvmField
-    val PARALYZE_HEAL = create("paralyze_heal", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE))
+    val PARALYZE_HEAL = create("paralyze_heal") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.STATUS_RESTORE) }
 
     @JvmField
-    val ETHER = create("ether", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER))
+    val ETHER = create("ether") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER) }
     @JvmField
-    val MAX_ETHER = create("max_ether", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER))
+    val MAX_ETHER = create("max_ether") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER) }
     @JvmField
-    val ELIXIR = create("elixir", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER))
+    val ELIXIR = create("elixir") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER) }
     @JvmField
-    val MAX_ELIXIR = create("max_elixir", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER))
+    val MAX_ELIXIR = create("max_elixir") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.ETHER) }
 
     @JvmField
-    val POTION = create("potion", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.POTION))
+    val POTION = create("potion") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.POTION) }
     @JvmField
-    val SUPER_POTION = create("super_potion", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.POTION))
+    val SUPER_POTION = create("super_potion") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.POTION) }
     @JvmField
-    val HYPER_POTION = create("hyper_potion", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.POTION))
+    val HYPER_POTION = create("hyper_potion") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.POTION) }
     @JvmField
-    val MAX_POTION = create("max_potion", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.MAX_POTION))
+    val MAX_POTION = create("max_potion") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.MAX_POTION) }
     @JvmField
-    val FULL_RESTORE = create("full_restore", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.MAX_POTION))
+    val FULL_RESTORE = create("full_restore") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.MAX_POTION) }
 
     @JvmField
-    val DIRE_HIT = create("dire_hit", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val DIRE_HIT = create("dire_hit") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val GUARD_SPEC = create("guard_spec", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val GUARD_SPEC = create("guard_spec") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val X_ACCURACY = create("x_${Stats.ACCURACY.identifier.path}", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val X_ACCURACY = create("x_${Stats.ACCURACY.identifier.path}") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val X_ATTACK = create("x_${Stats.ATTACK.identifier.path}", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val X_ATTACK = create("x_${Stats.ATTACK.identifier.path}") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val X_DEFENSE = create("x_${Stats.DEFENCE.identifier.path}", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val X_DEFENSE = create("x_${Stats.DEFENCE.identifier.path}") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val X_SP_ATK = create("x_${Stats.SPECIAL_ATTACK.identifier.path}", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val X_SP_ATK = create("x_${Stats.SPECIAL_ATTACK.identifier.path}") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val X_SP_DEF = create("x_${Stats.SPECIAL_DEFENCE.identifier.path}", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val X_SP_DEF = create("x_${Stats.SPECIAL_DEFENCE.identifier.path}") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
     @JvmField
-    val X_SPEED = create("x_${Stats.SPEED.identifier.path}", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM))
+    val X_SPEED = create("x_${Stats.SPEED.identifier.path}") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.BATTLE_ITEM) }
 
     @JvmField
-    val HP_UP = create("hp_up", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val HP_UP = create("hp_up") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val PROTEIN = create("protein", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val PROTEIN = create("protein") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val IRON = create("iron", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val IRON = create("iron") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val CARBOS = create("carbos", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val CARBOS = create("carbos") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val CALCIUM = create("calcium", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val CALCIUM = create("calcium") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val ZINC = create("zinc", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val ZINC = create("zinc") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val PP_UP = create("pp_up", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val PP_UP = create("pp_up") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
     @JvmField
-    val PP_MAX = create("pp_max", StackableItemBlock(BlockBehaviour.Properties.of().sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN))
+    val PP_MAX = create("pp_max") { key -> StackableItemBlock(BlockBehaviour.Properties.of().setId(key).sound(SoundType.CANDLE).mapColor(MapColor.NONE).noOcclusion(), StackableItemBlock.StackableItemBlockType.VITAMIN) }
 
     @JvmField
-    val MONITOR = create("monitor", MonitorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.BLOCK).requiresCorrectToolForDrops().strength(5.0F, 6.0F).lightLevel { if (it.getValue(MonitorBlock.SCREEN) != MonitorBlock.MonitorScreen.OFF) 13 else 0 }))
+    val MONITOR = create("monitor") { key -> MonitorBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.IMMOVEABLE).requiresCorrectToolForDrops().strength(5.0F, 6.0F).lightLevel { if (it.getValue(MonitorBlock.SCREEN) != MonitorBlock.MonitorScreen.OFF) 13 else 0 }) }
     @JvmField
-    val DAMAGED_MONITOR = create("damaged_monitor", DamagedMonitorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.BLOCK).requiresCorrectToolForDrops().strength(5.0F, 6.0F).lightLevel { when (it.getValue(DamagedMonitorBlock.SCREEN)) { DamagedMonitorBlock.BrokenMonitorScreen.GLITCHING -> 10; else -> 0 } }))
+    val DAMAGED_MONITOR = create("damaged_monitor") { key -> DamagedMonitorBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.IMMOVEABLE).requiresCorrectToolForDrops().strength(5.0F, 6.0F).lightLevel { when (it.getValue(DamagedMonitorBlock.SCREEN)) { DamagedMonitorBlock.BrokenMonitorScreen.GLITCHING -> 10; else -> 0 } }) }
     @JvmField
-    val FOSSIL_ANALYZER = create("fossil_analyzer", FossilAnalyzerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.BLOCK).requiresCorrectToolForDrops().strength(5.0F, 6.0F).noOcclusion()))
+    val FOSSIL_ANALYZER = create("fossil_analyzer") { key -> FossilAnalyzerBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.IMMOVEABLE).requiresCorrectToolForDrops().strength(5.0F, 6.0F).noOcclusion()) }
     @JvmField
-    val RESTORATION_TANK = create("restoration_tank", RestorationTankBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.GLASS).pushReaction(PushReaction.BLOCK).requiresCorrectToolForDrops().strength(5.0F, 6.0F).noOcclusion()))
+    val RESTORATION_TANK = create("restoration_tank") { key -> RestorationTankBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).sound(SoundType.GLASS).pushReaction(PushReaction.IMMOVEABLE).requiresCorrectToolForDrops().strength(5.0F, 6.0F).noOcclusion()) }
 
     @JvmField
-    val HEALING_MACHINE = create("healing_machine", HealingMachineBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.BLOCK).strength(2F).noOcclusion().lightLevel { if (it.getValue(HealingMachineBlock.CHARGE_LEVEL) >= HealingMachineBlock.MAX_CHARGE_LEVEL) 12 else 5 }))
+    val HEALING_MACHINE = create("healing_machine") { key -> HealingMachineBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.IMMOVEABLE).strength(2F).noOcclusion().lightLevel { if (it.getValue(HealingMachineBlock.CHARGE_LEVEL) >= HealingMachineBlock.MAX_CHARGE_LEVEL) 12 else 5 }) }
 
     @JvmField
-    val PC = create("pc", PCBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.BLOCK).strength(2F).noOcclusion().lightLevel { if ((it.getValue(PCBlock.ON) as Boolean) && (it.getValue(PCBlock.PART) == PCBlock.PCPart.TOP)) 13 else 0 }))
+    val PC = create("pc") { key -> PCBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.METAL).sound(SoundType.METAL).pushReaction(PushReaction.IMMOVEABLE).strength(2F).noOcclusion().lightLevel { if ((it.getValue(PCBlock.ON) as Boolean) && (it.getValue(PCBlock.PART) == PCBlock.PCPart.TOP)) 13 else 0 }) }
 
-    val TM_MACHINE = create(
-            "tm_machine",
-        TMMachineBlock(
-            BlockBehaviour.Properties.of()
+    val TM_MACHINE = create("tm_machine") { key -> TMMachineBlock(
+            BlockBehaviour.Properties.of().setId(key)
                 .mapColor(MapColor.COLOR_GREEN)
                 .sound(SoundType.METAL)
-                .pushReaction(PushReaction.BLOCK)
+                .pushReaction(PushReaction.IMMOVEABLE)
                 .strength(2F)
                 .noOcclusion()
-        )
-    )
+        ) }
 
 
     @JvmField
-    val LECTERN = create("lectern", LecternBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).sound(SoundType.WOOD).strength(2.5F).ignitedByLava().lightLevel { if (it.getValue(LecternBlock.EMIT_LIGHT) as Boolean) 13 else 0 }))
+    val LECTERN = create("lectern") { key -> LecternBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).sound(SoundType.WOOD).strength(2.5F).ignitedByLava().lightLevel { if (it.getValue(LecternBlock.EMIT_LIGHT) as Boolean) 13 else 0 }) }
 
     @JvmField
-    val DISC_SHELF = create("disc_shelf", DiscShelfBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).sound(SoundType.METAL).strength(2.5F)))
+    val DISC_SHELF = create("disc_shelf") { key -> DiscShelfBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).sound(SoundType.METAL).strength(2.5F)) }
 
     @JvmField
-    val DISPLAY_CASE = create("display_case", DisplayCaseBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.DISPLAY_CASE_SOUNDS).noOcclusion().pushReaction(PushReaction.BLOCK).mapColor(MapColor.STONE).strength(0.3F).requiresCorrectToolForDrops()))
+    val DISPLAY_CASE = create("display_case") { key -> DisplayCaseBlock(BlockBehaviour.Properties.of().setId(key).sound(CobblemonSounds.DISPLAY_CASE_SOUNDS).noOcclusion().pushReaction(PushReaction.IMMOVEABLE).mapColor(MapColor.STONE).strength(0.3F).requiresCorrectToolForDrops()) }
 
     // TODO after 1.7
 //    @JvmField
-//    val INCENSE_SWEET = create("incense_sweet", SweetIncenseBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.DISPLAY_CASE_SOUNDS).noOcclusion().pushReaction(PushReaction.BLOCK).mapColor(MapColor.STONE).strength(0.3F)))
+//    val INCENSE_SWEET = create("incense_sweet", SweetIncenseBlock(BlockBehaviour.Properties.of().sound(CobblemonSounds.DISPLAY_CASE_SOUNDS).noOcclusion().pushReaction(PushReaction.IMMOVEABLE).mapColor(MapColor.STONE).strength(0.3F)))
 
     @JvmField
-    val PASTURE = create("pasture", PastureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).sound(SoundType.WOOD).strength(2F).noOcclusion().pushReaction(PushReaction.BLOCK).lightLevel { if ((it.getValue(PastureBlock.ON) as Boolean) && (it.getValue(PastureBlock.PART) == PastureBlock.PasturePart.TOP)) 13 else 0 }))
+    val PASTURE = create("pasture") { key -> PastureBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_BROWN).sound(SoundType.WOOD).strength(2F).noOcclusion().pushReaction(PushReaction.IMMOVEABLE).lightLevel { if ((it.getValue(PastureBlock.ON) as Boolean) && (it.getValue(PastureBlock.PART) == PastureBlock.PasturePart.TOP)) 13 else 0 }) }
 
-    val RED_MINT = create("red_mint", MintBlock(MintType.RED, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.DESTROY)))
+    val RED_MINT = create("red_mint") { key -> MintBlock(MintType.RED, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_RED).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.POPPED)) }
     @JvmField
-    val BLUE_MINT = create("blue_mint", MintBlock(MintType.BLUE, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.DESTROY)))
+    val BLUE_MINT = create("blue_mint") { key -> MintBlock(MintType.BLUE, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_BLUE).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.POPPED)) }
     @JvmField
-    val CYAN_MINT = create("cyan_mint", MintBlock(MintType.CYAN, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.DESTROY)))
+    val CYAN_MINT = create("cyan_mint") { key -> MintBlock(MintType.CYAN, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_CYAN).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.POPPED)) }
     @JvmField
-    val PINK_MINT = create("pink_mint", MintBlock(MintType.PINK, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.DESTROY)))
+    val PINK_MINT = create("pink_mint") { key -> MintBlock(MintType.PINK, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_PINK).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.POPPED)) }
     @JvmField
-    val GREEN_MINT = create("green_mint", MintBlock(MintType.GREEN, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.DESTROY)))
+    val GREEN_MINT = create("green_mint") { key -> MintBlock(MintType.GREEN, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.COLOR_GREEN).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.POPPED)) }
     @JvmField
-    val WHITE_MINT = create("white_mint", MintBlock(MintType.WHITE, BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollission().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.DESTROY)))
-
-    @JvmField
-    val VIVICHOKE_SEEDS = this.create("vivichoke_seeds", VivichokeBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).ignitedByLava().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak().sound(CobblemonSounds.VIVICHOKE_SOUNDS)))
-    @JvmField
-    val PEP_UP_FLOWER = this.create("pep_up_flower", FlowerBlock(MobEffects.LEVITATION, 10F, BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY)))
-    @JvmField
-    val POTTED_PEP_UP_FLOWER = this.create("potted_pep_up_flower", BlocksInvoker.createFlowerPotBlock(PEP_UP_FLOWER))
-    @JvmField
-    val HEARTY_GRAINS = this.create("hearty_grains", HeartyGrainsBlock(BlockBehaviour.Properties.of().pushReaction(PushReaction.DESTROY).ignitedByLava().mapColor(MapColor.PLANT).noCollission().randomTicks().instabreak()))
+    val WHITE_MINT = create("white_mint") { key -> MintBlock(MintType.WHITE, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak().sound(CobblemonSounds.MINT_SOUNDS).pushReaction(PushReaction.POPPED)) }
 
     @JvmField
-    val GALARICA_NUT_BUSH = this.create("galarica_nut_bush", NutBushBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).randomTicks().noCollission().sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.DESTROY)))
+    val VIVICHOKE_SEEDS = this.create("vivichoke_seeds") { key -> VivichokeBlock(BlockBehaviour.Properties.of().setId(key).pushReaction(PushReaction.POPPED).ignitedByLava().mapColor(MapColor.PLANT).noCollision().randomTicks().instabreak().sound(CobblemonSounds.VIVICHOKE_SOUNDS)) }
+    @JvmField
+    val PEP_UP_FLOWER = this.create("pep_up_flower") { key -> FlowerBlock(MobEffects.LEVITATION, 10F, BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED)) }
+    @JvmField
+    val POTTED_PEP_UP_FLOWER = this.create("potted_pep_up_flower") { key -> FlowerPotBlock(PEP_UP_FLOWER, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+    @JvmField
+    val HEARTY_GRAINS = this.create("hearty_grains") { key -> HeartyGrainsBlock(BlockBehaviour.Properties.of().setId(key).pushReaction(PushReaction.POPPED).ignitedByLava().mapColor(MapColor.PLANT).noCollision().randomTicks().instabreak()) }
 
     @JvmField
-    val POTTED_RED_APRICORN_SAPLING = this.create("potted_red_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(RED_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_YELLOW_APRICORN_SAPLING = this.create("potted_yellow_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(YELLOW_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_GREEN_APRICORN_SAPLING = this.create("potted_green_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(GREEN_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_BLUE_APRICORN_SAPLING = this.create("potted_blue_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(BLUE_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_PINK_APRICORN_SAPLING = this.create("potted_pink_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(PINK_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_BLACK_APRICORN_SAPLING = this.create("potted_black_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(BLACK_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_WHITE_APRICORN_SAPLING = this.create("potted_white_apricorn_sapling", BlocksInvoker.createFlowerPotBlock(WHITE_APRICORN_SAPLING))
-    @JvmField
-    val POTTED_SACCHARINE_SAPLING = this.create("potted_saccharine_sapling", BlocksInvoker.createFlowerPotBlock(SACCHARINE_SAPLING))
+    val GALARICA_NUT_BUSH = this.create("galarica_nut_bush") { key -> NutBushBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.PLANT).randomTicks().noCollision().sound(SoundType.SWEET_BERRY_BUSH).pushReaction(PushReaction.POPPED)) }
 
     @JvmField
-    val HEARTY_GRAIN_BALE = this.create("hearty_grain_bale", BaleBlock(BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).instrument(NoteBlockInstrument.BANJO).strength(0.5F).sound(CobblemonSounds.HEARTY_GRAIN_BALE_SOUNDS)))
+    val POTTED_RED_APRICORN_SAPLING = this.create("potted_red_apricorn_sapling") { key -> FlowerPotBlock(RED_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
     @JvmField
-    val TATAMI_BLOCK = this.create("tatami_block", HorizontalRotationalBlock(BlockBehaviour.Properties.of().ignitedByLava().mapColor(MapColor.PLANT).strength(0.1F).sound(CobblemonSounds.TATAMI_BLOCK_SOUNDS)))
+    val POTTED_YELLOW_APRICORN_SAPLING = this.create("potted_yellow_apricorn_sapling") { key -> FlowerPotBlock(YELLOW_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
     @JvmField
-    val TATAMI_MAT = this.create("tatami_mat", HorizontalRotationCarpetBlock(BlockBehaviour.Properties.of().ignitedByLava().mapColor(MapColor.PLANT).strength(0.1F).sound(CobblemonSounds.TATAMI_MAT_SOUNDS)))
+    val POTTED_GREEN_APRICORN_SAPLING = this.create("potted_green_apricorn_sapling") { key -> FlowerPotBlock(GREEN_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+    @JvmField
+    val POTTED_BLUE_APRICORN_SAPLING = this.create("potted_blue_apricorn_sapling") { key -> FlowerPotBlock(BLUE_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+    @JvmField
+    val POTTED_PINK_APRICORN_SAPLING = this.create("potted_pink_apricorn_sapling") { key -> FlowerPotBlock(PINK_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+    @JvmField
+    val POTTED_BLACK_APRICORN_SAPLING = this.create("potted_black_apricorn_sapling") { key -> FlowerPotBlock(BLACK_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+    @JvmField
+    val POTTED_WHITE_APRICORN_SAPLING = this.create("potted_white_apricorn_sapling") { key -> FlowerPotBlock(WHITE_APRICORN_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+    @JvmField
+    val POTTED_SACCHARINE_SAPLING = this.create("potted_saccharine_sapling") { key -> FlowerPotBlock(SACCHARINE_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT).setId(key)) }
+
+    @JvmField
+    val HEARTY_GRAIN_BALE = this.create("hearty_grain_bale") { key -> BaleBlock(BlockBehaviour.Properties.of().setId(key).mapColor(MapColor.PLANT).instrument(NoteBlockInstrument.BANJO).strength(0.5F).sound(CobblemonSounds.HEARTY_GRAIN_BALE_SOUNDS)) }
+    @JvmField
+    val TATAMI_BLOCK = this.create("tatami_block") { key -> HorizontalRotationalBlock(BlockBehaviour.Properties.of().setId(key).ignitedByLava().mapColor(MapColor.PLANT).strength(0.1F).sound(CobblemonSounds.TATAMI_BLOCK_SOUNDS)) }
+    @JvmField
+    val TATAMI_MAT = this.create("tatami_mat") { key -> HorizontalRotationCarpetBlock(BlockBehaviour.Properties.of().setId(key).ignitedByLava().mapColor(MapColor.PLANT).strength(0.1F).sound(CobblemonSounds.TATAMI_MAT_SOUNDS)) }
 
     /**
      * Returns a map of all the blocks that can be stripped with an axe in the format of input - output.
@@ -876,19 +848,19 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
         SACCHARINE_LOG_SLATHERED to STRIPPED_SACCHARINE_LOG
     )
 
-    private fun apricornBlock(name: String, apricorn: Apricorn): ApricornBlock = this.create(name, ApricornBlock(BlockBehaviour.Properties.of().mapColor(apricorn.mapColor()).randomTicks().strength(Blocks.OAK_LOG.defaultDestroyTime(), Blocks.OAK_LOG.explosionResistance).sound(SoundType.WOOD).noOcclusion(), apricorn))
+    private fun apricornBlock(name: String, apricorn: Apricorn): ApricornBlock = this.create(name) { key -> ApricornBlock(BlockBehaviour.Properties.of().setId(key).mapColor(apricorn.mapColor()).randomTicks().strength(Blocks.OAK_LOG.defaultDestroyTime(), Blocks.OAK_LOG.explosionResistance).sound(SoundType.WOOD).noOcclusion(), apricorn) }
 
     private fun tumblestoneBlock(name: String, stage: Int, height: Int, xzOffset: Int, nextStage: Block?, mapColor: MapColor) : Block {
-        return this.create(name, TumblestoneBlock(BlockBehaviour.Properties.of()
+        return this.create(name) { key -> TumblestoneBlock(BlockBehaviour.Properties.of().setId(key)
             .mapColor(mapColor)
-            .pushReaction(PushReaction.DESTROY)
+            .pushReaction(PushReaction.POPPED)
             .noOcclusion()
             .strength(1.5F)
             .sound(CobblemonSounds.TUMBLESTONE_SOUNDS),
-            stage, height, xzOffset, nextStage))
+            stage, height, xzOffset, nextStage) }
     }
 
-    private val berries = mutableMapOf<ResourceLocation, BerryBlock>()
+    private val berries = mutableMapOf<Identifier, BerryBlock>()
 
     @JvmField
     val AGUAV_BERRY = this.berryBlock("aguav")
@@ -1067,7 +1039,12 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
 
     private fun berryBlock(name: String): BerryBlock {
         val identifier = cobblemonResource("${name}_berry")
-        val block = this.create(identifier.path, BerryBlock(identifier, BlockBehaviour.Properties.ofFullCopy(Blocks.WHEAT).dynamicShape().sound(CobblemonSounds.BERRY_BUSH_SOUNDS).strength(0.2F)))
+        val block = this.create(identifier.path) { key ->
+            // Wheat's 26.3 map colour reads its age 0..7 property. Berry bushes
+            // use age 0..5 and retain their original green map colour at every age.
+            BerryBlock(identifier, BlockBehaviour.Properties.ofFullCopy(Blocks.WHEAT).setId(key)
+                .mapColor(MapColor.PLANT).dynamicShape().sound(CobblemonSounds.BERRY_BUSH_SOUNDS).strength(0.2F))
+        }
         this.berries[identifier] = block
         return block
     }
@@ -1076,8 +1053,10 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
      * Calls helper method from Vanilla
      */
     private fun log(name: String, arg: MapColor = MapColor.DIRT, arg2: MapColor = MapColor.DIRT): Block {
-        val block = BlocksInvoker.createLogBlock(arg, arg2)
-        return this.create(name, block)
+        return this.create(name) { key ->
+            RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG).setId(key)
+                .mapColor { state -> if (state.getValue(RotatedPillarBlock.AXIS) == net.minecraft.core.Direction.Axis.Y) arg else arg2 })
+        }
     }
 
     /**
@@ -1095,23 +1074,24 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
         return block
     }
 
-    private fun evolutionStoneOre(name: String) = this.create(name, DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE)))
-    private fun evolutionStoneOre(name: String, lightLevel: Int) = this.create(name, DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).lightLevel { lightLevel }))
+    private fun evolutionStoneOre(name: String) = this.create(name) { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).setId(key)) }
+    private fun evolutionStoneOre(name: String, lightLevel: Int) = this.create(name) { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).setId(key).lightLevel { lightLevel }) }
 
-    private fun deepslateEvolutionStoneOre(name: String) = this.create(name, DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE)))
-    private fun deepslateEvolutionStoneOre(name: String, lightLevel: Int) = this.create(name, DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE).lightLevel { lightLevel }))
+    private fun deepslateEvolutionStoneOre(name: String) = this.create(name) { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE).setId(key)) }
+    private fun deepslateEvolutionStoneOre(name: String, lightLevel: Int) = this.create(name) { key -> DropExperienceBlock(UniformInt.of(1, 2), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE).setId(key).lightLevel { lightLevel }) }
 
     /**
      * Helper method for creating leaves
      * copied over from Vanilla
      */
     private fun leaves(name: String): Block {
-        val block = BlocksInvoker.createLeavesBlock(SoundType.GRASS)
-        return this.create(name, block)
+        return this.create(name) { key ->
+            TintedParticleLeavesBlock(0.01F, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES).setId(key).sound(SoundType.GRASS))
+        }
     }
 
     private fun typeGemBlock(name: String, mapColor: MapColor): Block {
-        val typeGemBlock = this.create(name, Block(BlockBehaviour.Properties.of().mapColor(mapColor).strength(3.0F, 6.0F).sound(CobblemonSounds.TYPE_GEM_BLOCK_SOUNDS)))
+        val typeGemBlock = this.create(name) { key -> Block(BlockBehaviour.Properties.of().setId(key).mapColor(mapColor).strength(3.0F, 6.0F).sound(CobblemonSounds.TYPE_GEM_BLOCK_SOUNDS)) }
 
         val identifier = cobblemonResource(name)
         typeGemBlocks[identifier] = typeGemBlock
@@ -1121,8 +1101,8 @@ object CobblemonBlocks : PlatformRegistry<Registry<Block>, ResourceKey<Registry<
 
     fun typeGemBlocks() = typeGemBlocks.toMap()
 
-    private fun typeGemCluster(name: String, gemBlock: Block, dropItemId: ResourceLocation, mapColor: MapColor): Block {
-        val gemClusterBlock = this.create(name, TypeGemClusterBlock(BlockBehaviour.Properties.of().mapColor(mapColor).strength(2.0F, 3.0F).sound(CobblemonSounds.TYPE_GEM_CLUSTER_SOUNDS).pushReaction(PushReaction.DESTROY), gemBlock, dropItemId))
+    private fun typeGemCluster(name: String, gemBlock: Block, dropItemId: Identifier, mapColor: MapColor): Block {
+        val gemClusterBlock = this.create(name) { key -> TypeGemClusterBlock(BlockBehaviour.Properties.of().setId(key).mapColor(mapColor).strength(2.0F, 3.0F).sound(CobblemonSounds.TYPE_GEM_CLUSTER_SOUNDS).pushReaction(PushReaction.POPPED), gemBlock, dropItemId) }
 
         TypeGemClusterBlock.gemToClusterMap[gemBlock] = gemClusterBlock
 

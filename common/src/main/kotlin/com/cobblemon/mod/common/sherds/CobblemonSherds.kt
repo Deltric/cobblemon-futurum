@@ -10,12 +10,10 @@ package com.cobblemon.mod.common.sherds
 
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.core.Registry
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.item.Item
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.level.block.entity.DecoratedPotPattern
 
 @Suppress("Unused")
@@ -41,24 +39,12 @@ object CobblemonSherds {
     @JvmField
     val SUSPICIOUS_SHERD = addSherd(cobblemonResource("suspicious_pottery_pattern"), CobblemonItems.SUSPICIOUS_SHERD)
 
-    fun addSherd(patternId: ResourceLocation, item: Item): CobblemonSherd {
+    fun addSherd(patternId: Identifier, item: Item): CobblemonSherd {
         val sherd = CobblemonSherd(patternId, item)
         val resourceKey = ResourceKey.create(Registries.DECORATED_POT_PATTERN, patternId)
         sherdToPattern[item] = resourceKey
         allSherds.add(sherd)
         return sherd
-    }
-
-    fun registerSherds() {
-        val registry = BuiltInRegistries.DECORATED_POT_PATTERN
-        for (sherd in allSherds) {
-            val regKey = ResourceKey.create(Registries.DECORATED_POT_PATTERN, sherd.patternId)
-            Registry.register(
-                registry,
-                regKey,
-                DecoratedPotPattern(sherd.patternId) // TODO check me
-            )
-        }
     }
 
 }

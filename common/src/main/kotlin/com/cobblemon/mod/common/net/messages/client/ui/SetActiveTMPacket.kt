@@ -26,14 +26,14 @@ class SetActiveTMPacket(val tm: TechnicalMachine?): NetworkPacket<SetActiveTMPac
     override val id = ID
 
     override fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeNullable(tm) { _, v -> buffer.writeResourceLocation(v.id) }
+        buffer.writeNullable(tm) { _, v -> buffer.writeIdentifier(v.id) }
     }
 
     companion object {
         val ID = cobblemonResource("set_active_tm")
 
         fun decode(buffer: RegistryFriendlyByteBuf) = SetActiveTMPacket(
-            TechnicalMachines.tmMap[buffer.readNullable { buffer.readResourceLocation() }]
+            TechnicalMachines.tmMap[buffer.readNullable { buffer.readIdentifier() }]
         )
     }
 }

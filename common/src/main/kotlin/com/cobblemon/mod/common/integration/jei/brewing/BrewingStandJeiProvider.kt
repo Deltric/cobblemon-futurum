@@ -8,29 +8,39 @@
 
 package com.cobblemon.mod.common.integration.jei.brewing
 
-import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.cobblemon.mod.common.integration.jei.CobblemonJeiProvider
 import mezz.jei.api.constants.RecipeTypes
 import mezz.jei.api.registration.IRecipeCatalystRegistration
 import mezz.jei.api.registration.IRecipeCategoryRegistration
 import mezz.jei.api.registration.IRecipeRegistration
-import net.minecraft.client.Minecraft
+import com.cobblemon.mod.common.client.cooking.ClientCookingRecipes
+import com.cobblemon.mod.common.item.crafting.brewingstand.BrewingStandRecipe
+import mezz.jei.api.recipe.IRecipeManager
 
 class BrewingStandJeiProvider : CobblemonJeiProvider {
     override fun registerCategory(registration: IRecipeCategoryRegistration) {
     }
 
+    private var sourceRecipes = emptyList<net.minecraft.world.item.crafting.RecipeHolder<*>>()
+    private var displayedRecipes = emptyList<JeiBrewingStandRecipe>()
+
+    private fun captureRecipes() {
+        sourceRecipes = ClientCookingRecipes.recipes.filter { it.value is BrewingStandRecipe }
+        displayedRecipes = sourceRecipes.map { JeiBrewingStandRecipe(it.value as BrewingStandRecipe, it.id.identifier()) }
+    }
+
     override fun registerRecipes(registration: IRecipeRegistration) {
-        val recipeManger =
-            Minecraft.getInstance().level?.recipeManager ?: throw IllegalStateException("Recipe manager not found")
+        captureRecipes()
+        registration.addRecipes(RecipeTypes.BREWING, displayedRecipes)
+    }
 
-        val allBrewingRecipes = recipeManger.getAllRecipesFor(CobblemonRecipeTypes.BREWING_STAND)
-
-        val jeiRecipes = allBrewingRecipes.map { entry ->
-            JeiBrewingStandRecipe(entry.value, entry.id)
-        }
-
-        registration.addRecipes(RecipeTypes.BREWING, jeiRecipes)
+    override fun refreshRecipes(manager: IRecipeManager) {
+        // RecipeHolder equality compares only the key; compare recipe values to detect changed definitions.
+        val updated = ClientCookingRecipes.recipes.filter { it.value is BrewingStandRecipe }
+        if (updated.map { it.value } == sourceRecipes.map { it.value }) return
+        manager.hideRecipes(RecipeTypes.BREWING, displayedRecipes)
+        captureRecipes()
+        manager.addRecipes(RecipeTypes.BREWING, displayedRecipes)
     }
 
     override fun registerRecipeCatalsysts(registration: IRecipeCatalystRegistration) { }

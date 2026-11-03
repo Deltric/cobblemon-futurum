@@ -26,11 +26,11 @@ import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import com.cobblemon.mod.common.util.toAssetPath
 import com.google.common.collect.Lists
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.FormattedCharSequence
 import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
@@ -62,7 +62,7 @@ class PartySlotButton(
 
     private val renderablePokemon = pokemon.asRenderablePokemon().also { it.aspects = aspects }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         isHovered = pMouseX >= x && pMouseY >= y && pMouseX < x + width && pMouseY < y + height && enabled
         val alpha = if (enabled) 1.0 else 0.7
         val matrices = context.pose()
@@ -70,14 +70,12 @@ class PartySlotButton(
         val hpRatio = currentHealth / maxHealth.toFloat()
         val status = pokemon.status
         if (hpRatio > 0F && status != null) {
-            blitk(
-                matrixStack = matrices,
-                texture = cobblemonResource("textures/gui/interact/party_select_status_$status.png"),
-                x = x + 27,
-                y = y + 22,
-                height = 5,
-                width = 37
-            )
+            blitk(context = context,
+            texture = cobblemonResource("textures/gui/interact/party_select_status_$status.png"),
+            x = x + 27,
+            y = y + 22,
+            height = 5,
+            width = 37)
 
             drawScaledText(
                 context = context,
@@ -89,46 +87,41 @@ class PartySlotButton(
             )
         }
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = if (currentHealth <= 0F) slotFaintedResource else slotResource,
             x = x,
             y = y,
             width = width,
             height = height,
             vOffset = if (!enabled) (height * 2) else (if (isHovered) height else 0),
-            textureHeight = height * 3
-        )
+            textureHeight = height * 3)
 
-        context.pose().pushPose()
-        context.pose().translate(x.toDouble() + 13, y.toDouble() - 2, 0.0)
+        context.pose().pushMatrix()
+        context.pose().translate((x.toDouble() + 13).toFloat(), (y.toDouble() - 2).toFloat())
 
-        drawProfilePokemon(
-            renderablePokemon = renderablePokemon,
-            matrixStack = context.pose(),
-            rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
-            state = state,
-            scale = 10F,
-            partialTicks = if (!isHovered) 0F else pPartialTicks
-        )
-        context.pose().popPose()
+        drawProfilePokemon(renderablePokemon = renderablePokemon,
+                context = context,
+                rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
+                state = state,
+                scale = 10F,
+                partialTicks = if (!isHovered) 0F else pPartialTicks)
+        context.pose().popMatrix()
 
         val ballIcon = pokemon.pokeball!!.asIdentifierDefaultingNamespace().toAssetPath("textures/gui/ball/", ".png")
         val ballHeight = 22
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = ballIcon,
             x = (x - 2) / SCALE,
             y = (y - 3) / SCALE,
             height = ballHeight,
             width = 18,
             textureHeight = ballHeight * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         // Ensure elements are not hidden behind Pokémon render
-        matrices.pushPose()
-        matrices.translate(0.0, 0.0, 100.0)
+        matrices.pushMatrix()
+        context.nextStratum()
+        matrices.translate((0.0).toFloat(), (0.0).toFloat())
         drawScaledText(
             context = context,
             text = lang("ui.lv.number", pokemon.level!!),
@@ -152,16 +145,14 @@ class PartySlotButton(
         )
 
         if ("male" in pokemon.aspects || "female" in pokemon.aspects) {
-            blitk(
-                matrixStack = matrices,
-                texture = if ("male" in pokemon.aspects) PartySlotWidget.genderIconMale else PartySlotWidget.genderIconFemale,
-                x = (x + 60.5) / SCALE,
-                y = (y + 12.5) / SCALE,
-                height = 7,
-                width = 5,
-                scale = SCALE,
-                alpha = alpha
-            )
+            blitk(context = context,
+            texture = if ("male" in pokemon.aspects) PartySlotWidget.genderIconMale else PartySlotWidget.genderIconFemale,
+            x = (x + 60.5) / SCALE,
+            y = (y + 12.5) / SCALE,
+            height = 7,
+            width = 5,
+            scale = SCALE,
+            alpha = alpha)
         }
 
         // HP
@@ -169,8 +160,7 @@ class PartySlotButton(
         val barWidth = hpRatio * barWidthMax
         val (red, green) = getDepletableRedGreen(hpRatio)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = CobblemonResources.WHITE,
             x = x + 1,
             y = y + 20,
@@ -180,8 +170,7 @@ class PartySlotButton(
             uOffset = barWidthMax - barWidth,
             red = red * 0.8F,
             green = green * 0.8F,
-            blue = 0.27F
-        )
+            blue = 0.27F)
 
         drawScaledText(
             context = context,
@@ -199,16 +188,16 @@ class PartySlotButton(
                 x = x + 14.0,
                 y = y + 9.5,
                 scale = 0.5,
-                matrixStack = matrices
+                context = context
             )
         }
 
         // Hover Text
         if (isHovered && hoverText.isNotEmpty()) {
-            this.parent.setTooltipForNextRenderPass(Lists.transform<Component, FormattedCharSequence>(hoverText) { it.visualOrderText })
+            context.setTooltipForNextFrame(net.minecraft.client.Minecraft.getInstance().font, Lists.transform<Component, FormattedCharSequence>(hoverText) { it.visualOrderText }, pMouseX, pMouseY)
         }
 
-        matrices.popPose()
+        matrices.popMatrix()
     }
 
     override fun playDownSound(soundManager: SoundManager) {}

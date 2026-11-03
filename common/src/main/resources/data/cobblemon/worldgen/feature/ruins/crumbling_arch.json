@@ -1,0 +1,7 @@
+{
+  "type": "cobblemon:structure",
+  "cobblemon_structures": [
+    "cobblemon:ruins/crumbling_arch"
+  ],
+  "cobblemon_processors": "cobblemon:ruins/crumbling_arch_ruins"
+}

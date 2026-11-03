@@ -52,9 +52,10 @@
             "type": "minecraft:biome"
         },
         {
-            "type": "minecraft:random_offset",
-            "y_spread": -7,
-            "xz_spread": 0
+            "type": "minecraft:offset",
+            "x": 0,
+            "y": -7,
+            "z": 0
         }
     ]
 }

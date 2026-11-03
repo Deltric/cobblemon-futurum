@@ -8,11 +8,9 @@
 
 package com.cobblemon.mod.common.datafixer.schema
 
-import com.cobblemon.mod.common.datafixer.CobblemonTypeReferences
-import com.mojang.datafixers.DSL
+import com.cobblemon.mod.common.datafixer.HistoricalItemStackTemplates
 import com.mojang.datafixers.schemas.Schema
 import com.mojang.datafixers.types.templates.TypeTemplate
-import net.minecraft.util.datafix.DataFixers
 import net.minecraft.util.datafix.fixes.References
 import java.util.function.Supplier
 
@@ -24,9 +22,9 @@ class CobblemonSchemaV2(versionKey: Int, parent: Schema?) : Schema(versionKey, p
         blockEntityTypes: MutableMap<String, Supplier<TypeTemplate>>
     ) {
         super.registerTypes(schema, entityTypes, blockEntityTypes)
-        val vanillaSchema = DataFixers.getDataFixer().getSchema(38185)
+        // Preserve the exact 1.21.1 definition of native schema 3818.5.
         schema.registerType(true, References.ITEM_STACK) {
-            vanillaSchema.getType(References.ITEM_STACK).buildTemplate()
+            HistoricalItemStackTemplates.withComponents()
         }
     }
 }

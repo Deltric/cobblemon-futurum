@@ -49,9 +49,6 @@ public abstract class ServerEntityMixin {
 
     @Shadow
     @Final
-    private Consumer<Packet<?>> broadcast;
-    @Shadow
-    @Final
     private Entity entity;
     @Unique
     private Matrix3f cobblemon$lastSentOrientation;

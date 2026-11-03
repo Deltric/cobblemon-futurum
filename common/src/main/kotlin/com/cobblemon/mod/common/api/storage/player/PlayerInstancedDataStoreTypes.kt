@@ -13,10 +13,10 @@ import com.cobblemon.mod.common.api.storage.player.client.ClientPokedexManager
 import com.cobblemon.mod.common.api.storage.player.client.ClientGeneralPlayerData
 import com.cobblemon.mod.common.api.storage.player.client.ClientTMMoveManager
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 object PlayerInstancedDataStoreTypes {
-    val types = mutableMapOf<ResourceLocation, PlayerInstancedDataStoreType>()
+    val types = mutableMapOf<Identifier, PlayerInstancedDataStoreType>()
 
     val GENERAL = register(PlayerInstancedDataStoreType(
         cobblemonResource("general"),
@@ -42,7 +42,7 @@ object PlayerInstancedDataStoreTypes {
         return type
     }
 
-    fun getTypeById(id: ResourceLocation): PlayerInstancedDataStoreType? {
+    fun getTypeById(id: Identifier): PlayerInstancedDataStoreType? {
         val type = types[id]
         if (type == null) Cobblemon.LOGGER.warn("Unknown PlayerInstancedDataStoreType ID: {}", id)
         return type

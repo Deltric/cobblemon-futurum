@@ -14,23 +14,24 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Rende
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.VaryingModelRepository
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 
-class GildedChestBlockRenderer(context: BlockEntityRendererProvider.Context) : BlockEntityRenderer<GildedChestBlockEntity> {
+class GildedChestBlockRenderer(context: BlockEntityRendererProvider.Context) : GeometryBlockEntityRenderer<GildedChestBlockEntity>() {
     val context = RenderContext().also {
         it.put(RenderContext.RENDER_STATE, RenderContext.RenderState.BLOCK)
         it.put(RenderContext.DO_QUIRKS, true)
     }
-    override fun render(
+    override fun extractGeometry(
         entity: GildedChestBlockEntity,
         tickDelta: Float,
         matrices: PoseStack,
-        vertexConsumers: MultiBufferSource,
+        vertexConsumers: ModelGeometry.Builder,
         light: Int,
         overlay: Int
     ) {
@@ -44,7 +45,7 @@ class GildedChestBlockRenderer(context: BlockEntityRendererProvider.Context) : B
         val model = VaryingModelRepository.getPoser(poserId, state) as BlockEntityModel
         model.context = context
         val texture = VaryingModelRepository.getTexture(poserId, state)
-        val vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(texture))
+        val vertexConsumer = vertexConsumers.getBuffer(RenderTypes.entityCutoutCull(texture))
         model.bufferProvider = vertexConsumers
         state.currentModel = model
         context.put(RenderContext.ASPECTS, aspects)
@@ -53,10 +54,10 @@ class GildedChestBlockRenderer(context: BlockEntityRendererProvider.Context) : B
         context.put(RenderContext.POSABLE_STATE, state)
 
         matrices.pushPose()
-        matrices.mulPose(Axis.ZP.rotationDegrees(180f))
+        matrices.rotate(Axis.ZP.rotationDegrees(180f))
         matrices.translate(-0.5, 0.0, 0.5)
-        matrices.mulPose(Axis.YP.rotationDegrees(entity.blockState.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot()))
-        matrices.mulPose(Axis.YP.rotationDegrees(180f))
+        matrices.rotate(Axis.YP.rotationDegrees(entity.blockState.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot()))
+        matrices.rotate(Axis.YP.rotationDegrees(180f))
 
         model.applyAnimations(
             entity = null,

@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.dialogue.widgets
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.ParentWidget
 import com.cobblemon.mod.common.api.gui.blitk
@@ -15,10 +16,10 @@ import com.cobblemon.mod.common.api.gui.drawCenteredText
 import com.cobblemon.mod.common.client.gui.dialogue.DialogueScreen
 import com.cobblemon.mod.common.net.messages.server.dialogue.InputToDialoguePacket
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class DialogueOptionWidget(
     val dialogueScreen: DialogueScreen,
@@ -29,22 +30,20 @@ class DialogueOptionWidget(
     y: Int,
     width: Int,
     height: Int,
-    val texture: ResourceLocation
+    val texture: Identifier
 ) : ParentWidget(x, y, width, height, text) {
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (!dialogueScreen.renderInput()) {
             return
         }
-        blitk(
-            texture = texture,
-            matrixStack = context.pose(),
+        blitk(texture = texture,
+            context = context,
             x = x,
             y = y,
             width = width,
             height = height,
             vOffset = if (selectable) (if (isHovered) height else 0) else (height * 2),
-            textureHeight = height * 3,
-        )
+            textureHeight = height * 3)
 
         drawCenteredText(
             context = context,
@@ -57,7 +56,7 @@ class DialogueOptionWidget(
 
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         if (!dialogueScreen.renderInput()) {
             return false
         }

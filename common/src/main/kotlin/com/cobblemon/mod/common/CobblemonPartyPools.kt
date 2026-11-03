@@ -25,18 +25,18 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.PackType
 
 object CobblemonPartyPools : JsonDataRegistry<PartyPool> {
-    override val id: ResourceLocation = cobblemonResource("party_pools")
+    override val id: Identifier = cobblemonResource("party_pools")
     override val type = PackType.SERVER_DATA
     override val typeToken: TypeToken<PartyPool> = TypeToken.get(PartyPool::class.java)
     override val resourcePath: String = "party_pools"
     override val observable = SimpleObservable<CobblemonPartyPools>()
     override val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(ResourceLocation::class.java, IdentifierAdapter)
+        .registerTypeAdapter(Identifier::class.java, IdentifierAdapter)
         .registerTypeAdapter(PokemonProperties::class.java, PokemonPropertiesAdapter(saveLong = false))
         .registerTypeAdapter(IntRange::class.java, IntRangeAdapter)
         .registerTypeAdapter(ScriptableIntRange::class.java, ScriptableIntRangeAdapter)
@@ -45,13 +45,13 @@ object CobblemonPartyPools : JsonDataRegistry<PartyPool> {
         .setPrettyPrinting()
         .create()
 
-    val partyPools = mutableMapOf<ResourceLocation, PartyPool>()
+    val partyPools = mutableMapOf<Identifier, PartyPool>()
 
     override fun sync(player: ServerPlayer) {
         // probably worth syncing. Knowing the details might help exploit the server? lot of effort for little though.
     }
 
-    override fun reload(data: Map<ResourceLocation, PartyPool>) {
+    override fun reload(data: Map<Identifier, PartyPool>) {
         data.entries.forEach { it.value.id = it.key }
         partyPools.clear()
         partyPools.putAll(data)

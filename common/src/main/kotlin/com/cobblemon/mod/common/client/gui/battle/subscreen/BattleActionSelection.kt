@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.battle.subscreen
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.ParentWidget
 import com.cobblemon.mod.common.client.battle.SingleActionRequest
 import com.cobblemon.mod.common.client.gui.battle.BattleGUI
@@ -26,11 +27,21 @@ abstract class BattleActionSelection(
     val opacity: Float
         get() = battleGUI.opacity
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    // Screens now select a child by isMouseOver before dispatching its click.
+    // Battle controls can extend beyond this widget's layout anchor rectangle.
+    final override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
+        isActive && isActionHovered(mouseX, mouseY)
+
+    protected abstract fun isActionHovered(mouseX: Double, mouseY: Double): Boolean
+
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val pMouseX = event.x()
+        val pMouseY = event.y()
+        val pButton = event.button()
         if(pButton == InputConstants.MOUSE_BUTTON_LEFT){
             return mousePrimaryClicked(pMouseX, pMouseY)
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+        return super.mouseClicked(event, doubleClick)
     }
 
     abstract fun mousePrimaryClicked(pMouseX: Double, pMouseY: Double): Boolean

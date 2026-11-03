@@ -13,15 +13,15 @@ import com.cobblemon.mod.common.api.gui.drawProfile
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.models.blockbench.FloatingState
 import java.util.UUID
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.events.GuiEventListener
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class NPCRenderWidget(
     val x: Int,
     val y: Int,
     val entityId: UUID,
-    var identifier: ResourceLocation,
+    var identifier: Identifier,
     val aspects: MutableSet<String>
 ) : CobblemonRenderable, GuiEventListener {
     val state = FloatingState().also {
@@ -36,7 +36,7 @@ class NPCRenderWidget(
 
     override fun isFocused() = false
     override fun setFocused(focused: Boolean) {}
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
 
         context.enableScissor(
             x,
@@ -44,19 +44,18 @@ class NPCRenderWidget(
             x + WIDTH,
             y + HEIGHT
         )
-        context.pose().pushPose()
+        context.pose().pushMatrix()
         // Decrease on Z-axis to prevent model from rendering above other components like tooltips
-        context.pose().translate(x + (WIDTH / 2F), y + HEIGHT + (HEIGHT / 4F), -500F)
+        context.nextStratum()
+        context.pose().translate((x + (WIDTH / 2F)).toFloat(), (y + HEIGHT + (HEIGHT / 4F)).toFloat())
 
-        drawProfile(
-            resourceIdentifier = identifier,
-            matrixStack = context.pose(),
-            partialTicks = delta,
-            scale = 120F,
-            state = state
-        )
+        drawProfile(resourceIdentifier = identifier,
+                context = context,
+                partialTicks = delta,
+                scale = 120F,
+                state = state)
 
-        context.pose().popPose()
+        context.pose().popMatrix()
         context.disableScissor()
     }
 }

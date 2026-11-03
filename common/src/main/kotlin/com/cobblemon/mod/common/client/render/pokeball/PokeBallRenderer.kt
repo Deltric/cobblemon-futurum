@@ -15,22 +15,38 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Varyi
 import com.cobblemon.mod.common.entity.pokeball.EmptyPokeBallEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.models.blockbench.PosableEntityRenderState
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.state.level.CameraRenderState
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
-import net.minecraft.client.renderer.entity.ItemRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
-class PokeBallRenderer(context: EntityRendererProvider.Context) : EntityRenderer<EmptyPokeBallEntity>(context) {
+class PokeBallRenderer(context: EntityRendererProvider.Context) : EntityRenderer<EmptyPokeBallEntity, PosableEntityRenderState>(context) {
     val model = PosablePokeBallModel()
 
-    override fun getTextureLocation(pEntity: EmptyPokeBallEntity): ResourceLocation {
+    fun getTextureLocation(pEntity: EmptyPokeBallEntity): Identifier {
         return VaryingModelRepository.getTexture(pEntity.pokeBall.name, pEntity.delegate as EmptyPokeBallClientDelegate)
     }
 
-    override fun render(entity: EmptyPokeBallEntity, yaw: Float, partialTicks: Float, poseStack: PoseStack, buffer: MultiBufferSource, packedLight: Int) {
+    override fun createRenderState() = PosableEntityRenderState()
+
+    override fun submit(state: PosableEntityRenderState, poseStack: PoseStack, collector: SubmitNodeCollector, camera: CameraRenderState) {
+        state.geometry?.submit(poseStack, collector, state.outlineColor)
+        super.submit(state, poseStack, collector, camera)
+    }
+
+    override fun extractRenderState(entity: EmptyPokeBallEntity, renderState: PosableEntityRenderState, partialTicks: Float) {
+        super.extractRenderState(entity, renderState, partialTicks)
+        renderState.geometry = null
+        val yaw = entity.getYRot(partialTicks)
+        val poseStack = PoseStack()
+        val buffer = ModelGeometry.Builder()
+        val packedLight = renderState.lightCoords
+
         val state = entity.delegate as EmptyPokeBallClientDelegate
         this.model.context.put(RenderContext.POSABLE_STATE, state)
         this.model.context.put(RenderContext.ASPECTS, entity.aspects)
@@ -41,9 +57,9 @@ class PokeBallRenderer(context: EntityRendererProvider.Context) : EntityRenderer
         this.model.setupEntityTypeContext(entity)
         this.model.context.put(RenderContext.RENDER_STATE, RenderContext.RenderState.WORLD)
         poseStack.pushPose()
-        poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
+        poseStack.rotate(Axis.YP.rotationDegrees(yaw))
         poseStack.scale(0.7F, -0.7F, -0.7F)
-        val vertexConsumer = ItemRenderer.getFoilBufferDirect(buffer, RenderType.entityCutout(getTextureLocation(entity)), false, false)
+        val vertexConsumer = buffer.getBuffer(RenderTypes.entityCutoutCull(getTextureLocation(entity)))
         state.updatePartialTicks(partialTicks)
         model.setLayerContext(buffer, state, VaryingModelRepository.getLayers(entity.pokeBall.name, state))
         this.model.setupAnim(entity, 0f, 0f, entity.tickCount + partialTicks, 0F, 0F)
@@ -56,6 +72,6 @@ class PokeBallRenderer(context: EntityRendererProvider.Context) : EntityRenderer
         model.resetLayerContext()
 
         poseStack.popPose()
-        super.render(entity, yaw, partialTicks, poseStack, buffer, packedLight)
+        renderState.geometry = buffer.build()
     }
 }

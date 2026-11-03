@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.pokedex.widgets
 
+import com.cobblemon.mod.common.api.gui.scrollAmount
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.moves.MoveTemplate
@@ -49,12 +51,12 @@ import com.cobblemon.mod.common.util.lang
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 
 class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
@@ -179,6 +181,12 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         addWidget(descriptionWidget)
     }
 
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean {
+        // The background also extends behind the separately registered tab icons.
+        // Only the actual controls belong to this panel's input region.
+        return super.isMouseOver(mouseX, mouseY) && children.any { it.isMouseOver(mouseX, mouseY) }
+    }
+
     fun setLearnset(
         species: Species,
         form: FormData,
@@ -200,17 +208,15 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         selectMove(null)
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = if (secondaryType != null) doubleTypeBar else typeBar,
             x = pX,
             y = pY + 12,
             width = HALF_OVERLAY_WIDTH,
-            height = 12
-        )
+            height = 12)
 
         if (primaryType != null) {
             TypeIcon(
@@ -234,28 +240,24 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
                 centered = true
             )
 
-            formLeftButton.render(context, mouseX, mouseY, delta)
-            formRightButton.render(context, mouseX, mouseY, delta)
+            formLeftButton.extractRenderState(context, mouseX, mouseY, delta)
+            formRightButton.extractRenderState(context, mouseX, mouseY, delta)
         }
 
-        blitk(
-            texture = moveCategoryBar,
-            matrixStack = context.pose(),
+        blitk(texture = moveCategoryBar,
+            context = context,
             x = pX,
             y = pY + 26,
             width = 91,
-            height = 10
-        )
+            height = 10)
 
-        blitk(
-            texture = categoryFilterIcon,
-            matrixStack = context.pose(),
+        blitk(texture = categoryFilterIcon,
+            context = context,
             x = (pX + 3) / SCALE,
             y = (pY + 27.5) / SCALE,
             width = 14,
             height = 14,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         drawScaledText(
             context = context,
@@ -266,49 +268,48 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             shadow = true
         )
 
-        categoryUpButton.render(context, mouseX, mouseY, delta)
-        categoryDownButton.render(context, mouseX, mouseY, delta)
+        categoryUpButton.extractRenderState(context, mouseX, mouseY, delta)
+        categoryDownButton.extractRenderState(context, mouseX, mouseY, delta)
 
         sortButtons.forEachIndexed { index, button ->
-            button.render(context, mouseX, mouseY, delta)
+            button.extractRenderState(context, mouseX, mouseY, delta)
 
             if (button.isButtonHovered(mouseX, mouseY)) {
                 renderTooltip(context, lang("ui.sort.${LearnsetSort.entries[index].name.lowercase()}").bold(), mouseX, mouseY, delta, -14)
             }
         }
 
-        if (filteredEntries.isNotEmpty()) listWidget.renderWidget(context, mouseX, mouseY, delta)
+        if (filteredEntries.isNotEmpty()) listWidget.extractRenderState(context, mouseX, mouseY, delta)
 
         renderDataSection(context)
 
-        descriptionWidget.renderWidget(context, mouseX, mouseY, delta)
+        descriptionWidget.extractRenderState(context, mouseX, mouseY, delta)
 
-        matrices.pushPose()
-        matrices.translate(0.0, 0.0, 500.0) // Translate on top of other elements
-        blitk(
-            texture = scrollBorderTop,
-            matrixStack = context.pose(),
+        matrices.pushMatrix()
+        context.nextStratum()
+        matrices.translate((0.0).toFloat(), (0.0).toFloat()) // Translate on top of other elements
+        blitk(texture = scrollBorderTop,
+            context = context,
             x = pX,
             y = pY + 36,
             width = HALF_OVERLAY_WIDTH - SCROLL_BAR_WIDTH,
-            height = 3
-        )
-        matrices.popPose()
+            height = 3)
+        matrices.popMatrix()
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {
         if (mouseX.toInt() in pX..(pX + HALF_OVERLAY_WIDTH) && mouseY.toInt() in (pY + 36)..(pY + 96)) {
-            listWidget.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
+            return listWidget.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
         }
 
         if (mouseX.toInt() in (pX + 64)..(pX + 136) && mouseY.toInt() in (pY + 119)..(pY + 147)) {
-            descriptionWidget.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
+            return descriptionWidget.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
         }
 
         return false
     }
 
-    private fun renderDataSection(context: GuiGraphics) {
+    private fun renderDataSection(context: GuiGraphicsExtractor) {
         val move = selectedEntry?.move
         val showMoveInfo = selectedEntry?.isDiscovered == true
 
@@ -321,14 +322,12 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             shadow = true
         )
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = moveInfoBackground,
             x = pX + 3,
             y = pY + 109,
             width = 133,
-            height = 38
-        )
+            height = 38)
 
         drawScaledText(
             context = context,
@@ -352,35 +351,29 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             MoveCategoryIcon(x = pX + 124, y = pY + 109, category = move.damageCategory, opacity = alpha).render(context)
         }
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = movesPowerIconResource,
             x = (pX + 5) / SCALE,
             y = (pY + 120.5) / SCALE,
             width = MOVE_ICON_SIZE,
             height = MOVE_ICON_SIZE,
-            scale = SCALE
-        )
+            scale = SCALE)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = movesAccuracyIconResource,
             x = (pX + 5) / SCALE,
             y = (pY + 130.5) / SCALE,
             width = MOVE_ICON_SIZE,
             height = MOVE_ICON_SIZE,
-            scale = SCALE
-        )
+            scale = SCALE)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = movesEffectIconResource,
             x = (pX + 5) / SCALE,
             y = (pY + 140.5) / SCALE,
             width = MOVE_ICON_SIZE,
             height = MOVE_ICON_SIZE,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         drawScaledText(
             context = context,
@@ -571,9 +564,9 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         }
     }
 
-    private fun buildEvolutionMoveLevelIndex(form: FormData): Map<ResourceLocation, Map<String, Int>> {
+    private fun buildEvolutionMoveLevelIndex(form: FormData): Map<Identifier, Map<String, Int>> {
         val evolutionForms = collectEvolutionForms(form)
-        val levelsBySpecies = mutableMapOf<ResourceLocation, MutableMap<String, Int>>()
+        val levelsBySpecies = mutableMapOf<Identifier, MutableMap<String, Int>>()
 
         for (evolutionForm in evolutionForms) {
             val speciesId = evolutionForm.species.resourceIdentifier
@@ -727,7 +720,7 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         val level: Int? = null,
         val tmLocked: Boolean = false,
         val isDiscovered: Boolean = true,
-        val tmId: ResourceLocation? = null,
+        val tmId: Identifier? = null,
         val tmUnlocked: Boolean = false
     )
 
@@ -756,41 +749,37 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             selectedEntry = entry
         }
 
-        override fun getScrollbarPosition(): Int {
+        override fun scrollBarX(): Int {
             return left + HALF_OVERLAY_WIDTH - SCROLL_BAR_WIDTH
         }
 
-        override fun renderScrollbar(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-            val xLeft = this.scrollbarPosition
+        override fun renderScrollbar(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+            val xLeft = this.scrollBarX()
             val yMargin = 2
             val yStart = y + yMargin
 
             val barHeight = this.bottom - yMargin - yStart
 
-            var yBottom = ((barHeight * barHeight).toFloat() / this.maxPosition.toFloat()).toInt()
+            var yBottom = ((barHeight * barHeight).toFloat() / (this.contentHeight() - 4).toFloat()).toInt()
             yBottom = Mth.clamp(yBottom, 32, barHeight - 8)
-            var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScroll + yStart
+            var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScrollAmount() + yStart
             if (yTop < yStart) yTop = yStart
 
             // Scroll Track
-            blitk(
-                texture = EntriesScrollingWidget.scrollbarTrack,
-                matrixStack = context.pose(),
-                x = xLeft,
-                y = yStart,
-                width = SCROLL_BAR_WIDTH,
-                height = height - (yMargin * 2)
-            )
+            blitk(texture = EntriesScrollingWidget.scrollbarTrack,
+            context = context,
+            x = xLeft,
+            y = yStart,
+            width = SCROLL_BAR_WIDTH,
+            height = height - (yMargin * 2))
 
             // Scroll Slide
-            blitk(
-                texture = EntriesScrollingWidget.scrollbarSlide,
-                matrixStack = context.pose(),
-                x = xLeft,
-                y = yTop,
-                width = SCROLL_BAR_WIDTH,
-                height = yBottom
-            )
+            blitk(texture = EntriesScrollingWidget.scrollbarSlide,
+            context = context,
+            x = xLeft,
+            y = yTop,
+            width = SCROLL_BAR_WIDTH,
+            height = yBottom)
         }
 
         override fun getEntry(index: Int): MoveEntrySlot {
@@ -801,33 +790,31 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             private var lastX = 0
             private var lastY = 0
 
-            override fun render(context: GuiGraphics, index: Int, y: Int, x: Int, entryWidth: Int, entryHeight: Int, mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float) {
+            override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float) {
+                val y = this.contentY
+                val x = this.contentX
                 lastX = x
                 lastY = y
 
                 val barY = y + SCROLL_SLOT_SPACING
-                blitk(
-                    matrixStack = context.pose(),
-                    texture = moveSlot,
-                    x = x,
-                    y = barY,
-                    width = MOVE_SLOT_WIDTH,
-                    height = 13
-                )
+                blitk(context = context,
+            texture = moveSlot,
+            x = x,
+            y = barY,
+            width = MOVE_SLOT_WIDTH,
+            height = 13)
 
                 val isSlotSelected = entry == parentList.selectedEntry
                 val isSlotHovered = hovered && (mouseX <= x + MOVE_SLOT_WIDTH)
                 if (isSlotHovered || isSlotSelected) {
-                    blitk(
-                        matrixStack = context.pose(),
-                        texture = moveSlotSelected,
-                        x = x,
-                        y = barY,
-                        width = MOVE_SLOT_WIDTH,
-                        height = 13,
-                        textureHeight = 26,
-                        vOffset = if (isSlotHovered && !isSlotSelected) 13 else 0
-                    )
+                    blitk(context = context,
+            texture = moveSlotSelected,
+            x = x,
+            y = barY,
+            width = MOVE_SLOT_WIDTH,
+            height = 13,
+            textureHeight = 26,
+            vOffset = if (isSlotHovered && !isSlotSelected) 13 else 0)
                 }
 
                 TypeIcon(
@@ -866,15 +853,13 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
                     val tmX = (x + 131.5 - (Minecraft.getInstance().font.width(moveCategoryLabel.bold()) + 10))
                     val tmY = (barY + 2.5)
 
-                    blitk(
-                        matrixStack = context.pose(),
-                        texture = if (entry.tmUnlocked) tmSprite else tmSpriteUndiscovered,
-                        x = tmX / SCALE,
-                        y = tmY / SCALE,
-                        width = 16,
-                        height = 16,
-                        scale = SCALE
-                    )
+                    blitk(context = context,
+            texture = if (entry.tmUnlocked) tmSprite else tmSpriteUndiscovered,
+            x = tmX / SCALE,
+            y = tmY / SCALE,
+            width = 16,
+            height = 16,
+            scale = SCALE)
 
                     val hovering = mouseX.toFloat() in tmX..(tmX + 8) && mouseY.toFloat() in tmY..(tmY + 8)
                     if (hovering) {
@@ -885,7 +870,8 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
                 }
             }
 
-            override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+            override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+                val mouseX = event.x()
                 val canClick = mouseX < (lastX + (HALF_OVERLAY_WIDTH - 3))
                 if (canClick) {
                     onSelect(entry)
@@ -921,45 +907,43 @@ class MovesLearnsetWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             scrollAmount = 0.0
         }
 
-        override fun renderScrollbar(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-            val xLeft = this.scrollbarPosition
+        override fun renderScrollbar(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+            val xLeft = this.scrollBarX()
             val yMargin = 1
             val yStart = y + yMargin
 
             val barHeight = this.bottom - yMargin - yStart
 
-            var yBottom = ((barHeight * barHeight).toFloat() / this.maxPosition.toFloat()).toInt()
+            var yBottom = ((barHeight * barHeight).toFloat() / (this.contentHeight() - 4).toFloat()).toInt()
             yBottom = Mth.clamp(yBottom, 16, barHeight - 6)
-            var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScroll + yStart
+            var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScrollAmount() + yStart
             if (yTop < yStart) yTop = yStart
 
             // Scroll Track
-            blitk(
-                texture = InfoTextScrollWidget.scrollbarTrack,
-                matrixStack = context.pose(),
-                x = xLeft + 0.5,
-                y = yStart,
-                width = DESCRIPTION_SCROLLBAR_WIDTH / 2,
-                height = height - (yMargin * 2)
-            )
+            blitk(texture = InfoTextScrollWidget.scrollbarTrack,
+            context = context,
+            x = xLeft + 0.5,
+            y = yStart,
+            width = DESCRIPTION_SCROLLBAR_WIDTH / 2,
+            height = height - (yMargin * 2))
 
             // Scroll Slide
-            blitk(
-                texture = InfoTextScrollWidget.scrollbarSlide,
-                matrixStack = context.pose(),
-                x = xLeft,
-                y = yTop,
-                width = DESCRIPTION_SCROLLBAR_WIDTH,
-                height = yBottom
-            )
+            blitk(texture = InfoTextScrollWidget.scrollbarSlide,
+            context = context,
+            x = xLeft,
+            y = yTop,
+            width = DESCRIPTION_SCROLLBAR_WIDTH,
+            height = yBottom)
         }
 
-        override fun getScrollbarPosition(): Int {
+        override fun scrollBarX(): Int {
             return left + width - DESCRIPTION_SCROLLBAR_WIDTH
         }
 
         class TextSlot(val text: String) : Slot<TextSlot>() {
-            override fun render(context: GuiGraphics, index: Int, y: Int, x: Int, entryWidth: Int, entryHeight: Int, mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float) {
+            override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float) {
+                val y = this.contentY
+                val x = this.contentX
                 drawScaledText(
                     context = context,
                     text = text.text(),

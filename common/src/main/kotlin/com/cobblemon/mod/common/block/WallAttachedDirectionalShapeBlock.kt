@@ -9,9 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.util.rotateShape
-import com.mojang.serialization.Codec
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.BlockGetter
@@ -48,17 +45,6 @@ class WallAttachedDirectionalShapeBlock(settings: Properties, val width: Int = 1
 
             return Shapes.box(minX, minY, minZ, maxX, maxY, 1.0)
         }
-    }
-
-    override fun codec(): MapCodec<WallAttachedDirectionalShapeBlock> = RecordCodecBuilder.mapCodec { instance ->
-        instance.group(
-            propertiesCodec(),
-            Codec.INT.fieldOf("width").forGetter { it.width },
-            Codec.INT.fieldOf("height").forGetter { it.height },
-            Codec.INT.fieldOf("depth").forGetter { it.depth }
-        ).apply(instance, { properties, width, height, depth ->
-            WallAttachedDirectionalShapeBlock(properties, width, height, depth)
-        })
     }
 
     override fun getShape(state: BlockState, level: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape {

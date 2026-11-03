@@ -7,23 +7,19 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:saccharine_door",
-              "properties": {
-                "half": "lower"
-              }
+          "name": "cobblemon:saccharine_door",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:saccharine_door",
+            "state": {
+              "half": "lower"
             }
-          ],
-          "name": "cobblemon:saccharine_door"
+          }
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ]
 }

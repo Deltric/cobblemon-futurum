@@ -18,7 +18,7 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.PrimitiveCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Effect details for the actual particles of a particle effect.
@@ -27,7 +27,7 @@ import net.minecraft.resources.ResourceLocation
  * @since January 4th, 2023
  */
 class BedrockParticle(
-    var texture: ResourceLocation = ResourceLocation.parse("minecraft:textures/particles/bubble.png"),
+    var texture: Identifier = Identifier.parse("minecraft:textures/particles/bubble.png"),
     var material: ParticleMaterial = ParticleMaterial.ALPHA,
     var uvMode: ParticleUVMode = StaticParticleUVMode(),
     var sizeX: Expression = NumberExpression(0.15),
@@ -93,7 +93,7 @@ class BedrockParticle(
 
         val CODEC: Codec<BedrockParticle> = RecordCodecBuilder.create { instance ->
             instance.group(
-                ResourceLocation.CODEC.fieldOf("texture").forGetter { it.texture },
+                Identifier.CODEC.fieldOf("texture").forGetter { it.texture },
                 PrimitiveCodec.STRING.fieldOf("material").forGetter { it.material.name },
                 ParticleUVMode.codec.fieldOf("uvMode").forGetter { it.uvMode },
                 EXPRESSION_SET_CODEC.fieldOf("expressionSet").forGetter {
@@ -177,8 +177,8 @@ class BedrockParticle(
         sizeY = MoLang.createParser(buffer.readString()).parseExpression()
         maxAge = MoLang.createParser(buffer.readString()).parseExpression()
         killExpression = MoLang.createParser(buffer.readString()).parseExpression()
-        updateExpressions = buffer.readList { MoLang.createParser(it.readString()).parseExpression() }
-        renderExpressions = buffer.readList { MoLang.createParser(it.readString()).parseExpression() }
+        updateExpressions = buffer.readList { MoLang.createParser(it.readString()).parseExpression() }.toMutableList()
+        renderExpressions = buffer.readList { MoLang.createParser(it.readString()).parseExpression() }.toMutableList()
         motion = ParticleMotion.readFromBuffer(buffer)
         rotation = ParticleRotation.readFromBuffer(buffer)
         viewDirection = ParticleViewDirection.readFromBuffer(buffer)
@@ -186,8 +186,8 @@ class BedrockParticle(
         tinting = ParticleTinting.readFromBuffer(buffer)
         collision.readFromBuffer(buffer)
         environmentLighting = buffer.readBoolean()
-        creationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }
-        expirationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }
+        creationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }.toMutableList()
+        expirationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }.toMutableList()
         timeline.decode(buffer)
     }
 }

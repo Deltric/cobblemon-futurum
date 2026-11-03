@@ -3,15 +3,9 @@
   "group": "iv_candy_bad",
   "category": "misc",
   "key": {
-    "G": {
-      "item": "cobblemon:grepa_berry"
-    },
-    "B": {
-      "item": "cobblemon:enigma_berry"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_l"
-    }
+    "G": "cobblemon:grepa_berry",
+    "B": "cobblemon:enigma_berry",
+    "E": "cobblemon:exp_candy_l"
   },
   "pattern": [
     "GBG",

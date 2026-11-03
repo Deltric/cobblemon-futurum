@@ -27,6 +27,14 @@ architectury {
     common("neoforge", "fabric")
 }
 
+// NeoForge 26.3 ships Mixin 0.17.3. Fabric 0.17.4 changes Redirect.at from
+// one annotation to an array; compiling shared mixins against it creates
+// bytecode that NeoForge's MixinExtras cannot read. Keep the common annotation
+// API compatible with both runtimes, without replacing either loader's runtime.
+configurations.named("compileClasspath") {
+    resolutionStrategy.force("net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7")
+}
+
 repositories {
     maven(url = "${rootProject.projectDir}/deps")
     maven(url = "https://api.modrinth.com/maven")
@@ -37,28 +45,23 @@ repositories {
 
 dependencies {
     implementation(libs.bundles.kotlin)
-    modImplementation(libs.fabric.loader)
-    modApi(libs.molang)
+    implementation(libs.fabric.loader)
+    api(libs.molang)
 
     // Integrations
     compileOnlyApi(libs.jei.api)
-    modCompileOnly(libs.bundles.common.integrations.compileOnly) {
+    compileOnly(libs.bundles.common.integrations.compileOnly) {
         isTransitive = false
     }
-    // LambDynamicLights is handled differently because we need the Mojang-mappings version of it.
-    modCompileOnly(libs.lambDynamicLights) {
-        capabilities {
-            requireCapability("dev.lambdaurora.lambdynamiclights:api-mojmap")
-        }
-    }
+    compileOnly(libs.lambDynamicLights)
     // Flywheel has no common dep so just pick one and don't use any platform specific code in common
-    // modCompileOnly(libs.flywheelFabric)
+    // compileOnly(libs.flywheelFabric)
 
     // Showdown
-    modCompileOnly(libs.graal.core)
+    compileOnly(libs.graal.polyglot)
 
     // Data Storage
-    modCompileOnly(libs.bundles.mongo)
+    compileOnly(libs.bundles.mongo)
 
     // Unit Testing
     testImplementation(libs.bundles.unitTesting)

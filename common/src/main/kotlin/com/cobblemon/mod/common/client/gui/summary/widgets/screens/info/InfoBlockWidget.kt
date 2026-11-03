@@ -11,10 +11,10 @@ package com.cobblemon.mod.common.client.gui.summary.widgets.screens.info
 import com.cobblemon.mod.common.api.text.*
 import com.cobblemon.mod.common.client.gui.summary.widgets.SoundlessWidget
 import com.cobblemon.mod.common.client.render.drawScaledText
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class InfoBlockWidget(
     pX: Int,
@@ -23,10 +23,10 @@ class InfoBlockWidget(
     blockHeight: Int,
     private val text: MutableComponent,
     private val withinRowVerticalTextOffset: Int,
-    private val font: ResourceLocation,
+    private val font: Identifier,
 ) : SoundlessWidget(pX, pY, blockWidth, blockHeight, Component.literal("InfoBlockWidget")) {
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         drawScaledText(
             context = context,
             font = font,

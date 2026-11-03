@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.type
 
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.types.ElementalType
 import com.cobblemon.mod.common.client.gui.summary.widgets.SoundlessWidget
@@ -26,19 +27,19 @@ abstract class TypeWidget(
         private const val OFFSET = 0.5
     }
 
-    fun renderType(type: ElementalType, pPoseStack: PoseStack, pX: Int = x, pY: Int = y) {
-        blitk(
-            matrixStack = pPoseStack,
+    fun renderType(type: ElementalType, context: GuiGraphicsExtractor, pX: Int = x, pY: Int = y) {
+        blitk(context = context,
             texture = typeResource,
-            x = pX + OFFSET, y = pY,
-            width = width, height = height,
+            x = pX + OFFSET,
+            y = pY,
+            width = width,
+            height = height,
             uOffset = width * type.textureXMultiplier.toFloat() + 0.1,
-            textureWidth = width * 18
-        )
+            textureWidth = width * 18)
     }
 
-    fun renderType(mainType: ElementalType, secondaryType: ElementalType, pPoseStack: PoseStack) {
-        renderType(secondaryType, pPoseStack, x + 16)
-        renderType(mainType, pPoseStack)
+    fun renderType(mainType: ElementalType, secondaryType: ElementalType, context: GuiGraphicsExtractor) {
+        renderType(secondaryType, context, x + 16)
+        renderType(mainType, context)
     }
 }

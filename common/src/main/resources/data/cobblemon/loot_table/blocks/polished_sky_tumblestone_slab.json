@@ -7,26 +7,24 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "cobblemon:polished_sky_tumblestone_slab",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "conditions": [
-                {
-                  "condition": "minecraft:block_state_property",
-                  "block": "cobblemon:polished_sky_tumblestone_slab",
-                  "properties": {
-                    "type": "double"
-                  }
-                }
-              ],
               "count": 2.0,
-              "add": false
+              "add": false,
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:polished_sky_tumblestone_slab",
+                "state": {
+                  "type": "double"
+                }
+              }
             },
             {
-              "function": "minecraft:explosion_decay"
+              "type": "minecraft:explosion_decay"
             }
-          ],
-          "name": "cobblemon:polished_sky_tumblestone_slab"
+          ]
         }
       ]
     }

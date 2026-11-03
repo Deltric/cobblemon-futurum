@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.block.campfirepot
 
+import com.cobblemon.mod.common.net.messages.client.cooking.CookingPotPreviewPacket
+import net.minecraft.world.item.Item
+import net.minecraft.tags.TagKey
+import net.minecraft.server.level.ServerLevel
 import com.cobblemon.mod.common.CobblemonMenuType
 import com.cobblemon.mod.common.CobblemonRecipeBookTypes.COOKING_POT
 import com.cobblemon.mod.common.CobblemonRecipeTypes
@@ -20,7 +24,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.player.StackedContents
+import net.minecraft.world.entity.player.StackedItemContents
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ContainerData
 import net.minecraft.world.inventory.ContainerListener
@@ -38,7 +42,7 @@ import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.level.Level
 import java.util.*
 
-class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, ContainerListener {
+class CookingPotMenu : RecipeBookMenu, ContainerListener {
     private val player: Player
     private val level: Level
     private val playerInventory: Inventory
@@ -49,6 +53,11 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
     private val quickCheck = RecipeManager.createCheck(CobblemonRecipeTypes.COOKING_POT_COOKING)
     var currentActiveRecipe: RecipeHolder<CookingPotRecipeBase>? = null
     var previewItem = ItemStack.EMPTY
+    var activeSeasoningTag: TagKey<Item>? = null
+    private var placingRecipe = false
+    private var previewSent = false
+    private var sentPreview = ItemStack.EMPTY
+    private var sentSeasoningTag: TagKey<Item>? = null
 
     constructor(containerId: Int, playerInventory: Inventory) : super(CobblemonMenuType.COOKING_POT, containerId) {
         this.playerInventory = playerInventory
@@ -108,31 +117,31 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
 
     override fun broadcastChanges() {
         super.broadcastChanges()
+        val serverPlayer = player as? ServerPlayer ?: return
+        // The constructor runs before the open-screen packet; send only once this menu is active.
+        if (serverPlayer.containerMenu === this && (!previewSent || !ItemStack.matches(sentPreview, previewItem) || sentSeasoningTag != activeSeasoningTag)) {
+            CookingPotPreviewPacket(containerId, previewItem, activeSeasoningTag?.location).sendToPlayer(serverPlayer)
+            sentPreview = previewItem.copy()
+            sentSeasoningTag = activeSeasoningTag
+            previewSent = true
+        }
     }
 
-    override fun handlePlacement(placeAll: Boolean, recipe: RecipeHolder<*>, player: ServerPlayer) {
-        val recipeValue = recipe.value()
-        if (recipeValue is CookingPotRecipeBase) {
-            @Suppress("UNCHECKED_CAST")
-            val castedRecipe = recipe as RecipeHolder<CookingPotRecipeBase>
-
-            // Save seasoning contents
-            val seasoningSlots = CampfireBlockEntity.SEASONING_SLOTS
-            val preservedSeasonings = seasoningSlots.map { container.getItem(it).copy() }
-
-            this.beginPlacingRecipe()
-            try {
-                val serverPlaceRecipe = ServerPlaceRecipe(this)
-                serverPlaceRecipe.recipeClicked(player, castedRecipe, placeAll)
-            } finally {
-                this.finishPlacingRecipe(castedRecipe)
-            }
-
-            seasoningSlots.forEachIndexed { index, slot ->
-                container.setItem(slot, preservedSeasonings[index])
-            }
-        } else {
-            throw IllegalArgumentException("Unsupported recipe type: ${recipeValue::class.java.name}")
+    override fun handlePlacement(useMaxItems: Boolean, allowDroppingItemsToClear: Boolean, recipe: RecipeHolder<*>, level: ServerLevel, inventory: Inventory): PostPlaceAction {
+        require(recipe.value() is CookingPotRecipeBase) { "Unsupported cooking recipe: ${recipe.value()::class.java.name}" }
+        @Suppress("UNCHECKED_CAST")
+        val cookingRecipe = recipe as RecipeHolder<CookingPotRecipeBase>
+        placingRecipe = true
+        try {
+            val inputSlots = inputGridSlots
+            return ServerPlaceRecipe.placeRecipe(object : ServerPlaceRecipe.CraftingMenuAccess<CookingPotRecipeBase> {
+                override fun fillCraftSlotsStackedContents(contents: StackedItemContents) = this@CookingPotMenu.fillCraftSlotsStackedContents(contents)
+                override fun clearCraftingContent() = this@CookingPotMenu.clearCraftingContent()
+                override fun recipeMatches(recipe: RecipeHolder<CookingPotRecipeBase>) = this@CookingPotMenu.recipeMatches(recipe)
+            }, gridWidth, gridHeight, inputSlots, inputSlots, inventory, cookingRecipe, useMaxItems, allowDroppingItemsToClear)
+        } finally {
+            placingRecipe = false
+            recalculateRecipe()
         }
     }
 
@@ -140,15 +149,16 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
         super.removed(player)
     }
 
-    override fun fillCraftSlotsStackedContents(itemHelper: StackedContents) {
-        this.container.fillStackedContents(itemHelper)
+    override fun fillCraftSlotsStackedContents(itemHelper: StackedItemContents) {
+        for (slot in CampfireBlockEntity.CRAFTING_GRID_SLOTS) itemHelper.accountSimpleStack(container.getItem(slot))
     }
 
-    override fun clearCraftingContent() {
-        container.clearContent()
+    fun clearCraftingContent() {
+        // Cooked output and seasoning are persistent inventory, not part of the recipe grid.
+        for (slot in CampfireBlockEntity.CRAFTING_GRID_SLOTS) container.setItem(slot, ItemStack.EMPTY)
     }
 
-    override fun recipeMatches(recipe: RecipeHolder<CookingPotRecipeBase>): Boolean {
+    fun recipeMatches(recipe: RecipeHolder<CookingPotRecipeBase>): Boolean {
         val craftInput = CraftingInput.of(3,3, container.items.subList(1,10))
         val recipeValue = recipe.value()
         return if (recipeValue is CookingPotRecipeBase) {
@@ -159,11 +169,12 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
     }
 
     private fun recalculateRecipe() {
-        val craftInput = CraftingInput.of(3,3, container.items.subList(1,10))
+        val serverLevel = level as? ServerLevel ?: return
+        val craftInput = CraftingInput.of(3, 3, CampfireBlockEntity.CRAFTING_GRID_SLOTS.map(container::getItem))
         fun <T : CookingPotRecipeBase> fetchRecipe(
             recipeType: RecipeType<T>
         ): Optional<RecipeHolder<CookingPotRecipeBase>> {
-            val optional = level.recipeManager.getRecipeFor(recipeType, craftInput, level)
+            val optional = serverLevel.recipeAccess().getRecipeFor(recipeType, craftInput, serverLevel)
             @Suppress("UNCHECKED_CAST")
             return optional.map { it as RecipeHolder<CookingPotRecipeBase> }
         }
@@ -172,8 +183,9 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
             .orElseGet { fetchRecipe(CobblemonRecipeTypes.COOKING_POT_SHAPELESS).orElse(null) }
 
         currentActiveRecipe = recipe
+        activeSeasoningTag = recipe?.value()?.seasoningTag
         if (recipe != null) {
-            previewItem = recipe.value.assemble(craftInput, level.registryAccess())
+            previewItem = recipe.value.assemble(craftInput)
             // Apply seasoning to the preview item
             recipe.value.applySeasoning(
                 previewItem,
@@ -185,19 +197,22 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
         } else previewItem = ItemStack.EMPTY
     }
 
-    override fun getResultSlotIndex(): Int {
+    val resultSlot: Slot get() = slots[CampfireBlockEntity.RESULT_SLOT]
+    val inputGridSlots: List<Slot> get() = CampfireBlockEntity.CRAFTING_GRID_SLOTS.map { slots[it] }
+
+    val resultSlotIndex: Int get() {
         return CampfireBlockEntity.RESULT_SLOT
     }
 
-    override fun getGridWidth(): Int {
+    val gridWidth: Int get() {
         return CampfireBlockEntity.CRAFTING_GRID_WIDTH
     }
 
-    override fun getGridHeight(): Int {
+    val gridHeight: Int get() {
         return CampfireBlockEntity.CRAFTING_GRID_WIDTH
     }
 
-    override fun getSize(): Int {
+    val size: Int get() {
         return CampfireBlockEntity.ITEMS_SIZE
     }
 
@@ -215,7 +230,7 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
         return COOKING_POT
     }
 
-    override fun shouldMoveToInventory(slotIndex: Int): Boolean {
+    fun shouldMoveToInventory(slotIndex: Int): Boolean {
         return !CampfireBlockEntity.SEASONING_SLOTS.contains(slotIndex)
     }
 
@@ -273,7 +288,7 @@ class CookingPotMenu : RecipeBookMenu<CraftingInput, CookingPotRecipeBase>, Cont
     }
 
     override fun slotChanged(containerToSend: AbstractContainerMenu, dataSlotIndex: Int, stack: ItemStack) {
-        if (CampfireBlockEntity.CRAFTING_GRID_SLOTS.contains(dataSlotIndex) || CampfireBlockEntity.SEASONING_SLOTS.contains(dataSlotIndex)) recalculateRecipe()
+        if (!placingRecipe && (dataSlotIndex in CampfireBlockEntity.CRAFTING_GRID_SLOTS || dataSlotIndex in CampfireBlockEntity.SEASONING_SLOTS)) recalculateRecipe()
         broadcastChanges()
     }
 

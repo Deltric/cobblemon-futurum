@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/held",
-  "criteria": {
-    "has_gem": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:dragon_gem"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "cobblemon:recipes/held",
+    "criteria": {
+        "has_gem": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:dragon_gem"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:dragon_fang"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:dragon_fang"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    "requirements": [
+        [
+            "has_gem",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:dragon_fang"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_gem",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:dragon_fang"
-    ]
-  }
 }

@@ -22,9 +22,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.texture.DynamicTexture
 import kotlin.math.floor
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.joml.Vector3f
 import org.joml.Vector4f
 
@@ -35,29 +34,29 @@ import org.joml.Vector4f
  * @since May 14th, 2022
  */
 class VaryingRenderableResolver(
-    val name: ResourceLocation,
+    val name: Identifier,
     val variations: MutableList<ModelAssetVariation>
 ) {
     lateinit var repository: VaryingModelRepository
-    val posers = mutableMapOf<Pair<ResourceLocation, ResourceLocation>, PosableModel>()
-    val models = mutableMapOf<ResourceLocation, Bone>()
+    val posers = mutableMapOf<Pair<Identifier, Identifier>, PosableModel>()
+    val models = mutableMapOf<Identifier, Bone>()
 
-    fun getResolvedPoser(state: PosableState): ResourceLocation {
+    fun getResolvedPoser(state: PosableState): Identifier {
         return getVariationValue(state) { poser }
             ?: throw IllegalStateException("Unable to find a poser for $name with aspects ${state.currentAspects.joinToString()}. This shouldn't be possible if you've defined the fallback variation.")
     }
 
-    fun getResolvedModel(state: PosableState): ResourceLocation {
+    fun getResolvedModel(state: PosableState): Identifier {
         return getVariationValue(state) { model }
             ?: throw IllegalStateException("Unable to find a model for $name with aspects ${state.currentAspects.joinToString()}. This shouldn't be possible if you've defined the fallback variation.")
     }
 
-    fun getResolvedTexture(state: PosableState): ResourceLocation {
+    fun getResolvedTexture(state: PosableState): Identifier {
         return getVariationValue(state) { texture }?.invoke(state)
             ?: throw IllegalStateException("Unable to find a texture for $name with aspects ${state.currentAspects.joinToString()}. This shouldn't be possible if you've defined the fallback variation.")
     }
 
-    fun getSprite(state: PosableState, type: SpriteType): ResourceLocation? {
+    fun getSprite(state: PosableState, type: SpriteType): Identifier? {
         return getVariationValue(state) { sprites }?.get(type)
     }
 
@@ -78,8 +77,8 @@ class VaryingRenderableResolver(
         return layerMaps.values.filter(ModelLayer::enabled)
     }
 
-    fun getAllModels(): Set<ResourceLocation> {
-        val models = mutableSetOf<ResourceLocation>()
+    fun getAllModels(): Set<Identifier> {
+        val models = mutableSetOf<Identifier>()
         for (variation in variations) {
             if (variation.model != null) {
                 models.add(variation.model)
@@ -91,7 +90,7 @@ class VaryingRenderableResolver(
     companion object {
         val GSON = GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(ResourceLocation::class.java, IdentifierAdapter)
+            .registerTypeAdapter(Identifier::class.java, IdentifierAdapter)
             .registerTypeAdapter(Vector3f::class.java, Vector3fAdapter)
             .registerTypeAdapter(Vector4f::class.java, Vector4fAdapter)
             .registerTypeAdapter(ModelTextureSupplier::class.java, ModelTextureSupplierAdapter)
@@ -131,7 +130,7 @@ class VaryingRenderableResolver(
         }
     }
 
-    fun getTexture(state: PosableState): ResourceLocation {
+    fun getTexture(state: PosableState): Identifier {
         repository.posers[getResolvedPoser(state)] ?: throw IllegalStateException("No poser for $name")
         return getResolvedTexture(state)
     }
@@ -151,7 +150,7 @@ class VaryingRenderableResolver(
  */
 class ModelVariationSet(
     @SerializedName("name", alternate = ["species", "pokeball"])
-    val name: ResourceLocation = cobblemonResource("thing"),
+    val name: Identifier = cobblemonResource("thing"),
     val order: Int = 0,
     val variations: MutableList<ModelAssetVariation> = mutableListOf()
 )
@@ -169,11 +168,11 @@ class ModelVariationSet(
 class ModelAssetVariation(
     val aspects: MutableSet<String> = mutableSetOf(),
     val condition: ExpressionLike? = null,
-    val poser: ResourceLocation? = null,
-    val model: ResourceLocation? = null,
+    val poser: Identifier? = null,
+    val model: Identifier? = null,
     val texture: ModelTextureSupplier? = null,
     val layers: List<ModelLayer>? = null,
-    val sprites: Map<SpriteType, ResourceLocation>? = null
+    val sprites: Map<SpriteType, Identifier>? = null
 ) {
     fun fits(state: PosableState): Boolean {
         return aspects.all { it in state.currentAspects } && (condition == null || state.runtime.resolveBoolean(condition))
@@ -188,11 +187,11 @@ class ModelAssetVariation(
  * @since February 6th, 2023
  */
 fun interface ModelTextureSupplier {
-    operator fun invoke(state: PosableState): ResourceLocation
+    operator fun invoke(state: PosableState): Identifier
 }
 
-class StaticModelTextureSupplier(val texture: ResourceLocation): ModelTextureSupplier {
-    override fun invoke(state: PosableState): ResourceLocation {
+class StaticModelTextureSupplier(val texture: Identifier): ModelTextureSupplier {
+    override fun invoke(state: PosableState): Identifier {
         return texture
     }
 }
@@ -200,10 +199,10 @@ class StaticModelTextureSupplier(val texture: ResourceLocation): ModelTextureSup
 class AnimatedModelTextureSupplier(
     val loop: Boolean,
     val fps: Float,
-    val frames: List<ResourceLocation>,
+    val frames: List<Identifier>,
     val interpolation: Boolean
 ): ModelTextureSupplier {
-    override fun invoke(state: PosableState): ResourceLocation {
+    override fun invoke(state: PosableState): Identifier {
         val frameIndex = floor(state.animationSeconds * fps).toInt()
         return if (frameIndex >= frames.size && !loop) {
             frames.last()
@@ -212,71 +211,65 @@ class AnimatedModelTextureSupplier(
         }
     }
 
-    fun interpolatedTexture(state: PosableState): DynamicTexture? {
+    fun interpolatedImage(state: PosableState): NativeImage? {
         val resourceManager = Minecraft.getInstance().resourceManager
-
         val frameIndex = floor(state.animationSeconds * fps).toInt()
+        fun readFrame(index: Int) = resourceManager.getResourceOrThrow(frames[index]).open().use(NativeImage::read)
+        val firstIndex = if (frameIndex >= frames.size && !loop) frames.lastIndex else Math.floorMod(frameIndex, frames.size)
+        val texture1 = try { readFrame(firstIndex) } catch (_: Exception) { return null }
         try {
             if (frameIndex >= frames.size && !loop) {
-                return DynamicTexture(NativeImage.read(resourceManager.getResourceOrThrow(frames.last()).open()))
+                return texture1
             }
-        } catch (e : Exception) {
-            return null
-        }
-        val o = frameIndex % frames.size
-        val i = state.animationSeconds * fps - frameIndex
-
-        val texture1 : NativeImage
-        val texture2 : NativeImage
-
-        try { //Try getting images of the frames so we can use them to make a new one
-            texture1 = NativeImage.read(resourceManager.getResourceOrThrow(frames[o]).open())
-            val s = if (o == frames.size - 1) 0 else o + 1
-            texture2 = NativeImage.read(resourceManager.getResourceOrThrow(frames[s]).open())
-        } catch (e : Exception) {
-            return null
-        }
-
-        for (x in 0..<texture1.width) {
-            for (y in 0..<texture1.height) {
-                val color1 = texture1.getPixelRGBA(x,y).toRGBA()
-                val color2 = texture2.getPixelRGBA(x,y).toRGBA()
-
-                var newRed : Int
-                var newGreen : Int
-                var newBlue : Int
-                var newAlpha : Int
-
-                //Usually full transparent pixel is black, so this makes it copy the other texture colours to look better, however considering if we should allow to disable this feature
-                if (color1.w == 0F && color2.w == 1F) {
-                    newRed = floor(color2.x * 255).toInt()
-                    newGreen = floor(color2.y * 255).toInt()
-                    newBlue = floor(color2.z * 255).toInt()
-                } else if (color1.w == 1F && color2.w == 0F) {
-                    newRed = floor(color1.x * 255).toInt()
-                    newGreen = floor(color1.y * 255).toInt()
-                    newBlue = floor(color1.z * 255).toInt()
-                } else {
-                    newRed = floor((color1.x + (color2.x - color1.x) * i) * 255).toInt()
-                    newGreen = floor((color1.y + (color2.y - color1.y) * i) * 255).toInt()
-                    newBlue = floor((color1.z + (color2.z - color1.z) * i) * 255).toInt()
+            val i = state.animationSeconds * fps - frameIndex
+            readFrame((firstIndex + 1) % frames.size).use { texture2 ->
+                require(texture1.width == texture2.width && texture1.height == texture2.height) {
+                    "Interpolated texture frames must have identical dimensions"
                 }
+                for (x in 0..<texture1.width) {
+                    for (y in 0..<texture1.height) {
+                        val color1 = texture1.getPixel(x,y).toRGBA()
+                        val color2 = texture2.getPixel(x,y).toRGBA()
 
-                newAlpha = floor((color1.w + (color2.w - color1.w) * i) * 255).toInt()
+                        var newRed : Int
+                        var newGreen : Int
+                        var newBlue : Int
+                        var newAlpha : Int
 
-                val finalColor = (newAlpha shl 24) or (newRed shl 16) or (newGreen shl 8) or newBlue
+                        //Usually full transparent pixel is black, so this makes it copy the other texture colours to look better, however considering if we should allow to disable this feature
+                        if (color1.w == 0F && color2.w == 1F) {
+                            newRed = floor(color2.x * 255).toInt()
+                            newGreen = floor(color2.y * 255).toInt()
+                            newBlue = floor(color2.z * 255).toInt()
+                        } else if (color1.w == 1F && color2.w == 0F) {
+                            newRed = floor(color1.x * 255).toInt()
+                            newGreen = floor(color1.y * 255).toInt()
+                            newBlue = floor(color1.z * 255).toInt()
+                        } else {
+                            newRed = floor((color1.x + (color2.x - color1.x) * i) * 255).toInt()
+                            newGreen = floor((color1.y + (color2.y - color1.y) * i) * 255).toInt()
+                            newBlue = floor((color1.z + (color2.z - color1.z) * i) * 255).toInt()
+                        }
 
-                texture1.setPixelRGBA(x,y,finalColor) //We aren't using texture 1 anymore so it's easier to override it
+                        newAlpha = floor((color1.w + (color2.w - color1.w) * i) * 255).toInt()
+
+                        val finalColor = (newAlpha shl 24) or (newRed shl 16) or (newGreen shl 8) or newBlue
+
+                        texture1.setPixel(x,y,finalColor) //We aren't using texture 1 anymore so it's easier to override it
+                    }
+                }
             }
+            return texture1
+        } catch (_: Exception) {
+            texture1.close()
+            return null
         }
-        val newTexture = DynamicTexture(texture1)
-        newTexture.setFilter(false, false)
-        return newTexture
     }
+
 }
 
 class VariableModelTextureSupplier : ModelTextureSupplier {
-    override fun invoke(state: PosableState): ResourceLocation {
+    override fun invoke(state: PosableState): Identifier {
         return state.runtime.environment.variable.map["texture"]?.asString()?.asIdentifierDefaultingNamespace()
             ?: cobblemonResource("textures/npcs/default.png")
     }

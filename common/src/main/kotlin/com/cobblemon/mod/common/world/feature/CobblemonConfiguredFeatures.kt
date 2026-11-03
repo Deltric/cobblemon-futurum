@@ -11,7 +11,7 @@ package com.cobblemon.mod.common.world.feature
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature
+import net.minecraft.world.level.levelgen.feature.Feature
 
 object CobblemonConfiguredFeatures {
 
@@ -48,5 +48,5 @@ object CobblemonConfiguredFeatures {
     @JvmField
     val TYPE_GEM_KEY = of("type_gem")
 
-    private fun of(id: String): ResourceKey<ConfiguredFeature<*, *>> = ResourceKey.create(Registries.CONFIGURED_FEATURE, cobblemonResource(id))
+    private fun of(id: String): ResourceKey<Feature> = ResourceKey.create(Registries.FEATURE, cobblemonResource(id))
 }

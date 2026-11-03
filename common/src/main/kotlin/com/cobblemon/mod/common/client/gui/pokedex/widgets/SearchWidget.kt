@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.pokedex.widgets
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.api.text.font
@@ -20,11 +21,11 @@ import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.SCALE
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.Util
+import net.minecraft.util.Util
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 
 class SearchWidget(
@@ -54,31 +55,30 @@ class SearchWidget(
         super.setFocused(focused)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         if (mouseX.toInt() in x..(x + width) && mouseY.toInt() in y..(y + height)) isFocused = true
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = searchBarOverlay,
-            x = posX, y = posY,
+            x = posX,
+            y = posY,
             width = HALF_OVERLAY_WIDTH,
-            height = HEADER_BAR_HEIGHT
-        )
+            height = HEADER_BAR_HEIGHT)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = searchIcon,
             x = (posX.toInt() + 3) / SCALE,
             y = (posY.toInt() + 2) / SCALE,
             width = 14,
             height = 14,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         val showCursor = isFocused && ((Util.getMillis() - this.focusedTime) / 300L % 2L == 0L)
         val input = if (isFocused) "${value}${if ((cursorPosition == value.length) && showCursor) "_" else ""}".text()
@@ -97,7 +97,7 @@ class SearchWidget(
         if (showCursor && !value.isEmpty() && cursorPosition != value.length) {
             val startToCursorWidth = Minecraft.getInstance().font.width((input.getString(cursorPosition).text().bold()).font(CobblemonResources.DEFAULT_LARGE))
             context.fill(
-                RenderType.guiTextHighlight(),
+                RenderPipelines.GUI_TEXT_HIGHLIGHT,
                 startX + startToCursorWidth - 1,
                 startY,
                 startX + startToCursorWidth,

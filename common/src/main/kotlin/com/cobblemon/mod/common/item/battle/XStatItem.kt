@@ -8,16 +8,18 @@
 
 package com.cobblemon.mod.common.item.battle
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle
 import com.cobblemon.mod.common.api.battles.model.actor.BattleActor
 import com.cobblemon.mod.common.api.pokemon.stats.Stat
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon
-import net.minecraft.world.item.ItemNameBlockItem
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Block
 
-class XStatItem(val stat: Stat, stages: Int = 2, block: Block) : ItemNameBlockItem(block, Properties()), SimpleBagItemLike {
+class XStatItem(properties: Properties, val stat: Stat, stages: Int = 2, block: Block) : BlockItem(block, properties), SimpleBagItemLike {
     override val bagItem = object : BagItem {
         override val itemName = "item.cobblemon.x_${stat.identifier.path}"
         override val returnItem = Items.AIR

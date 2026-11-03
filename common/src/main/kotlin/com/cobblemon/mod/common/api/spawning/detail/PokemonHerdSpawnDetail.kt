@@ -19,7 +19,7 @@ import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cobblemon.mod.common.util.weightedSelection
 import com.google.gson.annotations.SerializedName
 import net.minecraft.core.registries.Registries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth.clamp
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -63,7 +63,7 @@ class PokemonHerdSpawnDetail : SpawnDetail() {
         var isFollower = true
         var weight = 1F
         var maxTimes = 10
-        var heldItem: ResourceLocation? = null
+        var heldItem: Identifier? = null
     }
 
     override fun isValid() = super.isValid() && herdablePokemon.all { it.pokemon.hasSpecies() && it.weight > 0F && it.maxTimes > 0 }
@@ -141,8 +141,8 @@ class PokemonHerdSpawnDetail : SpawnDetail() {
         } ?: level..level
 
         val heldItem = herdable.heldItem?.let { heldItemId ->
-            val item = spawnablePosition.world.registryAccess().registryOrThrow(Registries.ITEM).get(heldItemId)
-            if (item == Items.AIR) {
+            val item = spawnablePosition.world.registryAccess().lookupOrThrow(Registries.ITEM).getValue(heldItemId)
+            if (item == null || item == Items.AIR) {
                 LOGGER.error("Unable to find matching herd held item for ID: $heldItemId")
                 null
             } else {

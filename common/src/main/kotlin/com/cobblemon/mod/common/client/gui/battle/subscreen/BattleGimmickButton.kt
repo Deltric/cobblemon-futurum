@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.battle.subscreen
 
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import com.cobblemon.mod.common.api.data.ShowdownIdentifiable
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.moves.MoveTemplate
@@ -61,9 +62,8 @@ abstract class BattleGimmickButton(gimmick: ShowdownMoveset.Gimmick, val x: Floa
     private val sfx = SimpleSoundInstance.forUI(SoundEvents.ANVIL_LAND, 1.0F)
     private val texture = gimmick.id
 
-    fun render(matrices: PoseStack, mouseX: Int, mouseY: Int, delta: Float) {
-        blitk(
-            matrixStack = matrices,
+    fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        blitk(context = context,
             texture = cobblemonResource("textures/gui/battle/battle_gimmick_${texture}.png"),
             x = x * 2,
             y = y * 2,
@@ -71,8 +71,7 @@ abstract class BattleGimmickButton(gimmick: ShowdownMoveset.Gimmick, val x: Floa
             width = WIDTH,
             vOffset = if (toggled || isHovered(mouseX.toDouble(), mouseY.toDouble())) HEIGHT else 0,
             textureHeight = HEIGHT * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
     fun isHovered(mouseX: Double, mouseY: Double) = mouseX >= x && mouseX <= x + XOFF && mouseY >= y && mouseY <= y + YOFF

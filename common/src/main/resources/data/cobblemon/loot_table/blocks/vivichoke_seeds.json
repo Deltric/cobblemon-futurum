@@ -7,15 +7,13 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:vivichoke",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:vivichoke_seeds",
-              "properties": {
-                "age": "7"
-              }
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:vivichoke_seeds",
+            "state": {
+              "age": "7"
             }
-          ]
+          }
         }
       ]
     },
@@ -25,12 +23,10 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:vivichoke_seeds",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:vivichoke_seeds"
-            }
-          ]
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:vivichoke_seeds"
+          }
         }
       ]
     }

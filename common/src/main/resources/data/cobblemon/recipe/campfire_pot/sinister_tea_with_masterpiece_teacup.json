@@ -3,35 +3,24 @@
     "category": "complex_dishes",
     "group": "sinister_tea",
     "ingredients": [
-        {
-            "item": "cobblemon:masterpiece_teacup"
-        },
-        {
-            "item": "cobblemon:masterpiece_teacup"
-        },
-        {
-            "item": "cobblemon:masterpiece_teacup"
-        },
-        [
-          {
-            "item": "minecraft:water_bucket"
-          },
-          {
-            "tag": "c:drinks/milk"
-          }
-        ]
+        "cobblemon:masterpiece_teacup",
+        "cobblemon:masterpiece_teacup",
+        "cobblemon:masterpiece_teacup",
+        "#cobblemon:recipe_inputs/water_bucket_or_milk"
     ],
     "result": {
         "components": {
             "minecraft:food": {
                 "nutrition": 0,
                 "saturation": 0,
-                "can_always_eat": true,
-                "using_converts_to": {
-                    "id": "cobblemon:masterpiece_teacup"
-                }
+                "can_always_eat": true
             },
-            "minecraft:custom_model_data": 2
+            "minecraft:use_remainder": {
+                "id": "cobblemon:masterpiece_teacup"
+            },
+            "minecraft:custom_model_data": {
+                "floats": [2]
+            }
         },
         "id": "cobblemon:sinister_tea",
         "count": 3

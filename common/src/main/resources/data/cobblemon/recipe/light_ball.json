@@ -6,22 +6,12 @@
         "GTQ"
     ],
     "key": {
-        "Q": {
-            "tag": "c:gems/quartz"
-        },
-        "T": {
-            "item": "minecraft:tinted_glass"
-        },
-        "E": {
-            "item": "minecraft:ender_pearl"
-        },
+        "Q": "#c:gems/quartz",
+        "T": "minecraft:tinted_glass",
+        "E": "minecraft:ender_pearl",
         "G": [
-            {
-                "item": "cobblemon:thunder_stone"
-            },
-            {
-                "item": "cobblemon:electric_gem"
-            }
+            "cobblemon:thunder_stone",
+            "cobblemon:electric_gem"
         ]
     },
     "result": {

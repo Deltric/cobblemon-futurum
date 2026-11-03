@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.net.serializers
 
+import com.cobblemon.mod.common.util.readMap
+import com.cobblemon.mod.common.util.writeMap
 import com.cobblemon.mod.common.api.riding.stats.RidingStat
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.readString

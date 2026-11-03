@@ -7,26 +7,24 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "cobblemon:apricorn_slab",
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "conditions": [
-                {
-                  "condition": "minecraft:block_state_property",
-                  "block": "cobblemon:apricorn_slab",
-                  "properties": {
-                    "type": "double"
-                  }
-                }
-              ],
               "count": 2.0,
-              "add": false
+              "add": false,
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:apricorn_slab",
+                "state": {
+                  "type": "double"
+                }
+              }
             },
             {
-              "function": "minecraft:explosion_decay"
+              "type": "minecraft:explosion_decay"
             }
-          ],
-          "name": "cobblemon:apricorn_slab"
+          ]
         }
       ]
     }

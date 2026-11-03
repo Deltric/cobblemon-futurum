@@ -16,35 +16,41 @@
     "upgrade": {
       "trigger": "minecraft:item_used_on_block",
       "conditions": {
-        "location": [
-          {
-            "condition": "minecraft:block_state_property",
-            "block": "cobblemon:monitor"
-          },
-          {
-            "condition": "minecraft:match_tool",
-            "predicate": {
-              "items": "cobblemon:upgrade"
+        "location": {
+          "type": "minecraft:all_of",
+          "terms": [
+            {
+              "type": "minecraft:match_block",
+              "blocks": "cobblemon:monitor"
+            },
+            {
+              "type": "minecraft:match_tool",
+              "predicate": {
+                "items": "cobblemon:upgrade"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
     },
     "dubious": {
       "trigger": "minecraft:item_used_on_block",
       "conditions": {
-        "location": [
-          {
-            "condition": "minecraft:block_state_property",
-            "block": "cobblemon:monitor"
-          },
-          {
-            "condition": "minecraft:match_tool",
-            "predicate": {
-              "items": "cobblemon:dubious_disc"
+        "location": {
+          "type": "minecraft:all_of",
+          "terms": [
+            {
+              "type": "minecraft:match_block",
+              "blocks": "cobblemon:monitor"
+            },
+            {
+              "type": "minecraft:match_tool",
+              "predicate": {
+                "items": "cobblemon:dubious_disc"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
     }
   },

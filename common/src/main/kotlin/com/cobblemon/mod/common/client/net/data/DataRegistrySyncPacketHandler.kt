@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.net.data
 
+import com.cobblemon.mod.common.util.readList
 import com.cobblemon.mod.common.api.net.ClientNetworkPacketHandler
 import com.cobblemon.mod.common.net.messages.client.data.DataRegistrySyncPacket
 import net.minecraft.client.Minecraft

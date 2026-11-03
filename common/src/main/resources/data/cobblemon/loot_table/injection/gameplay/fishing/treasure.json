@@ -8,21 +8,19 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:pokerod_smithing_template",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "count": 1,
-              "add": false
+              "add": false,
+              "type": "minecraft:set_count"
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.167
-        }
-      ]
+      "condition": {
+        "chance": 0.167,
+        "type": "minecraft:random_chance"
+      }
     }
   ]
 }

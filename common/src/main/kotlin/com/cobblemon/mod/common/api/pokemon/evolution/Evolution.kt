@@ -35,6 +35,8 @@ import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.party
 import com.cobblemon.mod.common.world.gamerules.CobblemonGameRules
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
@@ -164,7 +166,13 @@ interface Evolution : EvolutionLike {
         val preEvoName = pokemon.getDisplayName()
         val pokemonEntity = pokemon.entity
         if (pokemonEntity == null || !useEvolutionEffect) {
-            pokemon.getOwnerPlayer()?.playNotifySound(CobblemonSounds.EVOLUTION_UI, SoundSource.PLAYERS, 1F, 1F)
+            pokemon.getOwnerPlayer()?.let { player ->
+                player.connection.send(ClientboundSoundPacket(
+                    BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CobblemonSounds.EVOLUTION_UI),
+                    SoundSource.PLAYERS, player.x, player.y, player.z,
+                    1F, 1F, player.random.nextLong()
+                ))
+            }
             evolutionMethod(pokemon)
             pokemon.getOwnerPlayer()?.sendSystemMessage(lang("ui.evolve.into", preEvoName, pokemon.species.translatedName))
         } else {
@@ -230,7 +238,7 @@ interface Evolution : EvolutionLike {
         this.shed(pokemon)
 
         val ownerPlayer = pokemon.getOwnerPlayer()
-        if (ownerPlayer != null && ownerPlayer.level().gameRules.getBoolean(CobblemonGameRules.DO_POKEMON_LOOT)) {
+        if (ownerPlayer != null && ownerPlayer.level().gameRules.get(CobblemonGameRules.DO_POKEMON_LOOT)) {
             drops.drop(
                 pokemon.entity,
                 ownerPlayer.level() as ServerLevel,

@@ -16,7 +16,7 @@ import com.mojang.blaze3d.platform.InputConstants
 
 object UpShiftPartyBinding : CobblemonKeyBinding(
     "key.cobblemon.upshiftparty",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_UP,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {

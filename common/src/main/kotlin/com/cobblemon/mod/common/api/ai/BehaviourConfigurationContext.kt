@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.api.ai
 
+import net.minecraft.world.entity.ai.Brain
 import com.bedrockk.molang.runtime.MoLangRuntime
 import com.bedrockk.molang.runtime.struct.QueryStruct
 import com.bedrockk.molang.runtime.value.DoubleValue
@@ -25,24 +26,21 @@ import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cobblemon.mod.common.util.resolve
 import com.cobblemon.mod.common.util.withQueryValue
 import com.mojang.datafixers.util.Pair
-import com.mojang.serialization.Dynamic
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.behavior.BehaviorControl
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.ai.sensing.SensorType
 import net.minecraft.world.entity.schedule.Activity
-import net.minecraft.world.entity.schedule.Schedule
 
 class BehaviourConfigurationContext {
     val runtime = MoLangRuntime().setup()
 
-    var appliedBehaviours: Set<ResourceLocation> = setOf()
+    var appliedBehaviours: Set<Identifier> = setOf()
 
     var defaultActivity = Activity.IDLE
     var coreActivities = setOf(Activity.CORE)
     val activities = mutableListOf<ActivityConfigurationContext>()
-    val schedule = Schedule.EMPTY
     val memories = mutableSetOf<MemoryModuleType<*>>()
     val sensors = mutableSetOf<SensorType<*>>()
 
@@ -72,7 +70,7 @@ class BehaviourConfigurationContext {
         onAdd.add(script)
     }
 
-    fun apply(entity: LivingEntity, behaviourConfigs: List<BehaviourConfig>, dynamic: Dynamic<*>) {
+    fun apply(entity: LivingEntity, behaviourConfigs: List<BehaviourConfig>, packed: Brain.Packed) {
         runtime.withQueryValue("entity", entity.asMostSpecificMoLangValue())
         runtime.withQueryValue("brain", createBrainStruct(entity, this))
 
@@ -88,13 +86,12 @@ class BehaviourConfigurationContext {
         var brain = entity.brain
         // Apply the brain config
         if (entity is MoLangScriptingEntity) {
-            brain = entity.assignNewBrainWithMemoriesAndSensors(dynamic, memories, sensors)
+            brain = entity.assignNewBrainWithMemoriesAndSensors(packed, memories, sensors)
             onAdd.forEach { runtime.resolve(it) }
         }
         activities.forEach { it.apply(entity) }
         brain.setCoreActivities(coreActivities)
         brain.setDefaultActivity(defaultActivity)
-        brain.schedule = schedule
         brain.setActiveActivityIfPossible(defaultActivity)
     }
 
@@ -103,7 +100,7 @@ class BehaviourConfigurationContext {
             .addFunction("entity") { entity.asMostSpecificMoLangValue() }
             .addFunction("create_activity") { params ->
                 val name = params.getString(0).asIdentifierDefaultingNamespace()
-                val activity = entity.level().activityRegistry.get(name) ?: return@addFunction run {
+                val activity = entity.level().activityRegistry.getValue(name) ?: return@addFunction run {
                     Cobblemon.LOGGER.error("Tried loading activity $name as part of an entity brain but that activity does not exist")
                     DoubleValue.ZERO
                 }

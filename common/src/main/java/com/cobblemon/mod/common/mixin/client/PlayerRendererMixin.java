@@ -8,47 +8,49 @@
 
 package com.cobblemon.mod.common.mixin.client;
 
+import com.cobblemon.mod.common.client.render.AvatarPokemonState;
 import com.cobblemon.mod.common.client.render.ClientPlayerIcon;
+import com.cobblemon.mod.common.client.render.layer.PokemonOnShoulderRenderer;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.cobblemon.mod.common.client.render.player.MountedPlayerRenderer;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerRenderer.class)
-public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+@Mixin(AvatarRenderer.class)
+public abstract class PlayerRendererMixin extends LivingEntityRenderer<Avatar, AvatarRenderState, PlayerModel> {
+    @Unique private PokemonOnShoulderRenderer cobblemon$shoulders;
 
-    public PlayerRendererMixin(EntityRendererProvider.Context context, PlayerModel<AbstractClientPlayer> model, float shadowRadius) {
-        super(context, model, shadowRadius);
+    protected PlayerRendererMixin(EntityRendererProvider.Context context, PlayerModel model, float shadow) {
+        super(context, model, shadow);
     }
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
-    public void renderPlayer(AbstractClientPlayer player, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        ClientPlayerIcon.Companion.onRenderPlayer(player);
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void cobblemon$addShoulderLayer(EntityRendererProvider.Context context, boolean slim, CallbackInfo ci) {
+        cobblemon$shoulders = new PokemonOnShoulderRenderer(this);
+        addLayer(cobblemon$shoulders);
     }
 
-    @WrapOperation(method = "getRenderOffset(Lnet/minecraft/client/player/AbstractClientPlayer;F)Lnet/minecraft/world/phys/Vec3;", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isCrouching()Z"))
-    private boolean cobblemon$disableCrouchOffset(AbstractClientPlayer instance, Operation<Boolean> original) {
-        if (instance.isPassenger() && instance.getVehicle() instanceof PokemonEntity) {
-            return false;
-        }
-        return original.call(instance);
-    }
-
-    @Inject(method = "setModelProperties", at = @At("TAIL"))
-    private void cobblemon$setModelProperties(AbstractClientPlayer player, CallbackInfo ci) {
-        if (player.isPassenger() && player.getVehicle() instanceof PokemonEntity) {
-            PlayerModel<AbstractClientPlayer> playerModel = this.getModel();
-            playerModel.crouching = false;
+    @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V", at = @At("TAIL"))
+    private void cobblemon$extractPokemonState(Avatar entity, AvatarRenderState state, float partialTicks, CallbackInfo ci) {
+        AvatarPokemonState pokemonState = (AvatarPokemonState) state;
+        pokemonState.cobblemon$setShoulderGeometry(null);
+        pokemonState.cobblemon$setIconGeometry(null);
+        pokemonState.cobblemon$setMountedPose(null);
+        if (entity instanceof Player player) {
+            if (player.getVehicle() instanceof PokemonEntity) state.isCrouching = false;
+            pokemonState.cobblemon$setMountedPose(MountedPlayerRenderer.INSTANCE.extract(player, state));
+            cobblemon$shoulders.extract(player, state, partialTicks);
+            pokemonState.cobblemon$setIconGeometry(ClientPlayerIcon.Companion.extractPlayerIcon(player, partialTicks));
         }
     }
 }

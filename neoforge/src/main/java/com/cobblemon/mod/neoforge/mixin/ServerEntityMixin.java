@@ -15,7 +15,8 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.bundle.PacketAndPayloadAcceptor;
+import net.minecraft.network.protocol.Packet;
+import java.util.function.Consumer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,7 +36,7 @@ public class ServerEntityMixin {
     @Inject(method = "sendPairingData", at = @At("TAIL"))
     private void cobblemon$sendPairingSeatAssignments(
             ServerPlayer player,
-            PacketAndPayloadAcceptor<ClientGamePacketListener> packetAndPayloadAcceptor,
+            Consumer<Packet<? super ClientGamePacketListener>> packets,
             CallbackInfo ci
     ) {
         if (!(entity instanceof PokemonEntity pokemon)) return;

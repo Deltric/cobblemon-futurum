@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class EntryListWidgetMixin {
 
     @SuppressWarnings("ConstantValue")
-    @ModifyExpressionValue(method = "getEntryAtPosition", at = @At(value = "CONSTANT", args = {"intValue=4"}))
+    @ModifyExpressionValue(method = "getFirstEntryY", at = @At(value = "CONSTANT", args = {"intValue=2"}))
     public int cobblemon$adjustOnlyIfNecessary(int original) {
         if(ScrollingWidget.class.isInstance(this)) {
             return 0;

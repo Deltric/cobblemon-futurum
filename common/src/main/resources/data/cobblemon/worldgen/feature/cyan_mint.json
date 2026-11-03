@@ -1,0 +1,9 @@
+{
+  "type": "cobblemon:mint",
+  "state": {
+    "id": "cobblemon:cyan_mint",
+    "properties": {
+      "is_wild": "true"
+    }
+  }
+}

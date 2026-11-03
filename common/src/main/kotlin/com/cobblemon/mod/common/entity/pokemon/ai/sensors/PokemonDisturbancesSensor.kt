@@ -21,7 +21,7 @@ class PokemonDisturbancesSensor : Sensor<PokemonEntity>() {
                 .minByOrNull { entity.distanceToSqr(it) }
 
         nearestPlayers?.let {
-            entity.brain.setMemory(MemoryModuleType.DISTURBANCE_LOCATION, BlockPos(it.blockPosition()))
+            entity.brain.setMemory(MemoryModuleType.DISTURBANCE_LOCATION, it.blockPosition().immutable())
         }
     }
 

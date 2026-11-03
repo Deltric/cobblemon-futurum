@@ -11,7 +11,7 @@ package com.cobblemon.mod.common.client.gui.common
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.mark.Mark
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class MarkIcon(
     val x: Number,
@@ -25,20 +25,18 @@ class MarkIcon(
         const val SCALE = 0.5F
     }
 
-    fun render(context: GuiGraphics, mouseX: Int, mouseY: Int) {
-        blitk(
-            matrixStack = context.pose(),
+    fun render(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+        blitk(context = context,
             texture = mark.texture,
             x = x.toFloat() / SCALE,
             y = y.toFloat() / SCALE,
             height = SIZE,
             width = SIZE,
             alpha = opacity,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         if (showTooltip && isHovered(mouseX, mouseY)) {
-            context.renderTooltip(Minecraft.getInstance().font, mark.getName(), mouseX, mouseY)
+            context.setTooltipForNextFrame(Minecraft.getInstance().font, mark.getName(), mouseX, mouseY)
         }
     }
 

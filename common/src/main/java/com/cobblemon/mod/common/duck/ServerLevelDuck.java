@@ -8,7 +8,7 @@
 
 package com.cobblemon.mod.common.duck;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Duck that facilitates getting a level key that we store on the level.
@@ -17,5 +17,5 @@ import net.minecraft.resources.ResourceLocation;
  * @since August 30th, 2026
  */
 public interface ServerLevelDuck {
-    ResourceLocation cobblemon$getLevelResourceLocation();
+    Identifier cobblemon$getLevelResourceLocation();
 }

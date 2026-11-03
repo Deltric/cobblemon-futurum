@@ -15,87 +15,85 @@
     "place_pot": {
       "trigger": "minecraft:item_used_on_block",
       "conditions": {
-        "location": [
-          {
-            "condition": "minecraft:all_of",
-            "terms": [
-              {
-                "condition": "minecraft:any_of",
-                "terms": [
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_red"
-                      ]
-                    }
-                  },
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_yellow"
-                      ]
-                    }
-                  },
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_green"
-                      ]
-                    }
-                  },
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_blue"
-                      ]
-                    }
-                  },
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_pink"
-                      ]
-                    }
-                  },
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_black"
-                      ]
-                    }
-                  },
-                  {
-                    "condition": "minecraft:match_tool",
-                    "predicate": {
-                      "items": [
-                        "cobblemon:campfire_pot_white"
-                      ]
-                    }
+        "location": {
+          "type": "minecraft:all_of",
+          "terms": [
+            {
+              "type": "minecraft:any_of",
+              "terms": [
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_red"
+                    ]
                   }
-                ]
-              },
-              {
-                "condition": "minecraft:any_of",
-                "terms": [
-                  {
-                    "condition": "minecraft:block_state_property",
-                    "block": "cobblemon:campfire"
-                  },
-                  {
-                    "condition": "minecraft:block_state_property",
-                    "block": "cobblemon:soul_campfire"
+                },
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_yellow"
+                    ]
                   }
-                ]
-              }
-            ]
-          }
-        ]
+                },
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_green"
+                    ]
+                  }
+                },
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_blue"
+                    ]
+                  }
+                },
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_pink"
+                    ]
+                  }
+                },
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_black"
+                    ]
+                  }
+                },
+                {
+                  "type": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "cobblemon:campfire_pot_white"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:any_of",
+              "terms": [
+                {
+                  "type": "minecraft:match_block",
+                  "blocks": "cobblemon:campfire"
+                },
+                {
+                  "type": "minecraft:match_block",
+                  "blocks": "cobblemon:soul_campfire"
+                }
+              ]
+            }
+          ]
+        }
       }
     }
   },

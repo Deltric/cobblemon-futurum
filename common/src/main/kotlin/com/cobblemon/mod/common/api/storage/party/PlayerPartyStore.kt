@@ -69,7 +69,7 @@ open class PlayerPartyStore(
             true
         } else {
             val player = playerUUID.getPlayer()
-            val pc = getOverflowPC(player?.server?.registryAccess() ?: server()!!.registryAccess())
+            val pc = getOverflowPC(player?.registryAccess() ?: server()!!.registryAccess())
 
             if (pc == null || !pc.add(pokemon)) {
                 if (pc == null) {
@@ -162,7 +162,7 @@ open class PlayerPartyStore(
                     pokemon.tickInteractionCooldown(20)
                 }
 
-                pokemon.features.filterIsInstance<TickingSpeciesFeature>().forEach { it.onSecondPassed(player.serverLevel(), pokemon, null) }
+                pokemon.features.filterIsInstance<TickingSpeciesFeature>().forEach { it.onSecondPassed(player.level(), pokemon, null) }
 
                 if (pokemon.entity?.passengers?.isNotEmpty() != true) {
                     pokemon.rideStamina += 0.1F // Recover all stamina in 10 seconds, as long as no one's on it
@@ -200,7 +200,7 @@ open class PlayerPartyStore(
 
     private fun validateShoulder(player: ServerPlayer, isLeft: Boolean): Boolean {
         val shoulderEntity = if(isLeft) player.shoulderEntityLeft else player.shoulderEntityRight
-        val pokemon = find { it.uuid == shoulderEntity.getCompound("Pokemon").getUUID(DataKeys.POKEMON_UUID) }
+        val pokemon = find { it.uuid == shoulderEntity.getCompoundOrEmpty("Pokemon").getUUID(DataKeys.POKEMON_UUID) }
         // No longer valid if (in order): not in party, not the correct shoulder, no longer shoulder mountable
         if (pokemon == null || (pokemon.state as? ShoulderedState)?.isLeftShoulder != isLeft || !pokemon.form.shoulderMountable || pokemon.isAlpha) {
             return false

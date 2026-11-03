@@ -31,11 +31,14 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerEntity
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.Pose
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
+import com.cobblemon.mod.common.entity.ENTITY_STRING_LIST_CODEC
 
 class GenericBedrockEntity(world: Level) : Entity(CobblemonEntities.GENERIC_BEDROCK_ENTITY, world), PosableEntity, Schedulable {
     companion object {
@@ -56,7 +59,7 @@ class GenericBedrockEntity(world: Level) : Entity(CobblemonEntities.GENERIC_BEDR
 
     override val struct: QueryStruct = QueryStruct(hashMapOf())
 
-    var category: ResourceLocation
+    var category: Identifier
         get() = this.entityData.get(CATEGORY)
         set(value) {
             this.entityData.set(CATEGORY, value)
@@ -100,19 +103,19 @@ class GenericBedrockEntity(world: Level) : Entity(CobblemonEntities.GENERIC_BEDR
         builder.define(POSE_TYPE, PoseType.NONE)
     }
 
-    override fun readAdditionalSaveData(nbt: CompoundTag) {
-        this.category = ResourceLocation.parse(nbt.getString(DataKeys.GENERIC_BEDROCK_CATEGORY))
-        this.aspects = nbt.getList(DataKeys.GENERIC_BEDROCK_ASPECTS, Tag.TAG_STRING.toInt()).map { it.asString }.toSet()
-        this.entityData.set(POSE_TYPE, PoseType.values()[nbt.getByte(DataKeys.GENERIC_BEDROCK_POSE_TYPE).toInt()])
-        this.scale = nbt.getFloat(DataKeys.GENERIC_BEDROCK_SCALE)
-        this.colliderWidth = nbt.getFloat(DataKeys.GENERIC_BEDROCK_COLLIDER_WIDTH)
-        this.colliderHeight = nbt.getFloat(DataKeys.GENERIC_BEDROCK_COLLIDER_HEIGHT)
-        this.syncAge = nbt.getBoolean(DataKeys.GENERIC_BEDROCK_SYNC_AGE)
+    override fun readAdditionalSaveData(nbt: ValueInput) {
+        this.category = Identifier.parse(nbt.getStringOr(DataKeys.GENERIC_BEDROCK_CATEGORY, ""))
+        this.aspects = nbt.read(DataKeys.GENERIC_BEDROCK_ASPECTS, ENTITY_STRING_LIST_CODEC).orElse(emptyList()).toSet()
+        this.entityData.set(POSE_TYPE, PoseType.values()[nbt.getByteOr(DataKeys.GENERIC_BEDROCK_POSE_TYPE, 0).toInt()])
+        this.scale = nbt.getFloatOr(DataKeys.GENERIC_BEDROCK_SCALE, 0F)
+        this.colliderWidth = nbt.getFloatOr(DataKeys.GENERIC_BEDROCK_COLLIDER_WIDTH, 0F)
+        this.colliderHeight = nbt.getFloatOr(DataKeys.GENERIC_BEDROCK_COLLIDER_HEIGHT, 0F)
+        this.syncAge = nbt.getBooleanOr(DataKeys.GENERIC_BEDROCK_SYNC_AGE, false)
     }
 
-    override fun addAdditionalSaveData(nbt: CompoundTag) {
+    override fun addAdditionalSaveData(nbt: ValueOutput) {
         nbt.putString(DataKeys.GENERIC_BEDROCK_CATEGORY, category.toString())
-        nbt.put(DataKeys.GENERIC_BEDROCK_ASPECTS, ListTag().also { it.addAll(aspects.map(StringTag::valueOf)) })
+        nbt.store(DataKeys.GENERIC_BEDROCK_ASPECTS, ENTITY_STRING_LIST_CODEC, aspects.toList())
         nbt.putByte(DataKeys.GENERIC_BEDROCK_POSE_TYPE, getCurrentPoseType().ordinal.toByte())
         nbt.putFloat(DataKeys.GENERIC_BEDROCK_SCALE, scale)
         nbt.putFloat(DataKeys.GENERIC_BEDROCK_COLLIDER_WIDTH, colliderWidth)
@@ -120,8 +123,14 @@ class GenericBedrockEntity(world: Level) : Entity(CobblemonEntities.GENERIC_BEDR
         nbt.putBoolean(DataKeys.GENERIC_BEDROCK_SYNC_AGE, syncAge)
     }
 
+    override fun hurtServer(level: net.minecraft.server.level.ServerLevel, source: net.minecraft.world.damagesource.DamageSource, damage: Float): Boolean {
+        // Entity's former default marked a velocity update without taking damage.
+        if (!isInvulnerableToBase(source)) markHurt()
+        return false
+    }
+
     override fun isPickable() = true
-    override fun canBeCollidedWith() = true
+    override fun canBeCollidedWith(other: Entity?) = true
 
     override fun shouldBeSaved() = super.shouldBeSaved() && this.savesToWorld
     override fun getDimensions(pose: Pose) = EntityDimensions.scalable(colliderWidth, colliderHeight).scale(scale)

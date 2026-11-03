@@ -1,6 +1,13 @@
 {
   "pack": {
-    "pack_format": 34,
-    "description": "Adds Magikarp Jump variations for Gyarados."
+    "description": "Adds Magikarp Jump variations for Gyarados.",
+    "min_format": [
+      97,
+      1
+    ],
+    "max_format": [
+      97,
+      1
+    ]
   }
 }

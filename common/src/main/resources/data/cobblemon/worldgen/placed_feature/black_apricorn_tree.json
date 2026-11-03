@@ -6,7 +6,7 @@
       "predicate": {
         "type": "minecraft:would_survive",
         "state": {
-          "Name": "cobblemon:black_apricorn_sapling"
+          "id": "cobblemon:black_apricorn_sapling"
         }
       }
     }

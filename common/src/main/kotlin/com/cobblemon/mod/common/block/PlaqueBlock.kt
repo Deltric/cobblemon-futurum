@@ -9,8 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.util.rotateShape
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.BlockGetter
@@ -23,9 +21,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 
 class PlaqueBlock(properties : Properties) : SixFaceRotationalBlock(properties) {
     companion object {
-        val CODEC: MapCodec<PlaqueBlock> = RecordCodecBuilder.mapCodec {
-            it.group(propertiesCodec()).apply(it, ::PlaqueBlock)
-        }
 
         val FLOOR_NORTH = Shapes.or(
             Shapes.box(0.0625, 0.25, 0.4375, 0.9375, 1.0, 0.5625),
@@ -43,8 +38,6 @@ class PlaqueBlock(properties : Properties) : SixFaceRotationalBlock(properties) 
             .setValue(WATERLOGGED, false)
         )
     }
-
-    override fun codec(): MapCodec<PlaqueBlock> = CODEC
 
     override fun getShape(state: BlockState, blockGetter: BlockGetter, pos: BlockPos, collisionContext: CollisionContext): VoxelShape {
         val direction = state.getValue(FACING)

@@ -22,7 +22,6 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import com.mojang.serialization.Dynamic
 import com.mojang.serialization.DynamicOps
-import net.minecraft.util.datafix.fixes.ItemStackComponentizationFix
 import java.util.concurrent.Executors
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -30,7 +29,7 @@ object CobblemonSchemas {
     private val SAME: (Int, Schema) -> Schema = ::Schema
     private val RESULT: DataFixerBuilder.Result = this.create()
 
-    const val DATA_VERSION = 2
+    const val DATA_VERSION = 3
 
     /**
      * The Cobblemon [DataFixer].
@@ -72,11 +71,13 @@ object CobblemonSchemas {
     private fun appendSchemas(builder: DataFixerBuilder) {
         builder.addSchema(0, ::CobblemonRootSchema)
         val schema1 = builder.addSchema(1, ::CobblemonSchemaV2)
+        // Normalize complete item payloads before recursive Pokemon rules can
+        // traverse the old native template's differently bound recursive IDs.
+        builder.addFixer(PokemonLegacyItemComponentsFix(schema1))
         builder.addFixer(EvolutionProxyNestingFix(schema1))
         builder.addFixer(IvEvToIdentifierFix(schema1))
         builder.addFixer(TeraTypeFix(schema1))
         builder.addFixer(TradeableMissingFix(schema1))
-        builder.addFixer(ItemStackComponentizationFix(schema1))
         builder.addFixer(BlockPosUpdateFix(schema1))
         builder.addFixer(FeatureFix(schema1))
         builder.addFixer(MovesetJsonFix(schema1))
@@ -85,6 +86,10 @@ object CobblemonSchemas {
         builder.addFixer(RaisedPPStagesFix(schema1))
         val schema2 = builder.addSchema(2, SAME)
         builder.addFixer(HypertrainIVFix(schema2))
+        // Keep schemas 0/1/2 historical. The complete item payload is upgraded
+        // by native DFU without changing Cobblemon's structural template.
+        val schema3 = builder.addSchema(3, SAME)
+        builder.addFixer(PokemonItemComponentsFix(schema3))
     }
 
     private class CobblemonDataFixerCodec<R>(private val baseCodec: Codec<R>, private val typeReference: TypeReference) : Codec<R> {
@@ -92,6 +97,9 @@ object CobblemonSchemas {
         override fun <T> encode(input: R, ops: DynamicOps<T>, prefix: T): DataResult<T> {
             return this.baseCodec.encode(input, ops, prefix)
                 .flatMap { encoded -> ops.mergeToMap(encoded, ops.createString(VERSION_KEY), ops.createInt(DATA_VERSION)) }
+                .flatMap { encoded -> ops.mergeToMap(encoded,
+                    ops.createString(PokemonItemComponentsFix.ITEM_VERSION_KEY),
+                    ops.createInt(PokemonItemComponentsFix.TARGET_ITEM_VERSION)) }
         }
 
         override fun <T> decode(ops: DynamicOps<T>, input: T): DataResult<Pair<R, T>> {

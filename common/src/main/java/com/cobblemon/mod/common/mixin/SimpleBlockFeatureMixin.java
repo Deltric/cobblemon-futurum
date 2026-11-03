@@ -15,9 +15,9 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.SimpleBlockFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConfiguration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,8 +28,8 @@ public class SimpleBlockFeatureMixin {
     //this mixin inserts the logic needed to ensure that when hearty grains are of a certain age, they place with the upper block too
     //similarly to what the doubleblock logic is here
     @Inject(method = "place", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;canSurvive(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z", shift = At.Shift.AFTER), cancellable = true)
-    public void place(FeaturePlaceContext<SimpleBlockConfiguration> context, CallbackInfoReturnable<Boolean> cir,
-                      @Local BlockState blockState, @Local BlockPos blockPos, @Local WorldGenLevel worldGenLevel) {
+    public void place(WorldGenLevel worldGenLevel, ChunkGenerator generator, RandomSource random, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir,
+                      @Local BlockState blockState) {
         if (!(blockState.getBlock() instanceof HeartyGrainsBlock)) {
             return;
         }

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.pokedex
 
+import com.cobblemon.mod.common.util.readCollection
+import com.cobblemon.mod.common.util.writeCollection
 import com.bedrockk.molang.runtime.struct.QueryStruct
 import com.bedrockk.molang.runtime.struct.VariableStruct
 import com.bedrockk.molang.runtime.value.DoubleValue

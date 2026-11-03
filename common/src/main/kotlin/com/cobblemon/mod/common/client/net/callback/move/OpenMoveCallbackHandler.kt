@@ -15,6 +15,6 @@ import net.minecraft.client.Minecraft
 
 object OpenMoveCallbackHandler : ClientNetworkPacketHandler<OpenMoveCallbackPacket> {
     override fun handle(packet: OpenMoveCallbackPacket, client: Minecraft) {
-        client.setScreen(MoveSelectGUI(packet.title, packet.moves, packet.uuid))
+        client.gui.setScreen(MoveSelectGUI(packet.title, packet.moves, packet.uuid))
     }
 }

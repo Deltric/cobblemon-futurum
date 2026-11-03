@@ -5,7 +5,7 @@
     "Fabric dirt extends vanilla and some mods use only that instead"
   ],
   "values": [
-    "#minecraft:dirt",
+    "#minecraft:substrate_overworld",
     "minecraft:stone",
     "minecraft:infested_stone",
     "minecraft:andesite",

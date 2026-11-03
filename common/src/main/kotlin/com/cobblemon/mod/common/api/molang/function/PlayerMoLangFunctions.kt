@@ -49,10 +49,12 @@ import com.cobblemon.mod.common.util.server
 import com.cobblemon.mod.common.util.tmList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.stats.Stats
+import net.minecraft.util.Prediction
+import net.minecraft.world.item.component.SwingAnimation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameType
@@ -92,9 +94,9 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
                     }
 
                     is StringValue -> {
-                        val id = ResourceLocation.parse(value.value)
+                        val id = Identifier.parse(value.value)
                         val item =
-                            player.registryAccess().registryOrThrow(Registries.ITEM).get(id)
+                            player.registryAccess().lookupOrThrow(Registries.ITEM).getValue(id)
                                 ?: return@setInvSlot DoubleValue.ZERO
                         ItemStack(item)
                     }
@@ -122,9 +124,9 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
                     }
 
                     is StringValue -> {
-                        val id = ResourceLocation.parse(value.value)
+                        val id = Identifier.parse(value.value)
                         val item =
-                            player.registryAccess().registryOrThrow(Registries.ITEM).get(id)
+                            player.registryAccess().lookupOrThrow(Registries.ITEM).getValue(id)
                                 ?: return@giveItem DoubleValue.ZERO
                         ItemStack(item)
                     }
@@ -138,7 +140,7 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
 
             if (freeSlot == -1) {
                 if (dropIfFull) {
-                    player.drop(stack, false)
+                    player.drop(stack, false, Prediction.SERVER_ONLY)
                     return@giveItem DoubleValue.ONE
                 } else {
                     return@giveItem DoubleValue.ZERO
@@ -156,20 +158,20 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
                 ),
             )
         }
-        functions["swing_hand"] = { player.swing(player.usedItemHand) }
+        functions["swing_hand"] = { player.swing(player.usedItemHand, SwingAnimation.DEFAULT, true) }
         functions["food_level"] = { DoubleValue(player.foodData.foodLevel) }
         functions["saturation_level"] = { DoubleValue(player.foodData.saturationLevel) }
         functions["tell"] = { params ->
             val message = params.getString(0).text()
             val overlay = params.getBooleanOrNull(1) == true
-            player.displayClientMessage(message, overlay)
+            if (overlay) player.sendOverlayMessage(message) else player.sendSystemMessage(message)
         }
         functions["teleport"] = { params ->
             val x = params.getDouble(0)
             val y = params.getDouble(1)
             val z = params.getDouble(2)
             val playParticleOptions = params.getBooleanOrNull(3) ?: false
-            player.randomTeleport(x, y, z, playParticleOptions)
+            player.randomTeleport(x, y, z, playParticleOptions) { false }
         }
         functions["heal"] = { params ->
             val amount = params.getDoubleOrNull(0) ?: player.maxHealth
@@ -205,7 +207,7 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
                 functions["is_adventure"] = { DoubleValue(player.gameMode.gameModeForPlayer == GameType.ADVENTURE) }
                 functions["run_command"] = { params ->
                     val command = params.getString(0)
-                    player.server.commands.performPrefixedCommand(player.createCommandSourceStack(), command)
+                    player.level().server.commands.performPrefixedCommand(player.createCommandSourceStack(), command)
                 }
                 functions["set_battle_theme"] = { params ->
                     val soundId = params.getString(0).asResource()
@@ -330,7 +332,7 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
                 }
                 functions["pokedex"] = { player.pokedex().struct }
                 functions["has_advancement"] = hasAdvancement@{ params ->
-                    val requiredAdvancement = ResourceLocation.parse(params.getString(0))
+                    val requiredAdvancement = Identifier.parse(params.getString(0))
                     player.advancements.progress.forEach { (holder, progress) ->
                         if (holder.id == requiredAdvancement && progress.isDone) {
                             return@hasAdvancement DoubleValue.ONE
@@ -410,9 +412,9 @@ object PlayerMoLangFunctions : AbstractMoLangFunctionHolder<Player>() {
                 functions["get_custom_stat"] = getCustomStat@{ params ->
                     val statName = params.getString(0)
 
-                    val resourceLocation = ResourceLocation.tryParse(statName) ?: return@getCustomStat DoubleValue.ZERO
+                    val resourceLocation = Identifier.tryParse(statName) ?: return@getCustomStat DoubleValue.ZERO
                     val statResourceLocation =
-                        BuiltInRegistries.CUSTOM_STAT.get(resourceLocation) ?: return@getCustomStat DoubleValue.ZERO
+                        BuiltInRegistries.CUSTOM_STAT.getValue(resourceLocation) ?: return@getCustomStat DoubleValue.ZERO
 
                     val exists = Stats.CUSTOM.contains(statResourceLocation)
                     if (!exists) return@getCustomStat DoubleValue.ZERO

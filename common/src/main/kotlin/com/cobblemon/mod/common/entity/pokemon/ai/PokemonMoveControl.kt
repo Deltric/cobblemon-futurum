@@ -35,7 +35,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import kotlin.math.sqrt
 
-class PokemonMoveControl(val pokemonEntity: PokemonEntity) : MoveControl(pokemonEntity) {
+class PokemonMoveControl(val pokemonEntity: PokemonEntity) : MoveControl<PokemonEntity>(pokemonEntity) {
     companion object {
         const val VERY_CLOSE = 2.500000277905201E-3
     }
@@ -127,8 +127,8 @@ class PokemonMoveControl(val pokemonEntity: PokemonEntity) : MoveControl(pokemon
             val adjustedForward = strafeForwards * movingDistanceTotal
             val adjustedStrafe = strafeRight * movingDistanceTotal
 
-            val xComponent = -Mth.sin(mob.yRot.toRadians())
-            val zComponent = Mth.cos(mob.yRot.toRadians())
+            val xComponent = -Mth.sin(mob.yRot.toRadians().toDouble())
+            val zComponent = Mth.cos(mob.yRot.toRadians().toDouble())
             val xMovement = adjustedForward * zComponent - adjustedStrafe * xComponent
             val zMovement = adjustedStrafe * zComponent + adjustedForward * xComponent
             if (!isWalkable(xMovement, zMovement)) {
@@ -206,8 +206,8 @@ class PokemonMoveControl(val pokemonEntity: PokemonEntity) : MoveControl(pokemon
 
             if (!verticalHandled) {
                 val tooBigToStep = yDist > pokemonEntity.behaviour.moving.stepHeight
-                val xComponent = -Mth.sin(mob.yRot.toRadians()).toDouble()
-                val zComponent = Mth.cos(mob.yRot.toRadians()).toDouble()
+                val xComponent = -Mth.sin(mob.yRot.toRadians().toDouble()).toDouble()
+                val zComponent = Mth.cos(mob.yRot.toRadians().toDouble()).toDouble()
 
                 val motion = Vec3(xComponent, 0.0, zComponent).normalize()
                 val offset = motion.scale(mob.speed.toDouble())

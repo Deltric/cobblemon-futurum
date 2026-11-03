@@ -1,14 +1,8 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "cobblemon:pokerod_smithing_template"
-  },
-  "base": {
-    "tag": "minecraft:enchantable/fishing"
-  },
-  "addition": {
-    "item": "cobblemon:dream_ball"
-  },
+  "template": "cobblemon:pokerod_smithing_template",
+  "base": "#minecraft:enchantable/fishing",
+  "addition": "cobblemon:dream_ball",
   "result": {
     "id": "cobblemon:dream_rod",
     "count": 1

@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.config
 
+import com.cobblemon.mod.common.api.gui.scrollAmount
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.text.yellow
 import com.cobblemon.mod.common.client.gui.config.CobblemonConfigScreen.Companion.HEIGHT
@@ -25,7 +26,7 @@ import com.cobblemon.mod.common.config.CobblemonConfigField.CobblemonConfigSide.
 import com.cobblemon.mod.common.util.asTranslated
 import net.minecraft.SharedConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.ContainerObjectSelectionList
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.components.events.GuiEventListener
@@ -53,7 +54,6 @@ class CobblemonConfigVariableList(
         this.x = 0
         this.y = minecraft.window.guiScaledHeight / 2 - HEIGHT / 2
 
-        setRenderHeader(false, 0)
         addEntries()
     }
 
@@ -103,12 +103,12 @@ class CobblemonConfigVariableList(
         entries.forEach { entry -> entry.add() }
     }
 
-    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick)
+    override fun extractWidgetRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
+        super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTick)
 
         val hoveredVariableTooltip = this.hovered?.tooltip
         if (isMouseInsideScrollList(mouseX, mouseY) && hoveredVariableTooltip != null) {
-            guiGraphics.renderTooltip(minecraft.font, hoveredVariableTooltip.toCharSequence(minecraft), mouseX, mouseY)
+            guiGraphics.setTooltipForNextFrame(minecraft.font, hoveredVariableTooltip.toCharSequence(minecraft), mouseX, mouseY)
         }
     }
 
@@ -120,7 +120,7 @@ class CobblemonConfigVariableList(
     }
 
     override fun getRowWidth(): Int = width
-    override fun getScrollbarPosition(): Int = width / 2 - SLOT_WIDTH / 2 + SLOT_WIDTH + PADDING
+    override fun scrollBarX(): Int = width / 2 - SLOT_WIDTH / 2 + SLOT_WIDTH + PADDING
 
     fun filterConfigurations(text: String) {
         for (entry in entries) {
@@ -133,7 +133,7 @@ class CobblemonConfigVariableList(
             }
         }
 
-        scrollAmount = min(maxScroll.toDouble(), scrollAmount)
+        scrollAmount = min(maxScrollAmount().toDouble(), scrollAmount)
     }
 
     abstract class CobblemonConfigVariableListEntry(
@@ -156,18 +156,9 @@ class CobblemonConfigVariableList(
         val category: Category,
         val configVariables: List<CobblemonConfigVariable>
     ) : CobblemonConfigVariableListEntry(parent) {
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            top: Int,
-            left: Int,
-            width: Int,
-            height: Int,
-            mouseX: Int,
-            mouseY: Int,
-            hovering: Boolean,
-            partialTick: Float
-        ) {
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, hovering: Boolean, partialTick: Float) {
+            val top = this.contentY
+            val width = this.width
             drawScaledText(
                 context = context,
                 text = "cobblemon.config.ui.category.${category.lang}".asTranslated().yellow(),

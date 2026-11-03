@@ -13,19 +13,19 @@ import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class IconButton(
     pX: Int, pY: Int,
     val buttonWidth: Int,
     val buttonHeight: Int,
-    val resource: ResourceLocation,
-    val altResource: ResourceLocation? = null,
+    val resource: Identifier,
+    val altResource: Identifier? = null,
     val tooltipKey: String? = null,
     label: String,
     onPress: OnPress,
@@ -38,10 +38,9 @@ class IconButton(
     var highlighted = false
     var showAlt = false
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             x = x / SCALE,
             y = y / SCALE,
             texture = if (altResource != null && showAlt) altResource else resource,
@@ -49,12 +48,11 @@ class IconButton(
             height = buttonHeight,
             vOffset = if (isHovered() || highlighted) buttonHeight else 0,
             textureHeight = buttonHeight * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         if (isHovered()) {
             tooltipKey?.let {
-                context.renderTooltip(Minecraft.getInstance().font, lang(it), mouseX, mouseY)
+                context.setTooltipForNextFrame(Minecraft.getInstance().font, lang(it), mouseX, mouseY)
             }
         }
     }

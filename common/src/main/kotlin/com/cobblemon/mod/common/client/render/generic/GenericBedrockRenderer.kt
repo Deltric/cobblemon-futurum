@@ -14,16 +14,34 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Varyi
 import com.cobblemon.mod.common.entity.generic.GenericBedrockEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.models.blockbench.PosableEntityRenderState
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.state.level.CameraRenderState
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 
-class GenericBedrockRenderer(context: EntityRendererProvider.Context) : EntityRenderer<GenericBedrockEntity>(context) {
+class GenericBedrockRenderer(context: EntityRendererProvider.Context) : EntityRenderer<GenericBedrockEntity, PosableEntityRenderState>(context) {
     val model = PosableGenericEntityModel()
-    override fun getTextureLocation(entity: GenericBedrockEntity) = VaryingModelRepository.getTexture(entity.category, (entity.delegate as GenericBedrockClientDelegate))
-    override fun render(entity: GenericBedrockEntity, yaw: Float, partialTicks: Float, poseStack: PoseStack, buffer: MultiBufferSource, packedLight: Int) {
+    fun getTextureLocation(entity: GenericBedrockEntity) = VaryingModelRepository.getTexture(entity.category, (entity.delegate as GenericBedrockClientDelegate))
+    override fun createRenderState() = PosableEntityRenderState()
+
+    override fun submit(state: PosableEntityRenderState, poseStack: PoseStack, collector: SubmitNodeCollector, camera: CameraRenderState) {
+        if (state.isInvisible) return
+        state.geometry?.submit(poseStack, collector, state.outlineColor)
+        super.submit(state, poseStack, collector, camera)
+    }
+
+    override fun extractRenderState(entity: GenericBedrockEntity, renderState: PosableEntityRenderState, partialTicks: Float) {
+        super.extractRenderState(entity, renderState, partialTicks)
+        renderState.geometry = null
+        val yaw = entity.getYRot(partialTicks)
+        val poseStack = PoseStack()
+        val buffer = ModelGeometry.Builder()
+        val packedLight = renderState.lightCoords
+
         if (entity.isInvisible) {
             return
         }
@@ -37,8 +55,8 @@ class GenericBedrockRenderer(context: EntityRendererProvider.Context) : EntityRe
         poseStack.pushPose()
         poseStack.scale(1.0F, -1.0F, 1.0F)
         poseStack.scale(entity.scale, entity.scale, entity.scale)
-        poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
-        val vertexConsumer = buffer.getBuffer(RenderType.entityCutout(getTextureLocation(entity)))
+        poseStack.rotate(Axis.YP.rotationDegrees(yaw))
+        val vertexConsumer = buffer.getBuffer(RenderTypes.entityCutoutCull(getTextureLocation(entity)))
 
         state.updatePartialTicks(partialTicks)
         model.setLayerContext(buffer, state, VaryingModelRepository.getLayers(entity.category, state))
@@ -52,6 +70,6 @@ class GenericBedrockRenderer(context: EntityRendererProvider.Context) : EntityRe
         model.resetLayerContext()
 
         poseStack.popPose()
-        super.render(entity, yaw, partialTicks, poseStack, buffer, packedLight)
+        renderState.geometry = buffer.build()
     }
 }

@@ -30,7 +30,9 @@
         },
         "has_the_recipe": {
             "conditions": {
-                "recipe": "cobblemon:gray_plaque_redye"
+                "recipes": [
+                    "cobblemon:gray_plaque_redye"
+                ]
             },
             "trigger": "minecraft:recipe_unlocked"
         }

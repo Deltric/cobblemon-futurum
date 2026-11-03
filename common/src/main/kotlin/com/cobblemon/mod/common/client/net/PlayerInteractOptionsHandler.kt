@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft
 
 object PlayerInteractOptionsHandler : ClientNetworkPacketHandler<PlayerInteractOptionsPacket> {
     override fun handle(packet: PlayerInteractOptionsPacket, client: Minecraft) {
-        Minecraft.getInstance().setScreen(createPlayerInteractGui(packet))
+        Minecraft.getInstance().gui.setScreen(createPlayerInteractGui(packet))
     }
 
 }

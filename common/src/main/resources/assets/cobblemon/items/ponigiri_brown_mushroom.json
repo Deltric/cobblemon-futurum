@@ -1,0 +1,20 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "cobblemon:item/ponigiri_brown_mushroom",
+    "tints": [
+      {
+        "type": "cobblemon:item",
+        "layer": 0
+      },
+      {
+        "type": "cobblemon:item",
+        "layer": 1
+      },
+      {
+        "type": "cobblemon:item",
+        "layer": 2
+      }
+    ]
+  }
+}

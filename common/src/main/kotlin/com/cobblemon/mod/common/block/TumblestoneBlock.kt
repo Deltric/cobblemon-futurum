@@ -8,10 +8,10 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.LevelReader
 import com.cobblemon.mod.common.api.tags.CobblemonBlockTags
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.PrimitiveCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.item.context.BlockPlaceContext
@@ -35,15 +35,7 @@ class TumblestoneBlock(
     nextStage: Block?
 ) : GrowableStoneBlock(settings, stage, height, xzOffset, nextStage), SimpleWaterloggedBlock {
 
-    // TODO(Deltric): Look into Block.CODEC for being optional more
     companion object {
-        val CODEC: MapCodec<TumblestoneBlock> = RecordCodecBuilder.mapCodec { it.group(
-            propertiesCodec(),
-            PrimitiveCodec.INT.fieldOf("stage").forGetter { it.stage },
-            PrimitiveCodec.INT.fieldOf("height").forGetter { it.height },
-            PrimitiveCodec.INT.fieldOf("xzOffset").forGetter { it.xzOffset },
-            Block.CODEC.fieldOf("nextStage").forGetter { it.nextStage }
-        ).apply(it, ::TumblestoneBlock) }
 
         const val STAGE_0 = 0
         const val STAGE_1 = 1
@@ -78,10 +70,6 @@ class TumblestoneBlock(
 
     override fun isRandomlyTicking(state: BlockState): Boolean = stage < MAX_STAGE
 
-    override fun codec(): MapCodec<out DirectionalBlock> {
-        return CODEC
-    }
-
     override fun getFluidState(state: BlockState): FluidState {
         return if (state.getValue(WATERLOGGED)) {
             Fluids.WATER.getSource(false)
@@ -98,15 +86,8 @@ class TumblestoneBlock(
 
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
-        if (state.getValue(WATERLOGGED)) world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
-        return super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
+        if (state.getValue(WATERLOGGED)) ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+        return super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 }

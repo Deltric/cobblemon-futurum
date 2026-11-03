@@ -9,16 +9,16 @@
 package com.cobblemon.mod.common.api.gui
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import java.util.stream.Collectors
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.Style
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class MultiLineLabelK(
     private val comps: List<TextWithWidth>,
-    private val font: ResourceLocation? = null
+    private val font: Identifier? = null
 ) {
 
     companion object {
@@ -26,7 +26,7 @@ class MultiLineLabelK(
 
         fun create(component: Component, width: Number, maxLines: Number) = create(component, width, maxLines, null)
 
-        fun create(component: Component, width: Number, maxLines: Number, font: ResourceLocation?): MultiLineLabelK {
+        fun create(component: Component, width: Number, maxLines: Number, font: Identifier?): MultiLineLabelK {
             return MultiLineLabelK(
                 mcFont.splitter.splitLines(component, width.toInt(), Style.EMPTY).stream()
                     .limit(maxLines.toLong())
@@ -39,7 +39,7 @@ class MultiLineLabelK(
     }
 
     fun renderLeftAligned(
-        context: GuiGraphics,
+        context: GuiGraphicsExtractor,
         x: Number, y: Number,
         YStartOffset: Number = 0,
         ySpacing: Number,
@@ -47,8 +47,8 @@ class MultiLineLabelK(
         scale: Float = 1F,
         shadow: Boolean = true
     ) {
-        context.pose().pushPose()
-        context.pose().scale(scale, scale, 1F)
+        context.pose().pushMatrix()
+        context.pose().scale((scale).toFloat(), (scale).toFloat())
         comps.forEachIndexed { index, textWithWidth ->
             val yOffset = if (index == 0) YStartOffset else 0
             drawString(
@@ -61,7 +61,7 @@ class MultiLineLabelK(
                 font = font
             )
         }
-        context.pose().popPose()
+        context.pose().popMatrix()
     }
 
     class TextWithWidth internal constructor(val text: FormattedText, val width: Int)

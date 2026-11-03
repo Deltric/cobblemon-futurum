@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "rewards": {
-    "recipes": [
-      "cobblemon:shiny_stone_block"
-    ]
-  },
-  "criteria": {
-    "has_shiny_stone": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:shiny_stone"
-            ]
-          }
+    "parent": "cobblemon:recipes/blocks",
+    "rewards": {
+        "recipes": [
+            "cobblemon:shiny_stone_block"
         ]
-      }
     },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "cobblemon:shiny_stone_block"
-      }
-    }
-  },
-  "requirements": [
-    [
-      "has_shiny_stone",
-      "has_the_recipe"
+    "criteria": {
+        "has_shiny_stone": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:shiny_stone"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipes": [
+                    "cobblemon:shiny_stone_block"
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_shiny_stone",
+            "has_the_recipe"
+        ]
     ]
-  ]
 }

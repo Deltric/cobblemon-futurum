@@ -22,6 +22,7 @@ import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.util.Prediction
 
 object GiveTmCommand {
 
@@ -75,7 +76,7 @@ object GiveTmCommand {
             val stackSize = remaining.coerceAtMost(64)
             val stack = TMMoveComponent.createStack(move).copyWithCount(stackSize)
             if (!player.addItem(stack)) {
-                player.drop(stack, false)
+                player.drop(stack, false, Prediction.SERVER_ONLY)
             }
             remaining -= stackSize
         }

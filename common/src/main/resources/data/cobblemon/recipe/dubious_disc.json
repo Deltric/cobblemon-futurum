@@ -5,18 +5,10 @@
         "SAS"
     ],
     "key": {
-        "T": {
-            "item": "minecraft:tinted_glass"
-        },
-        "A": {
-            "item": "cobblemon:blank_tm"
-        },
-        "S": {
-            "item": "minecraft:sculk"
-        },
-        "L": {
-            "item": "minecraft:sea_lantern"
-        }
+        "T": "minecraft:tinted_glass",
+        "A": "cobblemon:blank_tm",
+        "S": "minecraft:sculk",
+        "L": "minecraft:sea_lantern"
     },
     "result": {
         "id": "cobblemon:dubious_disc"

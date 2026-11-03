@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.block.entity
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.CobblemonSounds
@@ -29,6 +31,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.world.ContainerHelper
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.entity.ContainerUser
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
@@ -244,24 +247,24 @@ class TMMachineBlockEntity(pos: BlockPos, state: BlockState) :
         return TMMachineMenu(containerId, inventory, tmMachineInventory, containerData)
     }
 
-    override fun saveAdditional(compound: CompoundTag, registries: HolderLookup.Provider) {
-        super.saveAdditional(compound, registries)
+    override fun saveAdditional(compound: ValueOutput) {
+        super.saveAdditional(compound)
         saveTint(compound)
         compound.putBoolean(BURN_ACTIVE_TAG, burnActive)
         compound.putBoolean(REPEAT_PROCESS_TAG, repeatProcess)
         compound.putInt(BURN_PROGRESS_TAG, burnProgress)
         compound.putString(ACTIVE_MOVE_TAG, activeMove)
-        ContainerHelper.saveAllItems(compound, tmMachineInventory.items, registries)
+        ContainerHelper.saveAllItems(compound, tmMachineInventory.items)
     }
 
-    override fun loadAdditional(compound: CompoundTag, registries: HolderLookup.Provider) {
-        super.loadAdditional(compound, registries)
+    override fun loadAdditional(compound: ValueInput) {
+        super.loadAdditional(compound)
         loadTint(compound)
-        burnActive = compound.getBoolean(BURN_ACTIVE_TAG)
-        repeatProcess = compound.getBoolean(REPEAT_PROCESS_TAG)
-        burnProgress = compound.getInt(BURN_PROGRESS_TAG)
-        activeMove = compound.getString(ACTIVE_MOVE_TAG)
-        ContainerHelper.loadAllItems(compound, tmMachineInventory.items, registries)
+        burnActive = compound.getBooleanOr(BURN_ACTIVE_TAG, false)
+        repeatProcess = compound.getBooleanOr(REPEAT_PROCESS_TAG, false)
+        burnProgress = compound.getIntOr(BURN_PROGRESS_TAG, 0)
+        activeMove = compound.getStringOr(ACTIVE_MOVE_TAG, "")
+        ContainerHelper.loadAllItems(compound, tmMachineInventory.items)
     }
 
     override fun getDisplayName(): Component = Component.translatable("block.cobblemon.tm_machine")
@@ -328,7 +331,7 @@ class TMMachineBlockEntity(pos: BlockPos, state: BlockState) :
         level?.blockEntityChanged(worldPosition)
 
         // Mark the chunk containing this block entity as dirty, ensuring it is saved
-        level?.getChunkAt(worldPosition)?.isUnsaved = true
+        level?.getChunkAt(worldPosition)?.markUnsaved()
 
         // Update Neighbours
         level?.updateNeighborsAt(blockPos, currentState.block)
@@ -407,11 +410,11 @@ class TMMachineBlockEntity(pos: BlockPos, state: BlockState) :
             }
         }
 
-        override fun startOpen(player: Player) {
+        override fun startOpen(player: ContainerUser) {
             blockEntity.startOpen(player)
         }
 
-        override fun stopOpen(player: Player) {
+        override fun stopOpen(player: ContainerUser) {
             blockEntity.stopOpen(player)
         }
     }

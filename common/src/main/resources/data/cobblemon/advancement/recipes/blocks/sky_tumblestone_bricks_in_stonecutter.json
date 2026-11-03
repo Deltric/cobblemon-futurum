@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "rewards": {
-    "recipes": [
-      "cobblemon:sky_tumblestone_bricks_in_stonecutter"
-    ]
-  },
-  "criteria": {
-    "has_tumblestone": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:polished_sky_tumblestone"
-            ]
-          }
+    "parent": "cobblemon:recipes/blocks",
+    "rewards": {
+        "recipes": [
+            "cobblemon:sky_tumblestone_bricks_in_stonecutter"
         ]
-      }
     },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "cobblemon:sky_tumblestone_bricks_in_stonecutter"
-      }
-    }
-  },
-  "requirements": [
-    [
-      "has_tumblestone",
-      "has_the_recipe"
+    "criteria": {
+        "has_tumblestone": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:polished_sky_tumblestone"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipes": [
+                    "cobblemon:sky_tumblestone_bricks_in_stonecutter"
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_tumblestone",
+            "has_the_recipe"
+        ]
     ]
-  ]
 }

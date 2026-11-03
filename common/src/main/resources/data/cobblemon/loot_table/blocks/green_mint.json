@@ -1,10 +1,5 @@
 {
   "type": "minecraft:block",
-  "functions": [
-    {
-      "function": "minecraft:explosion_decay"
-    }
-  ],
   "pools": [
     {
       "rolls": 1,
@@ -21,23 +16,19 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:green_mint_seeds",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:green_mint",
-              "properties": {
-                "age": "7"
-              }
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:green_mint",
+            "state": {
+              "age": "7"
             }
-          ]
+          }
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.125
-        }
-      ]
+      "condition": {
+        "chance": 0.125,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
@@ -45,78 +36,80 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:green_mint_seeds",
-          "functions": [],
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:green_mint",
-              "properties": {
-                "age": "7"
-              }
-            },
-            {
-              "condition": "minecraft:match_tool",
-              "predicate": {
-                "predicates": {
-                  "minecraft:enchantments": [
-                    {
-                      "enchantments": "minecraft:fortune"
-                    }
-                  ]
+          "condition": {
+            "type": "minecraft:all_of",
+            "terms": [
+              {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:green_mint",
+                "state": {
+                  "age": "7"
                 }
-              }
-            }
-          ]
-        }
-      ],
-      "functions": [],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.25
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "cobblemon:green_mint_seeds",
-          "functions": [],
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:green_mint",
-              "properties": {
-                "age": "7"
-              }
-            },
-            {
-              "condition": "minecraft:match_tool",
-              "predicate": {
-                "predicates": {
-                  "minecraft:enchantments": [
-                    {
-                      "enchantments": "minecraft:fortune",
-                      "levels": {
-                        "min": 2
+              },
+              {
+                "predicate": {
+                  "predicates": {
+                    "minecraft:enchantments": [
+                      {
+                        "enchantments": "minecraft:fortune"
                       }
-                    }
-                  ]
-                }
+                    ]
+                  }
+                },
+                "type": "minecraft:match_tool"
               }
-            }
-          ]
+            ]
+          },
+          "modifier": []
         }
       ],
-      "functions": [],
-      "conditions": [
+      "condition": {
+        "chance": 0.25,
+        "type": "minecraft:random_chance"
+      },
+      "modifier": []
+    },
+    {
+      "rolls": 1,
+      "entries": [
         {
-          "condition": "minecraft:random_chance",
-          "chance": 0.5
+          "type": "minecraft:item",
+          "name": "cobblemon:green_mint_seeds",
+          "condition": {
+            "type": "minecraft:all_of",
+            "terms": [
+              {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:green_mint",
+                "state": {
+                  "age": "7"
+                }
+              },
+              {
+                "predicate": {
+                  "predicates": {
+                    "minecraft:enchantments": [
+                      {
+                        "enchantments": "minecraft:fortune",
+                        "levels": {
+                          "min": 2
+                        }
+                      }
+                    ]
+                  }
+                },
+                "type": "minecraft:match_tool"
+              }
+            ]
+          },
+          "modifier": []
         }
-      ]
+      ],
+      "condition": {
+        "chance": 0.5,
+        "type": "minecraft:random_chance"
+      },
+      "modifier": []
     },
     {
       "rolls": 1,
@@ -124,15 +117,13 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:green_mint_leaf",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:green_mint",
-              "properties": {
-                "age": "7"
-              }
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:green_mint",
+            "state": {
+              "age": "7"
             }
-          ]
+          }
         }
       ]
     },
@@ -142,23 +133,24 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:green_mint_leaf",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:green_mint",
-              "properties": {
-                "age": "7"
-              }
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:green_mint",
+            "state": {
+              "age": "7"
             }
-          ]
+          }
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.5
-        }
-      ]
+      "condition": {
+        "chance": 0.5,
+        "type": "minecraft:random_chance"
+      }
+    }
+  ],
+  "modifier": [
+    {
+      "type": "minecraft:explosion_decay"
     }
   ]
 }

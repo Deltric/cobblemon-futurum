@@ -26,7 +26,7 @@ import net.minecraft.world.level.levelgen.placement.PlacementFilter
 class ConditionalRarityFilterPlacementModifier(
     val predicate: BlockPredicate,
     val chance: Int
-) : PlacementFilter() {
+) : PlacementFilter {
     companion object {
         val MODIFIER_CODEC: MapCodec<ConditionalRarityFilterPlacementModifier> = RecordCodecBuilder.mapCodec { instance ->
             instance
@@ -38,7 +38,7 @@ class ConditionalRarityFilterPlacementModifier(
         }
     }
 
-    override fun type() = CobblemonPlacementModifierTypes.CONDITIONAL_RARITY_FILTER
+    override fun codec(): MapCodec<ConditionalRarityFilterPlacementModifier> = MODIFIER_CODEC
 
     override fun shouldPlace(context: PlacementContext, random: RandomSource, pos: BlockPos): Boolean {
         return if (predicate.test(context.level, pos)) random.nextFloat() < 1.0f / this.chance.toFloat() else true

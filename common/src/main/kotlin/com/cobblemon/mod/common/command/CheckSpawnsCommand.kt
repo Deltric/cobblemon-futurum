@@ -56,7 +56,7 @@ object CheckSpawnsCommand {
 
     private fun execute(context: CommandContext<CommandSourceStack>, player: ServerPlayer) : Int {
         if (!config.enableSpawning ||
-            (player.serverLevel() as ServerLevelDuck).`cobblemon$getLevelResourceLocation`() in config.worldSpawningBlocklist) {
+            (player.level() as ServerLevelDuck).`cobblemon$getLevelResourceLocation`() in config.worldSpawningBlocklist) {
             return 0
         }
 

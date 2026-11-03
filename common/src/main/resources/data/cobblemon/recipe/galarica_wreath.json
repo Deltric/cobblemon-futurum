@@ -6,9 +6,7 @@
     "NNN"
   ],
   "key": {
-    "N": {
-      "item": "cobblemon:galarica_nuts"
-    }
+    "N": "cobblemon:galarica_nuts"
   },
   "result": {
     "count": 1,

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.item.interactive
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.advancement.CobblemonCriteria
 import com.cobblemon.mod.common.advancement.criterion.PokemonInteractContext
@@ -29,7 +31,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -44,8 +46,9 @@ import kotlin.math.ceil
  * @since July 7th, 2023
  */
 class ReviveItem(
+    properties: Properties,
     val max: Boolean
-) : CobblemonItem(Properties().apply {
+) : CobblemonItem(properties.apply {
         if (max) rarity(Rarity.UNCOMMON)
 }), HealingSource {
 
@@ -56,9 +59,9 @@ class ReviveItem(
         override fun getShowdownInput(actor: BattleActor, battlePokemon: BattlePokemon, data: String?) = "revive ${ if (max) "1" else "0.5" }"
     }
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (world !is ServerLevel) {
-            return InteractionResultHolder.success(user.getItemInHand(hand))
+            return InteractionResult.SUCCESS
         } else {
             val player = user as ServerPlayer
             val stack = user.getItemInHand(hand)
@@ -68,7 +71,7 @@ class ReviveItem(
                 val battlePokemon = actor.pokemonList
                 if (!actor.canFitForcedAction()) {
                     player.sendSystemMessage(battleLang("bagitem.cannot").red(), true)
-                    return InteractionResultHolder.consume(stack)
+                    return InteractionResult.CONSUME
                 } else {
                     val turn = battle.turn
                     PartySelectCallbacks.createBattleSelect(
@@ -104,7 +107,7 @@ class ReviveItem(
                     }
                 }
             }
-            return InteractionResultHolder.success(stack)
+            return InteractionResult.SUCCESS
         }
     }
 }

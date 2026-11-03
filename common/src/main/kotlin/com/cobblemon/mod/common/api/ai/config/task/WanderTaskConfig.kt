@@ -85,7 +85,7 @@ class WanderTaskConfig : SingleTaskConfig {
                 val newPos = pos.below(it)
                 if (!world.getBlockState(newPos).isAir) {
                     return@firstOrNull true
-                } else if (newPos.y <= world.minBuildHeight) {
+                } else if (newPos.y <= world.minY) {
                     // Don't adjust downward into the void (Mostly if we're in the end)
                     // This doesn't stop fliers from wandering off end islands,
                     // but it does stop them from diving directly into the void.
@@ -248,8 +248,8 @@ class WanderTaskConfig : SingleTaskConfig {
 //            if (!blockState.isSolid && !blockState.liquid()) {
 //                pos.move(0, -1, 0)
 //                var previousWasAir = true
-//                while (steps++ < maxSteps && pos.y > entity.level().minBuildHeight) {
-//                    if (pos.y <= entity.level().minBuildHeight) {
+//                while (steps++ < maxSteps && pos.y > entity.level().minY) {
+//                    if (pos.y <= entity.level().minY) {
 //                        continue@position
 //                    }
 //                    blockState = entity.level().getBlockState(pos)
@@ -267,7 +267,7 @@ class WanderTaskConfig : SingleTaskConfig {
 //                var previousWasSolid = blockState.isSolid && !blockState.`is`(BlockTags.LEAVES)
 //                pos.move(0, 1, 0)
 //                while (steps++ < maxSteps) {
-//                    if (pos.y >= entity.level().maxBuildHeight) {
+//                    if (pos.y >= entity.level().maxY) {
 //                        continue@position
 //                    }
 //                    blockState = entity.level().getBlockState(pos)

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.block.entity
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.block.chest.GildedChestBlock.Type
@@ -23,6 +25,7 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.ContainerHelper
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.entity.ContainerUser
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ChestMenu
@@ -38,7 +41,13 @@ class GildedChestBlockEntity(pos: BlockPos, state: BlockState, val type: Type = 
     var inventoryContents: NonNullList<ItemStack> = NonNullList.withSize(NUM_SLOTS, ItemStack.EMPTY)
     val posableState: GildedState = GildedState()
 
+    override fun preRemoveSideEffects(pos: BlockPos, state: BlockState) {
+        if (type != Type.FAKE) super.preRemoveSideEffects(pos, state)
+    }
+
     private val stateManager: ContainerOpenersCounter = object : ContainerOpenersCounter() {
+
+
         override fun onOpen(world: Level, pos: BlockPos, state: BlockState) {
             playSound(world, pos, state, CobblemonSounds.GILDED_CHEST_OPEN)
         }
@@ -77,16 +86,23 @@ class GildedChestBlockEntity(pos: BlockPos, state: BlockState, val type: Type = 
 
     override fun getItems() = inventoryContents
 
-    override fun startOpen(player: Player) {
-        if (!this.remove && !player.isSpectator && type != Type.FAKE) {
-            stateManager.incrementOpeners(player, level, blockPos, blockState)
+    override fun startOpen(user: ContainerUser) {
+        val world = level ?: return
+        if (!remove && !user.livingEntity.isSpectator && type != Type.FAKE) {
+            stateManager.incrementOpeners(user.livingEntity, world, blockPos, blockState, user.containerInteractionRange)
         }
     }
 
-    override fun stopOpen(player: Player) {
-        if (!this.remove && !player.isSpectator) {
-            stateManager.decrementOpeners(player, level, blockPos, blockState)
+    override fun stopOpen(user: ContainerUser) {
+        val world = level ?: return
+        if (!remove && !user.livingEntity.isSpectator) {
+            stateManager.decrementOpeners(user.livingEntity, world, blockPos, blockState)
         }
+    }
+
+    override fun getEntitiesWithContainerOpen(): List<ContainerUser> {
+        val world = level ?: return emptyList()
+        return stateManager.getEntitiesWithContainerOpen(world, blockPos)
     }
 
     override fun getSlotsForFace(side: Direction): IntArray {
@@ -149,24 +165,24 @@ class GildedChestBlockEntity(pos: BlockPos, state: BlockState, val type: Type = 
         world.blockEvent(pos, block, 1, newViewerCount)
     }
 
-    override fun saveAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.saveAdditional(nbt, registryLookup)
+    override fun saveAdditional(nbt: ValueOutput) {
+        super.saveAdditional(nbt)
         if (!trySaveLootTable(nbt)) {
-            ContainerHelper.saveAllItems(nbt, inventoryContents, registryLookup)
+            ContainerHelper.saveAllItems(nbt, inventoryContents)
         }
     }
 
-    override fun loadAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.loadAdditional(nbt, registryLookup)
+    override fun loadAdditional(nbt: ValueInput) {
+        super.loadAdditional(nbt)
         inventoryContents= NonNullList.withSize(containerSize, ItemStack.EMPTY)
         if (!tryLoadLootTable(nbt)) {
-            ContainerHelper.loadAllItems(nbt, inventoryContents, registryLookup)
+            ContainerHelper.loadAllItems(nbt, inventoryContents)
         }
     }
 
     fun tick() {
         if (!this.remove) {
-            stateManager.recheckOpeners(level, blockPos, this.blockState)
+            level?.let { stateManager.recheckOpeners(it, blockPos, blockState) }
         }
     }
 }

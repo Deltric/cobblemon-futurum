@@ -13,13 +13,11 @@ import com.cobblemon.mod.common.api.multiblock.MultiblockBlock
 import com.cobblemon.mod.common.api.multiblock.MultiblockEntity
 import com.cobblemon.mod.common.block.entity.FossilMultiblockEntity
 import com.cobblemon.mod.common.block.multiblock.FossilMultiblockBuilder
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.util.StringRepresentable
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
@@ -58,10 +56,6 @@ class MonitorBlock(settings: Properties) : MultiblockBlock(settings) {
         )
     }
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
     override fun getStateForPlacement(blockPlaceContext: BlockPlaceContext): BlockState {
         return defaultBlockState().setValue(HORIZONTAL_FACING, blockPlaceContext.horizontalDirection)
     }
@@ -85,27 +79,21 @@ class MonitorBlock(settings: Properties) : MultiblockBlock(settings) {
         player: Player,
         hand: InteractionHand,
         hit: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         val entity = level.getBlockEntity(pos) as? FossilMultiblockEntity
-            ?: return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
+            ?: return InteractionResult.PASS
         val result = entity.handleUseItem(stack, state, level, pos, player, hand)
-        if (result == ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) {
+        if (result == InteractionResult.TRY_WITH_EMPTY_HAND) {
             return if (entity.handleUseWithoutItem(state, level, pos, player).consumesAction()) {
-                ItemInteractionResult.sidedSuccess(level.isClientSide)
+                if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
             } else {
-                ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+                InteractionResult.TRY_WITH_EMPTY_HAND
             }
         }
         return result
     }
 
-    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, movedByPiston: Boolean) {
-        if (state.block != newState.block && !level.isClientSide && !movedByPiston) {
-            val entity = level.getBlockEntity(pos) as? FossilMultiblockEntity
-            entity?.dropDisk(level, pos, state)
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston)
-    }
+
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(HORIZONTAL_FACING)
@@ -117,7 +105,7 @@ class MonitorBlock(settings: Properties) : MultiblockBlock(settings) {
         return true
     }
 
-    override fun getAnalogOutputSignal(state: BlockState, world: Level, pos: BlockPos): Int {
+    override fun getAnalogOutputSignal(state: BlockState, world: Level, pos: BlockPos, direction: Direction): Int {
         val monitorEntity = world.getBlockEntity(pos) as? MultiblockEntity
         val multiBlockEntity = monitorEntity?.multiblockStructure
         if(multiBlockEntity != null) {
@@ -140,7 +128,7 @@ class MonitorBlock(settings: Properties) : MultiblockBlock(settings) {
         }
     }
 
-    override fun <T: BlockEntity?> getTicker(level: Level, state: BlockState, type: BlockEntityType<T>): BlockEntityTicker<T>? {
+    override fun <T: BlockEntity> getTicker(level: Level, state: BlockState, type: BlockEntityType<T>): BlockEntityTicker<T>? {
         return if (type == CobblemonBlockEntities.FOSSIL_MULTIBLOCK) {
             FossilMultiblockEntity.TICKER as BlockEntityTicker<T>
         } else {
@@ -159,7 +147,6 @@ class MonitorBlock(settings: Properties) : MultiblockBlock(settings) {
     }
 
     companion object {
-        val CODEC = simpleCodec(::MonitorBlock)
 
         //0 is off
         val SCREEN = EnumProperty.create("screen", MonitorScreen::class.java)
@@ -225,7 +212,6 @@ class MonitorBlock(settings: Properties) : MultiblockBlock(settings) {
         MUSIC,
         PORYGON_GRID,
         PORYGON_GLITCHING;
-
 
         override fun getSerializedName(): String = this.name.lowercase()
     }

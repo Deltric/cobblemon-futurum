@@ -8,26 +8,28 @@
 
 package com.cobblemon.mod.common.item.interactive
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.pokemon.stats.Stat
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemNameBlockItem
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 
-class VitaminItem(override val stat: Stat, block: Block): ItemNameBlockItem(block, Properties()), EVIncreaseItem {
+class VitaminItem(properties: Properties, override val stat: Stat, block: Block): BlockItem(block, properties), EVIncreaseItem {
     override val evIncreaseAmount: Int = 10
     override val sound: SoundEvent = CobblemonSounds.MEDICINE_PILLS_USE
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (user is ServerPlayer) {
             return use(user, user.getItemInHand(hand))
         }
-        return InteractionResultHolder.success(user.getItemInHand(hand))
+        return InteractionResult.SUCCESS
     }
 }

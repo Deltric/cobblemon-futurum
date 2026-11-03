@@ -1,0 +1,9 @@
+{
+  "type": "cobblemon:structure",
+  "cobblemon_structures": [
+    "cobblemon:habitats/strange_fungal_dwelling6",
+    "cobblemon:habitats/strange_fungal_dwelling7",
+    "cobblemon:habitats/strange_fungal_dwelling8"
+  ],
+  "cobblemon_processors": "cobblemon:habitats/strange_crimson_fungal_dwelling"
+}

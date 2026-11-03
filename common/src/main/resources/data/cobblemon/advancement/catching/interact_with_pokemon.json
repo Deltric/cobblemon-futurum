@@ -15,19 +15,21 @@
     "bucket_interactable_pokemon": {
       "conditions": {
         "player": {
-          "flags": {
-            "is_sneaking": false
-          }
-        },
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "cobblemon:pokemon"
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "flags": {
+              "is_sneaking": false
             }
           }
-        ],
+        },
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "entity_type": "cobblemon:pokemon"
+          }
+        },
         "item": {
           "items": "minecraft:bucket"
         }
@@ -37,19 +39,21 @@
     "shear_interactable_pokemon": {
       "conditions": {
         "player": {
-          "flags": {
-            "is_sneaking": false
-          }
-        },
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "cobblemon:pokemon"
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "flags": {
+              "is_sneaking": false
             }
           }
-        ],
+        },
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "entity_type": "cobblemon:pokemon"
+          }
+        },
         "item": {
           "items": "minecraft:shears"
         }
@@ -59,19 +63,21 @@
     "bottle_interactable_pokemon": {
       "conditions": {
         "player": {
-          "flags": {
-            "is_sneaking": false
-          }
-        },
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "cobblemon:pokemon"
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "flags": {
+              "is_sneaking": false
             }
           }
-        ],
+        },
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "entity_type": "cobblemon:pokemon"
+          }
+        },
         "item": {
           "items": "minecraft:glass_bottle"
         }
@@ -81,19 +87,21 @@
     "brush_interactable_pokemon": {
       "conditions": {
         "player": {
-          "flags": {
-            "is_sneaking": false
-          }
-        },
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "cobblemon:pokemon"
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "flags": {
+              "is_sneaking": false
             }
           }
-        ],
+        },
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "entity_type": "cobblemon:pokemon"
+          }
+        },
         "item": {
           "items": "minecraft:brush"
         }
@@ -103,19 +111,21 @@
     "bonemeal_interactable_pokemon": {
       "conditions": {
         "player": {
-          "flags": {
-            "is_sneaking": false
-          }
-        },
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "cobblemon:pokemon"
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "flags": {
+              "is_sneaking": false
             }
           }
-        ],
+        },
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "entity_type": "cobblemon:pokemon"
+          }
+        },
         "item": {
           "items": "minecraft:bone_meal"
         }
@@ -125,19 +135,21 @@
     "bowl_interactable_pokemon": {
       "conditions": {
         "player": {
-          "flags": {
-            "is_sneaking": false
-          }
-        },
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "cobblemon:pokemon"
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "flags": {
+              "is_sneaking": false
             }
           }
-        ],
+        },
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "entity_type": "cobblemon:pokemon"
+          }
+        },
         "item": {
           "items": "minecraft:bowl"
         }

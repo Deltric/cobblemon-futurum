@@ -5,12 +5,8 @@
     "GA"
   ],
   "key": {
-    "G": {
-      "item": "minecraft:glass"
-    },
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    }
+    "G": "minecraft:glass",
+    "A": "minecraft:amethyst_shard"
   },
   "result": {
     "id": "cobblemon:blank_tm",

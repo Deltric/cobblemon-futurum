@@ -17,7 +17,7 @@ import com.mojang.blaze3d.platform.InputConstants
 
 object SummaryBinding : CobblemonPartyLockedKeyBinding(
     "key.cobblemon.summary",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_M,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {

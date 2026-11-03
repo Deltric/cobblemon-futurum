@@ -31,6 +31,7 @@ import com.cobblemon.mod.common.util.getIntOrNull
 import com.cobblemon.mod.common.util.getMemorySafely
 import com.cobblemon.mod.common.util.getStringOrNull
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.schedule.Activity
@@ -61,9 +62,9 @@ class NPCServerDelegate : NPCSideDelegate {
                     val paramString = opponentValue.asString()
                     val playerUUID = paramString.asUUID
                     if (playerUUID != null) {
-                        entity.server!!.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
+                        (entity.level() as ServerLevel).server.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
                     } else {
-                        entity.server!!.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
+                        (entity.level() as ServerLevel).server.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
                     }
                 }
                 val battles = entity.battleIds.mapNotNull(BattleRegistry::getBattle)
@@ -77,9 +78,9 @@ class NPCServerDelegate : NPCSideDelegate {
                     val paramString = opponentValue.asString()
                     val playerUUID = paramString.asUUID
                     if (playerUUID != null) {
-                        entity.server!!.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
+                        (entity.level() as ServerLevel).server.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
                     } else {
-                        entity.server!!.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
+                        (entity.level() as ServerLevel).server.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
                     }
                 }
 
@@ -123,9 +124,9 @@ class NPCServerDelegate : NPCSideDelegate {
                     val paramString = playerValue.asString()
                     val playerUUID = paramString.asUUID
                     if (playerUUID != null) {
-                        entity.server!!.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
+                        (entity.level() as ServerLevel).server.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
                     } else {
-                        entity.server!!.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
+                        (entity.level() as ServerLevel).server.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
                     }
                 }
                 val dialogue = Dialogues.dialogues[params.getString(1).asIdentifierDefaultingNamespace()]!!

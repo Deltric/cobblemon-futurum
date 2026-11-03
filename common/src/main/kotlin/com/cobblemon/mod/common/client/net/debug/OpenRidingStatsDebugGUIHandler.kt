@@ -20,6 +20,6 @@ object OpenRidingStatsDebugGUIHandler : ClientNetworkPacketHandler<OpenRidingSta
         client: Minecraft
     ) {
         val vehicle = Minecraft.getInstance().player?.vehicle as? PokemonEntity ?: return
-        client.setScreen(RidingStatsDebugGUI(vehicle))
+        client.gui.setScreen(RidingStatsDebugGUI(vehicle))
     }
 }

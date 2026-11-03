@@ -1,6 +1,5 @@
 {
-    "pack": {
-        "description": "Resources for the Cobblemon mod",
-        "pack_format": 7
-    }
+  "pack": {
+    "description": "Resources for the Cobblemon mod"
+  }
 }

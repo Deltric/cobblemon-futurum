@@ -11,23 +11,21 @@
             {
               "type": "minecraft:item",
               "name": "cobblemon:sky_tumblestone_cluster",
-              "conditions": [
-                {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "predicates": {
-                      "minecraft:enchantments": [
-                        {
-                          "enchantments": "minecraft:silk_touch",
-                          "levels": {
-                            "min": 1
-                          }
+              "condition": {
+                "predicate": {
+                  "predicates": {
+                    "minecraft:enchantments": [
+                      {
+                        "enchantments": "minecraft:silk_touch",
+                        "levels": {
+                          "min": 1
                         }
-                      ]
-                    }
+                      }
+                    ]
                   }
-                }
-              ]
+                },
+                "type": "minecraft:match_tool"
+              }
             },
             {
               "type": "minecraft:alternatives",
@@ -35,36 +33,34 @@
                 {
                   "type": "minecraft:item",
                   "name": "cobblemon:sky_tumblestone",
-                  "functions": [
+                  "condition": {
+                    "predicate": {},
+                    "type": "minecraft:match_tool"
+                  },
+                  "modifier": [
                     {
-                      "function": "minecraft:set_count",
                       "count": 4,
-                      "add": false
+                      "add": false,
+                      "type": "minecraft:set_count"
                     },
                     {
-                      "function": "minecraft:apply_bonus",
                       "enchantment": "minecraft:fortune",
-                      "formula": "minecraft:ore_drops"
-                    }
-                  ],
-                  "conditions": [
-                    {
-                      "condition": "minecraft:match_tool",
-                      "predicate": {}
+                      "formula": "minecraft:ore_drops",
+                      "type": "minecraft:apply_bonus"
                     }
                   ]
                 },
                 {
                   "type": "minecraft:item",
                   "name": "cobblemon:sky_tumblestone",
-                  "functions": [
+                  "modifier": [
                     {
-                      "function": "minecraft:set_count",
                       "count": 2,
-                      "add": false
+                      "add": false,
+                      "type": "minecraft:set_count"
                     },
                     {
-                      "function": "minecraft:explosion_decay"
+                      "type": "minecraft:explosion_decay"
                     }
                   ]
                 }

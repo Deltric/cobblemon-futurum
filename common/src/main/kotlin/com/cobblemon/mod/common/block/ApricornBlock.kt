@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.level.block.BonemealSource
+import net.minecraft.world.level.ScheduledTickAccess
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.apricorn.Apricorn
 import com.cobblemon.mod.common.api.events.CobblemonEvents
@@ -16,8 +18,6 @@ import com.cobblemon.mod.common.api.tags.CobblemonBlockTags
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags
 import com.cobblemon.mod.common.util.playSoundServer
 import com.cobblemon.mod.common.util.toVec3d
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
@@ -117,23 +117,16 @@ class ApricornBlock(settings: Properties, val apricorn: Apricorn) : HorizontalDi
         return null
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         return if (direction == state.getValue(FACING) && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-            else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+            else super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 
-    override fun isValidBonemealTarget(world: LevelReader, pos: BlockPos, state: BlockState) = state.getValue(AGE) < MAX_AGE
+    override fun isValidBonemealTarget(world: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource) = state.getValue(AGE) < MAX_AGE
 
-    override fun isBonemealSuccess(world: Level, random: RandomSource, pos: BlockPos, state: BlockState) = true
+    override fun isBonemealSuccess(world: Level, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) = true
 
-    override fun performBonemeal(world: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
+    override fun performBonemeal(world: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         val curAge = state.getValue(AGE)
         val newAge = curAge + 1
         if (newAge > MAX_AGE) return
@@ -170,7 +163,7 @@ class ApricornBlock(settings: Properties, val apricorn: Apricorn) : HorizontalDi
     }
 
     // We need to point back to the actual apricorn item, see SweetBerryBushBlock for example
-    override fun getCloneItemStack(world: LevelReader, pos: BlockPos, state: BlockState) = ItemStack(this.apricorn.item())
+    override fun getCloneItemStack(world: LevelReader, pos: BlockPos, state: BlockState, includeData: Boolean) = ItemStack(this.apricorn.item())
 
     private fun doHarvest(world: Level, state: BlockState, pos: BlockPos, player: Player) {
         val resetState = this.harvest(world, state, pos)
@@ -215,15 +208,7 @@ class ApricornBlock(settings: Properties, val apricorn: Apricorn) : HorizontalDi
         return true
     }
 
-    override fun codec(): MapCodec<out HorizontalDirectionalBlock> {
-        return CODEC
-    }
-
     companion object {
-        val CODEC: MapCodec<ApricornBlock> = RecordCodecBuilder.mapCodec { it.group(
-            propertiesCodec(),
-            Apricorn.CODEC.fieldOf("apricorn").forGetter(ApricornBlock::apricorn)
-        ).apply(it, ::ApricornBlock) }
 
         val AGE = BlockStateProperties.AGE_3
         const val MAX_AGE = BlockStateProperties.MAX_AGE_3
@@ -326,6 +311,5 @@ class ApricornBlock(settings: Properties, val apricorn: Apricorn) : HorizontalDi
         )
 
     }
-
 
 }

@@ -16,14 +16,15 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Rende
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.VaryingModelRepository
 import com.cobblemon.mod.common.entity.npc.NPCEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.renderer.MultiBufferSource
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.models.blockbench.PosableLivingEntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context
 import net.minecraft.client.renderer.entity.LivingEntityRenderer
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import kotlin.math.min
 
-class NPCRenderer(context: Context) : LivingEntityRenderer<NPCEntity, PosableEntityModel<NPCEntity>>(context, PosableNPCModel(), 0.5f) {
-    override fun getTextureLocation(entity: NPCEntity): ResourceLocation {
+class NPCRenderer(context: Context) : PosableLivingEntityRenderer<NPCEntity, PosableEntityModel<NPCEntity>>(context, PosableNPCModel(), 0.5f) {
+    override fun getTextureLocation(entity: NPCEntity): Identifier {
         return VaryingModelRepository.getTexture(entity.resourceIdentifier, (entity.delegate as NPCClientDelegate))
     }
 
@@ -33,12 +34,12 @@ class NPCRenderer(context: Context) : LivingEntityRenderer<NPCEntity, PosableEnt
         poseStack.scale(livingEntity.renderScale, livingEntity.renderScale, livingEntity.renderScale)
     }
 
-    override fun render(
+    override fun extractGeometry(
         entity: NPCEntity,
         entityYaw: Float,
         partialTicks: Float,
         poseMatrix: PoseStack,
-        buffer: MultiBufferSource,
+        buffer: ModelGeometry.Builder,
         packedLight: Int
     ) {
         val aspects = entity.aspects
@@ -56,7 +57,7 @@ class NPCRenderer(context: Context) : LivingEntityRenderer<NPCEntity, PosableEnt
 
         poseMatrix.pushPose()
         poseMatrix.scale(entity.npc.modelScale, entity.npc.modelScale, entity.npc.modelScale)
-        super.render(entity, entityYaw, partialTicks, poseMatrix, buffer, packedLight)
+        super.extractGeometry(entity, entityYaw, partialTicks, poseMatrix, buffer, packedLight)
         poseMatrix.popPose()
         model.red = 1F
         model.green = 1F
@@ -65,13 +66,12 @@ class NPCRenderer(context: Context) : LivingEntityRenderer<NPCEntity, PosableEnt
 
         if (entity.deathTime < 1) {
             //Render Held Item
-            heldItemRenderer.renderOnModel(
+            heldItemRenderer.extractOnModel(
                 entity.mainHandItem,
                 clientDelegate,
                 poseMatrix,
                 buffer,
                 packedLight,
-                false,
                 entity
             )
         }
@@ -81,10 +81,10 @@ class NPCRenderer(context: Context) : LivingEntityRenderer<NPCEntity, PosableEnt
 //        }
     }
 
-    override fun shouldShowName(entity: NPCEntity): Boolean {
+    override fun shouldShowName(entity: NPCEntity, distanceToCameraSq: Double): Boolean {
         if (entity.hideNameTag) {
             return false
         }
-        return super.shouldShowName(entity)
+        return super.shouldShowName(entity, distanceToCameraSq)
     }
 }

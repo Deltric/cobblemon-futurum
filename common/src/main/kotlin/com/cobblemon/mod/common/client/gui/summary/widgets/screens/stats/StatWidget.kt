@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.screens.stats
 
+import com.cobblemon.mod.common.api.gui.drawGuiTriangle
+import net.minecraft.util.ARGB
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures
@@ -30,14 +33,9 @@ import com.cobblemon.mod.common.pokemon.IVs
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.BufferUploader
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.Tesselator
-import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
@@ -177,15 +175,8 @@ class StatWidget(
         }
     }
 
-    private fun drawTriangle(colour: Vector3f, v1: Vec2, v2: Vec2, v3: Vec2, opacity: Float = 0.6F) {
-        CobblemonResources.WHITE.let { RenderSystem.setShaderTexture(0, it) }
-        RenderSystem.setShaderColor(colour.x, colour.y, colour.z, opacity)
-        val bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION)
-        bufferBuilder.addVertex(v1.x, v1.y, 10F)
-        bufferBuilder.addVertex(v2.x, v2.y, 10F)
-        bufferBuilder.addVertex(v3.x, v3.y, 10F)
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow())
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F)
+    private fun drawTriangle(context: GuiGraphicsExtractor, colour: Vector3f, v1: Vec2, v2: Vec2, v3: Vec2, opacity: Float = 0.6F) {
+        drawGuiTriangle(context, v1, v2, v3, ARGB.colorFromFloat(opacity, colour.x, colour.y, colour.z))
     }
 
     /**
@@ -194,7 +185,7 @@ class StatWidget(
      * @param ratios list of ratios for how far each vertex is from the center, starting from top vertex going clockwise
      * @param colour the colour to render
      */
-    private fun drawStatPolygon(ratios: List<Float>, colour: Vector3f) {
+    private fun drawStatPolygon(context: GuiGraphicsExtractor, ratios: List<Float>, colour: Vector3f) {
         val sides = ratios.size
         if (sides !in 5 .. 6) return
 
@@ -233,28 +224,24 @@ class StatWidget(
         val centerPoint = Vec2(centerX, centerY)
 
         // Draw triangles between each vertex and the next clockwise starting from top vertex
-        RenderSystem.disableDepthTest()
         for (i in vertices.indices) {
             val nextIndex = (i + 1) % vertices.size
-            drawTriangle(colour, vertices[i], centerPoint, vertices[nextIndex])
+            drawTriangle(context, colour, vertices[i], centerPoint, vertices[nextIndex])
         }
-        RenderSystem.enableDepthTest()
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val renderOtherStats = statOptions.get(statTabIndex) == OTHER
         val renderPentagonStats = statOptions.get(statTabIndex) == RIDE
         val matrices = context.pose()
 
         // Background
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = if (renderOtherStats)  statsOtherBaseResource else statsBaseResource,
             x= x,
             y = y,
             width = width,
-            height = height
-        )
+            height = height)
 
         if (renderOtherStats) {
             val barOffsetY = 29
@@ -286,16 +273,14 @@ class StatWidget(
                 }
             }
             if (featuresList.size > 4) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = statsOtherSidebarsResource,
-                    x= x,
-                    y = y + 13,
-                    width = 134,
-                    height = 115
-                )
-                otherStatLeftButton?.renderWidget(context, pMouseX, pMouseY, pPartialTicks)
-                otherStatRightButton?.renderWidget(context, pMouseX, pMouseY, pPartialTicks)
+                blitk(context = context,
+            texture = statsOtherSidebarsResource,
+            x= x,
+            y = y + 13,
+            width = 134,
+            height = 115)
+                otherStatLeftButton?.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
+                otherStatRightButton?.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
             }
         } else {
             if (renderPentagonStats) {
@@ -304,15 +289,13 @@ class StatWidget(
                     val selectedBehaviour = behaviours[rideBehaviourIndex]
                     val canSwitchStyle = behaviours.size > 1 && centerHovered(pMouseX, pMouseY)
 
-                    blitk(
-                        matrixStack = matrices,
-                        texture = if (canSwitchStyle) statsChartPentagonHighlightResource else statsChartPentagonResource,
-                        x= (x + 20.5) / SCALE,
-                        y = (y + 22) / SCALE,
-                        width = 186,
-                        height = 176,
-                        scale = SCALE
-                    )
+                    blitk(context = context,
+            texture = if (canSwitchStyle) statsChartPentagonHighlightResource else statsChartPentagonResource,
+            x= (x + 20.5) / SCALE,
+            y = (y + 22) / SCALE,
+            width = 186,
+            height = 176,
+            scale = SCALE)
 
                     val pentagonColour = when (selectedBehaviour.key) {
                         RidingStyle.AIR -> {
@@ -332,22 +315,20 @@ class StatWidget(
                         }
                     }
 
-                    drawStatPolygon(
+                    drawStatPolygon(context,
                         ratios = RidingStat.entries.map { pokemon.getRideStat(selectedBehaviour.key, it) / 100F },
                         colour = pentagonColour
                     )
 
                     val rideStyle = selectedBehaviour.value.key.path.toString().split("/").last().lowercase()
                     val iconResource = cobblemonResource("textures/gui/summary/icon_ride_${selectedBehaviour.key.toString().lowercase()}_${rideStyle}.png")
-                    blitk(
-                        matrixStack = matrices,
-                        texture = iconResource,
-                        x= (x + 59) / SCALE,
-                        y = (y + 62.5) / SCALE,
-                        width = RIDE_ICON_SIZE,
-                        height = RIDE_ICON_SIZE,
-                        scale = SCALE
-                    )
+                    blitk(context = context,
+            texture = iconResource,
+            x= (x + 59) / SCALE,
+            y = (y + 62.5) / SCALE,
+            width = RIDE_ICON_SIZE,
+            height = RIDE_ICON_SIZE,
+            scale = SCALE)
 
                     val labelsHovered = statLabelsHovered(pentagonVerticesOffset, pMouseX, pMouseY)
                     // Stat Labels
@@ -373,7 +354,7 @@ class StatWidget(
                     )
 
                     if (pMouseX >= (x + 59) && pMouseY >= (y + 62.5) && pMouseX <= ((x + 59) + (RIDE_ICON_SIZE * SCALE)) && pMouseY <= ((y + 62.5) + (RIDE_ICON_SIZE * SCALE))) {
-                        context.renderTooltip(
+                        context.setTooltipForNextFrame(
                             Minecraft.getInstance().font,
                             lang("ui.ride_style.${selectedBehaviour.key.toString().lowercase()}.${rideStyle}")
                                 .append(" | ").append(lang("ui.ride_style.${selectedBehaviour.key.toString().lowercase()}")),
@@ -384,18 +365,16 @@ class StatWidget(
                 }
 
             } else {
-                blitk(
-                    matrixStack = matrices,
-                    texture = statsChartResource,
-                    x= (x + 25.5) / SCALE,
-                    y = (y + 22) / SCALE,
-                    width = 166,
-                    height = 192,
-                    scale = SCALE
-                )
+                blitk(context = context,
+            texture = statsChartResource,
+            x= (x + 25.5) / SCALE,
+            y = (y + 22) / SCALE,
+            width = 166,
+            height = 192,
+            scale = SCALE)
 
                 when (statOptions.get(statTabIndex)) {
-                    STATS -> drawStatPolygon(
+                    STATS -> drawStatPolygon(context,
                         listOf(
                             pokemon.maxHealth,
                             pokemon.attack,
@@ -406,11 +385,11 @@ class StatWidget(
                         ).map { it / 400F },
                         colour = Vector3f(50F/255F, 215F/255F, 1F)
                     )
-                    IV -> drawStatPolygon(
+                    IV -> drawStatPolygon(context,
                         statLabels.values.map { pokemon.ivs.getEffectiveBattleIV(it) / 31F },
                         colour = Vector3f(216F/255, 100F/255, 1F)
                     )
-                    EV -> drawStatPolygon(
+                    EV -> drawStatPolygon(context,
                         statLabels.values.map { (pokemon.evs[it]?.toFloat() ?: 0F) / EVs.MAX_STAT_VALUE.toFloat() },
                         colour = Vector3f(1F, 1F, 100F/255F)
                     )
@@ -455,8 +434,8 @@ class StatWidget(
                 // Nature-modified Stat Icons
                 if (statOptions.get(statTabIndex) == STATS) {
                     val nature = pokemon.effectiveNature
-                    renderModifiedStatIcon(matrices, nature.increasedStat, true)
-                    renderModifiedStatIcon(matrices, nature.decreasedStat, false)
+                    renderModifiedStatIcon(context, nature.increasedStat, true)
+                    renderModifiedStatIcon(context, nature.decreasedStat, false)
                 }
             }
         }
@@ -479,18 +458,24 @@ class StatWidget(
             )
         }
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = tabMarkerResource,
             x= (startPosX + (statTabIndex * statTabWidth) - (MARKER_WIDTH / 4)) / SCALE,
             y = (y + 140) / SCALE,
             width = MARKER_WIDTH,
             height = 4,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
+        isActive && (super.isMouseOver(mouseX, mouseY) ||
+            (statOptions[statTabIndex] == OTHER &&
+                (otherStatLeftButton?.isMouseOver(mouseX, mouseY) == true ||
+                    otherStatRightButton?.isMouseOver(mouseX, mouseY) == true)))
+
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val pMouseX = event.x()
+        val pMouseY = event.y()
         val index = getTabIndexFromPos(pMouseX, pMouseY)
         // Only play sound here as the rest of the widget is meant to be silent
         if (index in 0 until statOptions.size && statTabIndex != index) {
@@ -503,7 +488,7 @@ class StatWidget(
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(CobblemonSounds.GUI_CLICK, 1.0F))
         }
 
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+        return super.mouseClicked(event, doubleClick)
     }
 
     private fun statValuesAsText(stats: List<Stat>, asPercent: Boolean): List<MutableComponent> {
@@ -527,7 +512,7 @@ class StatWidget(
         }
     }
 
-    private fun renderModifiedStatIcon(pPoseStack: PoseStack, stat: Stat?, increasedStat: Boolean) {
+    private fun renderModifiedStatIcon(context: GuiGraphicsExtractor, stat: Stat?, increasedStat: Boolean) {
         if (stat != null) {
             var posX = x.toDouble()
             var posY = y.toDouble()
@@ -541,15 +526,13 @@ class StatWidget(
                 Stats.SPEED -> { posX += 65; posY += 120 }
             }
 
-            blitk(
-                matrixStack = pPoseStack,
-                texture = if (increasedStat) statIncreaseResource else statDecreaseResource,
-                x= posX / SCALE,
-                y = posY / SCALE,
-                width = 8,
-                height = 6,
-                scale = SCALE,
-            )
+            blitk(context = context,
+            texture = if (increasedStat) statIncreaseResource else statDecreaseResource,
+            x= posX / SCALE,
+            y = posY / SCALE,
+            width = 8,
+            height = 6,
+            scale = SCALE)
         }
     }
 
@@ -563,7 +546,7 @@ class StatWidget(
         return WHITE
     }
 
-    private fun renderPolygonLabels(context: GuiGraphics, labels: List<MutableComponent>, verticesOffset: List<Pair<Double, Double>>, offsetY: Double = 0.0, labelColours: List<Int>? = null, enableColour: Boolean = false) {
+    private fun renderPolygonLabels(context: GuiGraphicsExtractor, labels: List<MutableComponent>, verticesOffset: List<Pair<Double, Double>>, offsetY: Double = 0.0, labelColours: List<Int>? = null, enableColour: Boolean = false) {
         if (labels.size != verticesOffset.size) return
 
         labels.forEachIndexed { index, label ->

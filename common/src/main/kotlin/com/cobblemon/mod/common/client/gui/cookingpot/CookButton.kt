@@ -12,7 +12,7 @@ import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.block.campfirepot.CampfirePotColor
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
@@ -32,28 +32,24 @@ class CookButton(
         private val buttonResource = cobblemonResource("textures/gui/campfirepot/button.png")
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val closedIcon = cobblemonResource("textures/item/campfire_pots/campfire_pot_${color.suffix}.png")
         val openIcon = cobblemonResource("textures/item/campfire_pots/campfire_pot_${color.suffix}_open.png")
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = buttonResource,
             x = x,
             y = y,
             width = SIZE,
             height = SIZE,
             vOffset = if (isMouseOver(pMouseX.toDouble(), pMouseY.toDouble())) SIZE else 0,
-            textureHeight = SIZE * 2
-        )
+            textureHeight = SIZE * 2)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = if (selected) closedIcon else openIcon,
             x = x + 2,
             y = y + 2,
             width = 16,
-            height = 16
-        )
+            height = 16)
     }
 
     override fun playDownSound(soundManager: SoundManager) {

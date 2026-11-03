@@ -3,15 +3,9 @@
   "group": "iv_candy_bad",
   "category": "misc",
   "key": {
-    "K": {
-      "item": "cobblemon:kelpsy_berry"
-    },
-    "B": {
-      "item": "cobblemon:enigma_berry"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_xl"
-    }
+    "K": "cobblemon:kelpsy_berry",
+    "B": "cobblemon:enigma_berry",
+    "E": "cobblemon:exp_candy_xl"
   },
   "pattern": [
     "KBK",

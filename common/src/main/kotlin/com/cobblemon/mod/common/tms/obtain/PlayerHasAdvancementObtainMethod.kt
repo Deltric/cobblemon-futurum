@@ -12,12 +12,12 @@ import com.cobblemon.mod.common.api.tms.ObtainMethod
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * An [ObtainMethod] that triggers when the player has an advancement.
  */
-class PlayerHasAdvancementObtainMethod(val advancement: ResourceLocation? = null) : ObtainMethod {
+class PlayerHasAdvancementObtainMethod(val advancement: Identifier? = null) : ObtainMethod {
 
     // todo we can leave this here in case we want to use it later.... or addons?
     companion object {
@@ -25,7 +25,7 @@ class PlayerHasAdvancementObtainMethod(val advancement: ResourceLocation? = null
 
         fun readFromBuffer(buffer: RegistryFriendlyByteBuf): PlayerHasAdvancementObtainMethod {
             val hasAdvancement = buffer.readBoolean()
-            val advancement = if (hasAdvancement) buffer.readResourceLocation() else null
+            val advancement = if (hasAdvancement) buffer.readIdentifier() else null
             return PlayerHasAdvancementObtainMethod(advancement)
         }
     }
@@ -34,14 +34,14 @@ class PlayerHasAdvancementObtainMethod(val advancement: ResourceLocation? = null
 
     override fun matches(player: ServerPlayer): Boolean {
         if (advancement == null) return false
-        val advancementInstance = player.server.getAdvancements().get(advancement) ?: return false
+        val advancementInstance = player.level().server.getAdvancements().get(advancement) ?: return false
         val progress = player.advancements.getOrStartProgress(advancementInstance)
         return progress != null && progress.isDone
     }
 
     override fun writeToBuffer(buffer: RegistryFriendlyByteBuf) {
         buffer.writeUtf("cobblemon:advancement")
-        buffer.writeResourceLocation(advancement ?: ResourceLocation.tryParse("minecraft:empty"))
+        buffer.writeIdentifier(advancement ?: Identifier.parse("minecraft:empty"))
     }
 }
 

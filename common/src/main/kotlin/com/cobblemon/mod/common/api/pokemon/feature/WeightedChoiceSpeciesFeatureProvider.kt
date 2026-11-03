@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.api.pokemon.feature
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.readMap
+import com.cobblemon.mod.common.util.writeCollection
+import com.cobblemon.mod.common.util.writeMap
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.readString
 import com.cobblemon.mod.common.util.substitute

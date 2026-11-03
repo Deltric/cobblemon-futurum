@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "cobblemon:exp_candy_m"
-    }
+    "cobblemon:exp_candy_m"
   ],
   "result": {
     "count": 3,

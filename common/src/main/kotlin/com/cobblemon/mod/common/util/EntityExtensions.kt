@@ -23,7 +23,7 @@ import net.minecraft.nbt.NbtOps
 import net.minecraft.nbt.Tag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.tags.TagKey
 import net.minecraft.util.ExtraCodecs
 import net.minecraft.world.entity.Entity
@@ -47,15 +47,15 @@ fun Entity.makeEmptyBrainDynamic() = Dynamic(
 
 fun Entity.effectiveName() = this.displayName ?: this.name
 
-fun LivingEntity.hasMemory(memoryIdentifier: ResourceLocation): Boolean {
+fun LivingEntity.hasMemory(memoryIdentifier: Identifier): Boolean {
     val registry = BuiltInRegistries.MEMORY_MODULE_TYPE
-    val memoryType = registry.get(memoryIdentifier)
+    val memoryType = registry.getValue(memoryIdentifier) ?: return false
     return brain.checkMemory(memoryType, MemoryStatus.VALUE_PRESENT)
 }
 
 fun LivingEntity.hasMemory(tagKey: TagKey<MemoryModuleType<*>>): Boolean {
     val registry = BuiltInRegistries.MEMORY_MODULE_TYPE
-    val memoryTypesInTag = registry.getTag(tagKey).orElse(null) ?: return false
+    val memoryTypesInTag = registry.get(tagKey).orElse(null) ?: return false
     return memoryTypesInTag.any { brain.checkMemory(it.value(), MemoryStatus.VALUE_PRESENT) }
 }
 
@@ -75,15 +75,15 @@ fun LivingEntity.jitterDropItem(itemEntity: ItemEntity) {
     )
 }
 
-fun LivingEntity.isDoingActivity(activityIdentifier: ResourceLocation): Boolean {
+fun LivingEntity.isDoingActivity(activityIdentifier: Identifier): Boolean {
     val registry = BuiltInRegistries.ACTIVITY
-    val activity = registry.get(activityIdentifier) ?: return false
+    val activity = registry.getValue(activityIdentifier) ?: return false
     return brain.isActive(activity)
 }
 
 fun LivingEntity.isDoingActivity(tagKey: TagKey<Activity>): Boolean {
     val registry = BuiltInRegistries.ACTIVITY
-    val activitiesInTag = registry.getTag(tagKey).orElse(null) ?: return false
+    val activitiesInTag = registry.get(tagKey).orElse(null) ?: return false
     return activitiesInTag.any { brain.isActive(it.value()) }
 }
 
@@ -229,7 +229,7 @@ fun Entity.setPositionSafely(pos: Vec3): Boolean {
 }
 
 fun Entity.isDusk(): Boolean {
-    val time = level().dayTime % 24000
+    val time = level().overworldClockTime % 24000
     return time in 12000..13000
 }
 
@@ -243,9 +243,9 @@ fun Entity.isStandingOn(blocks: Set<String>, depth: Int = 2): Boolean {
         val elementOrTags = ExtraCodecs.TAG_OR_ELEMENT_ID.listOf().decode(JavaOps.INSTANCE, blocks.toList()).result().get().first
         elementOrTags.forEach {
             if (it.tag) {
-                if (blockState.blockHolder.`is`(TagKey.create(Registries.BLOCK, it.id))) return true
+                if (blockState.typeHolder().`is`(TagKey.create(Registries.BLOCK, it.id))) return true
             } else {
-                if (blockState.blockHolder.`is`(it.id)) return true
+                if (blockState.typeHolder().`is`(it.id)) return true
             }
         }
     }
@@ -268,7 +268,7 @@ fun Entity.closestPosition(positions: Iterable<BlockPos>, filter: (BlockPos) -> 
         if (filter(position)) {
             val distance = distanceTo(position)
             if (distance < closestDistance) {
-                closest = BlockPos(position)
+                closest = position.immutable()
                 closestDistance = distance
             }
         }
@@ -279,7 +279,7 @@ fun Entity.closestPosition(positions: Iterable<BlockPos>, filter: (BlockPos) -> 
 
 fun Entity.getIsSubmerged() = isInLava || isUnderWater
 
-fun <T> SynchedEntityData.update(data: EntityDataAccessor<T>, mutator: (T) -> T) {
+fun <T : Any> SynchedEntityData.update(data: EntityDataAccessor<T>, mutator: (T) -> T) {
     val value = get(data)
     val newValue = mutator(value)
     if (value != newValue) {

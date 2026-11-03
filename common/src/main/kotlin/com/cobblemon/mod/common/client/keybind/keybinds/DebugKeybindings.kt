@@ -34,7 +34,7 @@ object DebugKeybindings {
 
     class ScaleUpKeybinding: CobblemonKeyBinding(
         "key.cobblemon.scaleportraitup",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_EQUALS,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -50,7 +50,7 @@ object DebugKeybindings {
     }
     class ScaleDownKeybinding: CobblemonKeyBinding(
         "key.cobblemon.scaleportraitdown",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_MINUS,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -67,7 +67,7 @@ object DebugKeybindings {
 
     class TranslateUpKeybinding: CobblemonKeyBinding(
         "key.cobblemon.translateportraitup",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_I,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -83,7 +83,7 @@ object DebugKeybindings {
     }
     class TranslateDownKeybinding: CobblemonKeyBinding(
         "key.cobblemon.translateportraitdown",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_K,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -100,7 +100,7 @@ object DebugKeybindings {
 
     class TranslateLeftKeybinding: CobblemonKeyBinding(
         "key.cobblemon.translateportraitleft",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_J,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -117,7 +117,7 @@ object DebugKeybindings {
 
     class TranslateRightKeybinding: CobblemonKeyBinding(
         "key.cobblemon.translateportraitright",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_J,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -133,7 +133,7 @@ object DebugKeybindings {
 
     class PrintModelSettingsKeybinding : CobblemonKeyBinding(
         "key.cobblemon.printmodelsettings",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_PERIOD,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {
@@ -152,7 +152,7 @@ object DebugKeybindings {
 
     class ToggleRidingStatsDebugGUIKeybinding : CobblemonKeyBinding(
         "key.cobblemon.toggleridingstatsgui",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.KEY_SEMICOLON,
         KeybindCategories.COBBLEMON_DEBUG_CATEGORY
     ) {

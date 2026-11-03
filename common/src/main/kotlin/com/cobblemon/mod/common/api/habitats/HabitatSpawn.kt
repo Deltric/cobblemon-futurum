@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.habitats
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.spawning.IntRanges
@@ -65,7 +67,7 @@ class HabitatSpawn {
     /** The maximum light level that the Pokémon can spawn in. */
     var maxLight: Int? = null
 
-    fun writeToNBT(nbt: CompoundTag) {
+    fun save(nbt: ValueOutput) {
         nbt.putString(DataKeys.HABITAT_POOL_SPAWN_SPECIES, species.resourceIdentifier.toString())
         nbt.putString(DataKeys.HABITAT_POOL_SPAWN_POSITION_TYPE, spawnablePositionType)
         nbt.putFloat(DataKeys.HABITAT_POOL_SPAWN_WEIGHT, weight)
@@ -78,21 +80,21 @@ class HabitatSpawn {
         nbt.putString(DataKeys.HABITAT_POOL_SPAWN_BUCKET, bucket)
     }
 
-    fun readFromNBT(nbt: CompoundTag) {
-        species = PokemonSpecies.getByIdentifier(nbt.getString(DataKeys.HABITAT_POOL_SPAWN_SPECIES).asIdentifierDefaultingNamespace())!!
-        spawnablePositionType = nbt.getString(DataKeys.HABITAT_POOL_SPAWN_POSITION_TYPE)
-        weight = nbt.getFloat(DataKeys.HABITAT_POOL_SPAWN_WEIGHT)
-        levelRange = IntRangeAdapter.deserialize(nbt.getString(DataKeys.HABITAT_POOL_SPAWN_LEVEL_RANGE))
-        modifiers = if (nbt.contains(DataKeys.HABITAT_POOL_SPAWN_MODIFIERS)) PokemonProperties.parse(nbt.getString(DataKeys.HABITAT_POOL_SPAWN_MODIFIERS)) else null
-        phases = if (nbt.contains(DataKeys.HABITAT_POOL_SPAWN_PHASES)) IntRangesAdapter.basic.deserialize(nbt.getString(DataKeys.HABITAT_POOL_SPAWN_PHASES)) else null
-        timeRange = if (nbt.contains(DataKeys.HABITAT_POOL_SPAWN_TIMES)) TimeRange.adapter.deserialize(nbt.getString(DataKeys.HABITAT_POOL_SPAWN_TIMES)) else null
-        minLight = if (nbt.contains(DataKeys.HABITAT_POOL_SPAWN_MIN_LIGHT)) nbt.getInt(DataKeys.HABITAT_POOL_SPAWN_MIN_LIGHT) else null
-        maxLight = if (nbt.contains(DataKeys.HABITAT_POOL_SPAWN_MAX_LIGHT)) nbt.getInt(DataKeys.HABITAT_POOL_SPAWN_MAX_LIGHT) else null
-        bucket = if (nbt.contains(DataKeys.HABITAT_POOL_SPAWN_BUCKET)) nbt.getString(DataKeys.HABITAT_POOL_SPAWN_BUCKET) else "common"
+    fun load(input: ValueInput) {
+        species = PokemonSpecies.getByIdentifier(input.getStringOr(DataKeys.HABITAT_POOL_SPAWN_SPECIES, "").asIdentifierDefaultingNamespace())!!
+        spawnablePositionType = input.getStringOr(DataKeys.HABITAT_POOL_SPAWN_POSITION_TYPE, "")
+        weight = input.getFloatOr(DataKeys.HABITAT_POOL_SPAWN_WEIGHT, 0F)
+        levelRange = IntRangeAdapter.deserialize(input.getStringOr(DataKeys.HABITAT_POOL_SPAWN_LEVEL_RANGE, ""))
+        modifiers = input.getString(DataKeys.HABITAT_POOL_SPAWN_MODIFIERS).map { PokemonProperties.parse(it) }.orElse(null)
+        phases = input.getString(DataKeys.HABITAT_POOL_SPAWN_PHASES).map { IntRangesAdapter.basic.deserialize(it) }.orElse(null)
+        timeRange = input.getString(DataKeys.HABITAT_POOL_SPAWN_TIMES).map { TimeRange.adapter.deserialize(it) }.orElse(null)
+        minLight = input.getInt(DataKeys.HABITAT_POOL_SPAWN_MIN_LIGHT).orElse(null)
+        maxLight = input.getInt(DataKeys.HABITAT_POOL_SPAWN_MAX_LIGHT).orElse(null)
+        bucket = input.getStringOr(DataKeys.HABITAT_POOL_SPAWN_BUCKET, "common")
     }
 
     fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeResourceLocation(species.resourceIdentifier)
+        buffer.writeIdentifier(species.resourceIdentifier)
         buffer.writeUtf(spawnablePositionType)
         buffer.writeFloat(weight)
         buffer.writeUtf(IntRangeAdapter.serialize(levelRange))
@@ -105,7 +107,7 @@ class HabitatSpawn {
     }
 
     fun decode(buffer: RegistryFriendlyByteBuf) {
-        species = PokemonSpecies.getByIdentifier(buffer.readResourceLocation())!!
+        species = PokemonSpecies.getByIdentifier(buffer.readIdentifier())!!
         spawnablePositionType = buffer.readUtf()
         weight = buffer.readFloat()
         levelRange = IntRangeAdapter.deserialize(buffer.readUtf())

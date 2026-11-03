@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
 import com.cobblemon.mod.common.util.rotateShape
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -68,7 +70,7 @@ class EjectButtonBlock(properties: Properties, ticksToStayPressed: Int) : Button
         builder.add(FACING, FACE, POWERED, WATERLOGGED)
     }
 
-    override fun getFluidState(blockState: BlockState): FluidState? {
+    override fun getFluidState(blockState: BlockState): FluidState {
         return if (blockState.getValue(WATERLOGGED)) Fluids.WATER.getSource(false) else super.getFluidState(blockState);
     }
 
@@ -120,12 +122,12 @@ class EjectButtonBlock(properties: Properties, ticksToStayPressed: Int) : Button
         }
     }
 
-    override fun updateShape(state: BlockState, direction: Direction, neighborState: BlockState, world: LevelAccessor, pos: BlockPos, neighborPos: BlockPos): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
         return if (getConnectedDirection(state).opposite == direction && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-        else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+        else super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun canSurvive(state: BlockState, level: LevelReader, pos: BlockPos): Boolean {

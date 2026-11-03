@@ -28,8 +28,8 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.arguments.EntityArgument
-import net.minecraft.commands.arguments.ResourceLocationArgument
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.commands.arguments.IdentifierArgument
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 
@@ -44,7 +44,7 @@ object RunMolangScriptCommand {
         dispatcher.register(literal(NAME)
             .permission(CobblemonPermissions.RUN_MOLANG_SCRIPT)
             .then(
-                argument(SCRIPT, ResourceLocationArgument.id())
+                argument(SCRIPT, IdentifierArgument.id())
                 .executes { execute(it, it.resourceLocation(SCRIPT), null, null, null) }
                 .then(argument(PLAYER, EntityArgument.player())
                     .executes { execute(it, it.resourceLocation(SCRIPT), it.player(PLAYER), null, null) }
@@ -71,7 +71,7 @@ object RunMolangScriptCommand {
         )
     }
 
-    private fun execute(context: CommandContext<CommandSourceStack>, scriptId: ResourceLocation, player: ServerPlayer?, npc: Entity?, pokemon: Entity? = null): Int {
+    private fun execute(context: CommandContext<CommandSourceStack>, scriptId: Identifier, player: ServerPlayer?, npc: Entity?, pokemon: Entity? = null): Int {
         try {
             val runtime = MoLangRuntime().setup()
             val entity = context.source.entity

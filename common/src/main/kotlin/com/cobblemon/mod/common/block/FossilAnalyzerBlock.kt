@@ -14,7 +14,6 @@ import com.cobblemon.mod.common.block.entity.FossilAnalyzerBlockEntity
 import com.cobblemon.mod.common.block.entity.FossilMultiblockEntity
 import com.cobblemon.mod.common.block.multiblock.FossilMultiblockBuilder
 import com.cobblemon.mod.common.block.multiblock.FossilMultiblockStructure
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.WorldlyContainer
@@ -43,11 +42,7 @@ class FossilAnalyzerBlock(settings: Properties) : MultiblockBlock(settings), Wor
         return FossilAnalyzerBlockEntity(pos, state, FossilMultiblockBuilder(pos))
     }
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         world: Level,
         state: BlockState,
         type: BlockEntityType<T>
@@ -75,6 +70,5 @@ class FossilAnalyzerBlock(settings: Properties) : MultiblockBlock(settings), Wor
     companion object {
         val ON = BooleanProperty.create("on")
 
-        val CODEC = simpleCodec(::FossilAnalyzerBlock)
     }
 }

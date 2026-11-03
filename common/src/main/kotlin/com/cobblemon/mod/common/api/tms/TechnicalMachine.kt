@@ -17,7 +17,7 @@ import com.cobblemon.mod.common.item.components.TMMoveComponent
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.tms.obtain.DefaultObtainMethod
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.entity.player.Player
@@ -86,7 +86,7 @@ class TechnicalMachine(
         }
     }
 
-    lateinit var id: ResourceLocation
+    lateinit var id: Identifier
 
     /**
      * Gets the recipe list limited to the provided amount to match the slot amount of the TM Machine.

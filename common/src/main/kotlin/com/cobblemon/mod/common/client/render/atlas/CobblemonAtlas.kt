@@ -8,16 +8,15 @@
 
 package com.cobblemon.mod.common.client.render.atlas
 
-import net.minecraft.client.renderer.texture.TextureManager
-import net.minecraft.client.resources.TextureAtlasHolder
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.texture.TextureAtlas
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import net.minecraft.client.resources.model.sprite.AtlasManager
+import net.minecraft.resources.Identifier
 
-class CobblemonAtlas(
-    textureManager: TextureManager,
-    atlasId: ResourceLocation,
-    sourcePath: ResourceLocation
-) : TextureAtlasHolder(
-    textureManager,
-    atlasId,
-    sourcePath
-)
+/** Descriptor registered with the native atlas manager; reload/upload ownership stays in Minecraft. */
+class CobblemonAtlas(val textureId: Identifier, val sourcePath: Identifier) {
+    val config get() = AtlasManager.AtlasConfig(textureId, sourcePath, false)
+    val textureAtlas: TextureAtlas get() = Minecraft.getInstance().atlasManager.getAtlasOrThrow(sourcePath)
+    fun getSprite(id: Identifier): TextureAtlasSprite = textureAtlas.getSprite(id)
+}

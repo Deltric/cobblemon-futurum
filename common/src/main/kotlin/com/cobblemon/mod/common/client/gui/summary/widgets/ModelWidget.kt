@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.bedrockk.molang.runtime.value.DoubleValue
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags
@@ -15,10 +16,9 @@ import com.cobblemon.mod.common.client.gui.ProfileTransformType
 import com.cobblemon.mod.common.client.gui.drawProfilePokemon
 import com.cobblemon.mod.common.client.gui.calculateHeadYawAndPitch
 import com.cobblemon.mod.common.client.render.models.blockbench.FloatingState
-import com.cobblemon.mod.common.client.render.item.HeldItemRenderer
 import com.cobblemon.mod.common.pokemon.RenderablePokemon
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -51,7 +51,6 @@ class ModelWidget(
             state.runtime.environment.query.addFunction("is_wearing_face") { return@addFunction DoubleValue(field.heldItem.`is`(CobblemonItemTags.WEARABLE_FACE_ITEMS)) }
         }
 
-    private val heldItemRenderer = HeldItemRenderer()
 
     var state = FloatingState()
     var lookStartTime: Long? = null
@@ -60,7 +59,7 @@ class ModelWidget(
 
     var shouldRender = true
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, partialTicks: Float) {
         if (!shouldRender) {
             return
         }
@@ -68,9 +67,9 @@ class ModelWidget(
         renderPKM(context, partialTicks, pMouseX, pMouseY)
     }
 
-    private fun renderPKM(context: GuiGraphics, partialTicks: Float, mouseX: Int, mouseY: Int) {
+    private fun renderPKM(context: GuiGraphicsExtractor, partialTicks: Float, mouseX: Int, mouseY: Int) {
         val matrices = context.pose()
-        matrices.pushPose()
+        matrices.pushMatrix()
 
         context.enableScissor(
             x,
@@ -79,9 +78,9 @@ class ModelWidget(
             y + height
         )
 
-        matrices.translate(x + width * 0.5, y.toDouble() + offsetY, 0.0)
-        matrices.scale(baseScale, baseScale, baseScale)
-        matrices.pushPose()
+        matrices.translate((x + width * 0.5).toFloat(), (y.toDouble() + offsetY).toFloat())
+        matrices.scale((baseScale).toFloat(), (baseScale).toFloat())
+        matrices.pushMatrix()
 
         if (isHovered) {
             lookStartTime = System.currentTimeMillis()
@@ -110,39 +109,29 @@ class ModelWidget(
             )
         }
 
-        drawProfilePokemon(
-            renderablePokemon = pokemon,
-            matrixStack = matrices,
-            rotation = rotation,
-            state = state,
-            partialTicks = partialTicks,
-            headYaw = currentYawAndPitch.first,
-            headPitch = currentYawAndPitch.second,
-            blockLight = blockLight,
-            profileTransformType = ProfileTransformType.SUMMARY,
-        )
+        drawProfilePokemon(renderablePokemon = pokemon,
+                context = context,
+                rotation = rotation,
+                state = state,
+                partialTicks = partialTicks,
+                headYaw = currentYawAndPitch.first,
+                headPitch = currentYawAndPitch.second,
+                blockLight = blockLight,
+                profileTransformType = ProfileTransformType.SUMMARY,
+                renderHeldItem = true)
 
-        heldItemRenderer.renderOnModel(
-            pokemon.heldItem,
-            state,
-            matrices,
-            context.bufferSource(),
-            light = 0xF000F0,
-            true
-        )
-
-        matrices.popPose()
+        matrices.popMatrix()
         context.disableScissor()
 
-        matrices.popPose()
+        matrices.popMatrix()
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         if (this.isHovered) {
             playCry()
         }
 
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+        return super.mouseClicked(event, doubleClick)
     }
 
     private fun playCry() {

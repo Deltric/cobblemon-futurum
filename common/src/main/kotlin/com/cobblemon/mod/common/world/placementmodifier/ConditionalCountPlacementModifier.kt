@@ -16,7 +16,7 @@ import net.minecraft.util.RandomSource
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate
 import net.minecraft.world.level.levelgen.placement.PlacementContext
 import net.minecraft.world.level.levelgen.placement.PlacementModifier
-import java.util.stream.Stream
+import java.util.function.Consumer
 
 /**
  * It's like the count placement modifier, but conditional. If condition fails, doesn't alter the stream.
@@ -27,7 +27,7 @@ import java.util.stream.Stream
 class ConditionalCountPlacementModifier(
     val predicate: BlockPredicate,
     val count: Int
-) : PlacementModifier() {
+) : PlacementModifier {
     companion object {
         val MODIFIER_CODEC: MapCodec<ConditionalCountPlacementModifier> = RecordCodecBuilder.mapCodec { instance ->
             instance
@@ -39,15 +39,13 @@ class ConditionalCountPlacementModifier(
         }
     }
 
-    override fun type() = CobblemonPlacementModifierTypes.CONDITIONAL_COUNT
+    override fun codec(): MapCodec<ConditionalCountPlacementModifier> = MODIFIER_CODEC
 
-    override fun getPositions(context: PlacementContext, random: RandomSource, pos: BlockPos): Stream<BlockPos> {
-        return if (predicate.test(context.level, pos)) {
-            val new = mutableListOf<BlockPos>()
-            repeat(times = count) { new.add(pos) }
-            new.stream()
+    override fun modify(context: PlacementContext, random: RandomSource, pos: BlockPos, output: Consumer<BlockPos>) {
+        if (predicate.test(context.level, pos)) {
+            repeat(times = count) { output.accept(pos) }
         } else {
-            Stream.of(pos)
+            output.accept(pos)
         }
     }
 }

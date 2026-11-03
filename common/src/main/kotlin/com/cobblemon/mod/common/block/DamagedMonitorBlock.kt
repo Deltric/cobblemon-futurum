@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.level.redstone.Orientation
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.util.StringRepresentable
@@ -98,14 +99,7 @@ class DamagedMonitorBlock(settings: Properties) : Block(settings) {
         )
     }
 
-    override fun neighborChanged(
-        state: BlockState,
-        level: Level,
-        pos: BlockPos,
-        block: Block,
-        fromPos: BlockPos,
-        isMoving: Boolean
-    ){
+    override fun neighborChanged(state: BlockState, level: Level, pos: BlockPos, block: Block, orientation: Orientation?, isMoving: Boolean){
         val powered = level.hasNeighborSignal(pos)
 
         val newState = if (powered) {

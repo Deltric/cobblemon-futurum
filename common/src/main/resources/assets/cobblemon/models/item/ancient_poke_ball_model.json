@@ -2,6 +2,7 @@
   "credit": "Made with Blockbench",
   "texture_size": [64, 32],
   "textures": {
+    "particle": "#layer0",
     "layer0": "cobblemon:item/poke_balls/models/ancient_poke_ball"
   },
   "elements": [

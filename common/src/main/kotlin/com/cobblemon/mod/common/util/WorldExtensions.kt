@@ -57,7 +57,7 @@ fun Level.squeezeWithinBounds(pos: BlockPos): BlockPos {
     val border = worldBorder
     return BlockPos(
         pos.x.coerceIn(border.minX.toInt(), border.maxX.toInt()),
-        pos.y.coerceIn(minBuildHeight, maxBuildHeight),
+        pos.y.coerceIn(minY, maxY),
         pos.z.coerceIn(border.minZ.toInt(), border.maxZ.toInt())
     )
 }
@@ -70,7 +70,7 @@ fun ServerLevel.isBoxLoaded(box: AABB): Boolean {
 
     for (chunkX in startChunkX..endChunkX) {
         for (chunkZ in startChunkZ..endChunkZ) {
-            if (!this.areEntitiesLoaded(ChunkPos.asLong(chunkX, chunkZ))) {
+            if (!this.areEntitiesLoaded(ChunkPos.pack(chunkX, chunkZ))) {
                 return false
             }
         }
@@ -226,21 +226,21 @@ fun Level.canEntityStayAt(position: BlockPos, width: Int = 1, height: Int = 1, p
 }
 
 val Level.itemRegistry: Registry<Item>
-    get() = registryAccess().registryOrThrow(Registries.ITEM)
+    get() = registryAccess().lookupOrThrow(Registries.ITEM)
 val Level.biomeRegistry: Registry<Biome>
-    get() = registryAccess().registryOrThrow(Registries.BIOME)
+    get() = registryAccess().lookupOrThrow(Registries.BIOME)
 val Level.worldRegistry: Registry<Level>
-    get() = registryAccess().registryOrThrow(Registries.DIMENSION)
+    get() = registryAccess().lookupOrThrow(Registries.DIMENSION)
 val Level.enchantmentRegistry: Registry<Enchantment>
-    get() = registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+    get() = registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
 val Level.activityRegistry: Registry<Activity>
-    get() = registryAccess().registryOrThrow(Registries.ACTIVITY)
+    get() = registryAccess().lookupOrThrow(Registries.ACTIVITY)
 val Level.blockRegistry: Registry<Block>
-    get() = registryAccess().registryOrThrow(Registries.BLOCK)
+    get() = registryAccess().lookupOrThrow(Registries.BLOCK)
 val Level.entityTypeRegistry: Registry<EntityType<*>>
-    get() = registryAccess().registryOrThrow(Registries.ENTITY_TYPE)
+    get() = registryAccess().lookupOrThrow(Registries.ENTITY_TYPE)
 val Level.fluidRegistry: Registry<Fluid>
-    get() = registryAccess().registryOrThrow(Registries.FLUID)
+    get() = registryAccess().lookupOrThrow(Registries.FLUID)
 
 fun Vec3.traceDownwards(
     world: Level,

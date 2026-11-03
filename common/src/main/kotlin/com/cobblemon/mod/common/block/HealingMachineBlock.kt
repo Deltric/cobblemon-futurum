@@ -16,7 +16,6 @@ import com.cobblemon.mod.common.api.text.red
 import com.cobblemon.mod.common.block.entity.HealingMachineBlockEntity
 import com.cobblemon.mod.common.util.*
 import com.cobblemon.mod.common.world.gamerules.CobblemonGameRules
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
@@ -55,7 +54,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 @Suppress("DEPRECATED", "OVERRIDE_DEPRECATION")
 class HealingMachineBlock(settings: Properties) : BaseEntityBlock(settings) {
     companion object {
-        val CODEC: MapCodec<HealingMachineBlock> = simpleCodec(::HealingMachineBlock)
 
         private val NORTH_SOUTH_AABB = Shapes.or(
             Shapes.box(0.0, 0.0, 0.0, 1.0, 0.625, 1.0),
@@ -105,10 +103,6 @@ class HealingMachineBlock(settings: Properties) : BaseEntityBlock(settings) {
         return this.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, blockPlaceContext.horizontalDirection)
     }
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
     override fun isPathfindable(
         blockState: BlockState,
         pathComputationType: PathComputationType
@@ -131,9 +125,7 @@ class HealingMachineBlock(settings: Properties) : BaseEntityBlock(settings) {
         return blockState.rotate(mirror.getRotation(blockState.getValue(HorizontalDirectionalBlock.FACING)))
     }
 
-    override fun onRemove(state: BlockState, world: Level, pos: BlockPos, newState: BlockState, moved: Boolean) {
-        if (!state.`is`(newState.block)) super.onRemove(state, world, pos, newState, moved)
-    }
+
 
     override fun useWithoutItem(blockState: BlockState, world: Level, blockPos: BlockPos, player: Player, hit: BlockHitResult): InteractionResult {
         if (world.isClientSide) {
@@ -158,7 +150,7 @@ class HealingMachineBlock(settings: Properties) : BaseEntityBlock(settings) {
         }
         val party = serverPlayerEntity.party()
         val pc = serverPlayerEntity.pc()
-        val healPC = player.level().gameRules.getBoolean(CobblemonGameRules.HEALERS_HEAL_PC);
+        val healPC = serverPlayerEntity.level().gameRules.get(CobblemonGameRules.HEALERS_HEAL_PC)
 
         if (party.none() && (!healPC || pc.none())) {
             player.sendSystemMessage(lang("healingmachine.nopokemon").red(), true)
@@ -212,7 +204,7 @@ class HealingMachineBlock(settings: Properties) : BaseEntityBlock(settings) {
 
     override fun hasAnalogOutputSignal(state: BlockState) = true
 
-    override fun getAnalogOutputSignal(state: BlockState, world: Level, pos: BlockPos): Int = (world.getBlockEntity(pos) as? HealingMachineBlockEntity)?.currentSignal ?: 0
+    override fun getAnalogOutputSignal(state: BlockState, world: Level, pos: BlockPos, direction: Direction): Int = (world.getBlockEntity(pos) as? HealingMachineBlockEntity)?.currentSignal ?: 0
 
     override fun <T : BlockEntity> getTicker(world: Level, blockState: BlockState, blockWithEntityType: BlockEntityType<T>): BlockEntityTicker<T>? = createTickerHelper(blockWithEntityType, CobblemonBlockEntities.HEALING_MACHINE, HealingMachineBlockEntity.TICKER::tick)
 
@@ -220,13 +212,5 @@ class HealingMachineBlock(settings: Properties) : BaseEntityBlock(settings) {
         return RenderShape.MODEL
     }
 
-    override fun appendHoverText(
-        stack: ItemStack,
-        context: Item.TooltipContext,
-        tooltip: MutableList<Component>,
-        options: TooltipFlag
-    ) {
-        tooltip.add("block.${Cobblemon.MODID}.healing_machine.tooltip1".asTranslated().gray())
-        tooltip.add("block.${Cobblemon.MODID}.healing_machine.tooltip2".asTranslated().gray())
-    }
+
 }

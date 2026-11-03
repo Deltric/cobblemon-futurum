@@ -25,7 +25,7 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.PackType
 import net.minecraft.world.item.DyeColor
@@ -39,7 +39,7 @@ object Seasonings : JsonDataRegistry<Seasoning> {
     override val typeToken: TypeToken<Seasoning> = TypeToken.get(Seasoning::class.java)
     override val resourcePath = "seasonings"
     override val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(ResourceLocation::class.java, IdentifierAdapter)
+        .registerTypeAdapter(Identifier::class.java, IdentifierAdapter)
         .registerTypeAdapter(TypeToken.getParameterized(RegistryLikeCondition::class.java, Item::class.java).type, ItemLikeConditionAdapter)
         .setPrettyPrinting()
         .create()
@@ -50,7 +50,7 @@ object Seasonings : JsonDataRegistry<Seasoning> {
         SeasoningRegistrySyncPacket(seasonings.toList()).sendToPlayer(player)
     }
 
-    override fun reload(data: Map<ResourceLocation, Seasoning>) {
+    override fun reload(data: Map<Identifier, Seasoning>) {
         // this needs to sideload the berry data so we don't get duplicate JSONs.
         val finalData = Berries.all().associate {
             it.identifier to Seasoning(
@@ -72,7 +72,7 @@ object Seasonings : JsonDataRegistry<Seasoning> {
     }
 
     fun getFlavoursFromItemStack(stack: ItemStack): Map<Flavour, Int>? {
-        val holder = stack.itemHolder
+        val holder = stack.typeHolder()
         val seasoning = seasonings.find { it.ingredient.fits(holder) }
         val inherentFlavours = stack.get(CobblemonItemComponents.FLAVOUR)?.flavours
         val seasoningFlavours = seasoning?.flavours
@@ -122,7 +122,7 @@ object Seasonings : JsonDataRegistry<Seasoning> {
     }
 
     fun getFromItemStack(stack: ItemStack): Seasoning? {
-        val holder = stack.itemHolder
+        val holder = stack.typeHolder()
         return seasonings.find { it.ingredient.fits(holder) }
     }
 

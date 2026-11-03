@@ -19,6 +19,8 @@ public interface CameraDuck {
     @Nullable
     Entity cobblemon$getEntity();
 
+    float cobblemon$getPartialTicks();
+
     Vector3f cobblemon$getForwards();
 
     Vector3f cobblemon$getUp();

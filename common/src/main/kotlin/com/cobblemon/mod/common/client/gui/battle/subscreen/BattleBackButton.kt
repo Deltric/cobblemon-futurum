@@ -12,7 +12,7 @@ import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class BattleBackButton(val x: Float, val y: Float) : CobblemonRenderable {
     companion object {
@@ -21,9 +21,8 @@ class BattleBackButton(val x: Float, val y: Float) : CobblemonRenderable {
         const val SCALE = 0.5F
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        blitk(
-            matrixStack = context.pose(),
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        blitk(context = context,
             texture = cobblemonResource("textures/gui/battle/battle_back.png"),
             x = x * 2,
             y = y * 2,
@@ -31,8 +30,7 @@ class BattleBackButton(val x: Float, val y: Float) : CobblemonRenderable {
             width = WIDTH,
             vOffset = if (isHovered(mouseX.toDouble(), mouseY.toDouble())) HEIGHT else 0,
             textureHeight = HEIGHT * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
     fun isHovered(mouseX: Double, mouseY: Double) = mouseX.toFloat() in (x..(x + (WIDTH * SCALE))) && mouseY.toFloat() in (y..(y + (HEIGHT * SCALE)))

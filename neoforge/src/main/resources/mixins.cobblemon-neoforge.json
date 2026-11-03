@@ -1,20 +1,17 @@
 {
   "required": true,
   "package": "com.cobblemon.mod.neoforge.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "plugin": "com.cobblemon.mod.neoforge.mixin.MixinConfigPlugin",
   "client": [
-    "client.GuiMixin",
-    "client.LocalPlayerMixin",
     "client.NeoforgeCameraMixin",
-    "client.NeoforgeSoundEngineMixin",
-    "client.ScreenMixin"
+    "client.NeoforgeSoundEngineMixin"
   ],
   "mixins": [
     "EntityMixin",
     "GenericPacketSplitterMixin",
-    "NeoforgeBrewingStandMenuMixin",
+    "PlayerShoulderSyncMixin",
     "ServerEntityMixin"
   ]
 }

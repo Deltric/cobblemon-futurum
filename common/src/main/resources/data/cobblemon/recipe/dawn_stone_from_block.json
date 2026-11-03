@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "cobblemon:dawn_stone_block"
-    }
+    "cobblemon:dawn_stone_block"
   ],
   "result": {
     "count": 9,

@@ -8,12 +8,13 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.screens.moves
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.moves.MoveTemplate
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
@@ -31,7 +32,7 @@ class SwapMoveButton(
     onPress: OnPress
 ): Button((pX + OFFSET_X).toInt(), (pY + OFFSET_Y).toInt(), (WIDTH * SCALE).toInt(), (HEIGHT * SCALE).toInt(), Component.empty(), onPress, DEFAULT_NARRATION), CobblemonRenderable {
 
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, f: Double, g: Double): Boolean {
         return false
     }
 
@@ -45,11 +46,10 @@ class SwapMoveButton(
         private val addMoveButtonResource = cobblemonResource("textures/gui/summary/summary_move_add.png")
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val swapScreen = movesWidget.summary.sideScreen
         val selected = if (swapScreen is MoveSwapScreen) swapScreen.replacedMove?.template == move else false
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = if (move == null) addMoveButtonResource else switchMoveButtonResource,
             x = (pX + OFFSET_X) / SCALE,
             y = (pY + OFFSET_Y) / SCALE,
@@ -57,8 +57,7 @@ class SwapMoveButton(
             height = HEIGHT,
             vOffset = if (isHovered(pMouseX.toDouble(), pMouseY.toDouble()) || selected) HEIGHT else 0,
             textureHeight = HEIGHT * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
     override fun playDownSound(soundManager: SoundManager) {

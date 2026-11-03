@@ -9,11 +9,6 @@
 package com.cobblemon.mod.neoforge
 
 import com.cobblemon.mod.common.*
-import com.cobblemon.mod.common.CobblemonRecipeCategories.COOKING_POT_COMPLEX_DISHES
-import com.cobblemon.mod.common.CobblemonRecipeCategories.COOKING_POT_FOODS
-import com.cobblemon.mod.common.CobblemonRecipeCategories.COOKING_POT_MEDICINES
-import com.cobblemon.mod.common.CobblemonRecipeCategories.COOKING_POT_MISC
-import com.cobblemon.mod.common.CobblemonRecipeCategories.COOKING_POT_SEARCH
 import com.cobblemon.mod.common.advancement.CobblemonCriteria
 import com.cobblemon.mod.common.advancement.predicate.CobblemonEntitySubPredicates
 import com.cobblemon.mod.common.CobblemonMobEffects
@@ -21,9 +16,9 @@ import com.cobblemon.mod.common.api.net.serializers.*
 import com.cobblemon.mod.common.item.group.CobblemonItemGroups
 import com.cobblemon.mod.common.loot.LootInjector
 import com.cobblemon.mod.common.particle.CobblemonParticles
-import com.cobblemon.mod.common.sherds.CobblemonSherds
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.didSleep
+import com.cobblemon.mod.common.util.adapters.RegistryOpsProvider
 import com.cobblemon.mod.common.world.CobblemonStructures
 import com.cobblemon.mod.common.world.feature.CobblemonFeatures
 import com.cobblemon.mod.common.world.placementmodifier.CobblemonPlacementModifierTypes
@@ -39,15 +34,15 @@ import com.mojang.brigadier.arguments.ArgumentType
 import net.minecraft.commands.synchronization.ArgumentTypeInfo
 import net.minecraft.commands.synchronization.ArgumentTypeInfos
 import net.minecraft.core.registries.Registries
+import net.minecraft.core.component.DataComponents
+import com.cobblemon.mod.common.api.item.CobblemonComposting
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.PackLocationInfo
 import net.minecraft.server.packs.PackSelectionConfig
 import net.minecraft.server.packs.PackType
-import net.minecraft.server.packs.PathPackResources
-import net.minecraft.server.packs.repository.BuiltInPackSource
 import net.minecraft.server.packs.repository.KnownPack
 import net.minecraft.server.packs.repository.Pack
 import net.minecraft.server.packs.repository.Pack.Position
@@ -56,53 +51,63 @@ import net.minecraft.server.packs.resources.PreparableReloadListener
 import net.minecraft.stats.Stats
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.item.CreativeModeTab.TabVisibility
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.GameRules
+import net.minecraft.world.level.gamerules.GameRule
+import net.minecraft.world.level.gamerules.GameRuleCategory
+import net.minecraft.world.level.gamerules.GameRuleType
+import net.minecraft.world.flag.FeatureFlagSet
+import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.serialization.Codec
 import net.minecraft.world.level.ItemLike
 import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.levelgen.GenerationStep
 import net.minecraft.world.level.levelgen.placement.PlacedFeature
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.EventPriority
+import net.neoforged.bus.api.IEventBus
 import net.neoforged.fml.InterModComms
 import net.neoforged.fml.ModList
 import net.neoforged.fml.common.Mod
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
-import net.neoforged.fml.loading.FMLEnvironment
-import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent
-import net.neoforged.neoforge.common.ItemAbilities
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.common.NeoForgeMod
 import net.neoforged.neoforge.event.*
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent
-import net.neoforged.neoforge.event.level.BlockEvent
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent
-import net.neoforged.neoforge.event.village.VillagerTradesEvent
-import net.neoforged.neoforge.event.village.WandererTradesEvent
 import net.neoforged.neoforge.registries.DeferredRegister
+import net.neoforged.neoforge.resource.JarContentsPackResources
 import net.neoforged.neoforge.registries.NeoForgeRegistries
 import net.neoforged.neoforge.registries.RegisterEvent
 import net.neoforged.neoforge.server.ServerLifecycleHooks
-import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 import java.util.*
 import kotlin.reflect.KClass
 
 @Mod(Cobblemon.MODID)
-class CobblemonNeoForge : CobblemonImplementation {
+class CobblemonNeoForge(
+    private val modEventBus: IEventBus,
+    private val dist: Dist
+) : CobblemonImplementation {
     override val modAPI = ModAPI.NEOFORGE
     private val hasBeenSynced = hashSetOf<UUID>()
 
     private val commandArgumentTypes = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, Cobblemon.MODID)
-    private val reloadableResources = arrayListOf<PreparableReloadListener>()
+    private data class ServerReloader(
+        val identifier: Identifier,
+        val listener: PreparableReloadListener,
+        val dependencies: List<Identifier>
+    )
+    private val reloadableResources = arrayListOf<ServerReloader>()
     private val queuedWork = arrayListOf<() -> Unit>()
 
     override val networkManager = CobblemonNeoForgeNetworkManager
 
     init {
-        with(MOD_BUS) {
+        with(modEventBus) {
+            NeoForgeShoulderAttachments.register(this)
             this@CobblemonNeoForge.commandArgumentTypes.register(this)
             addListener(this@CobblemonNeoForge::initialize)
             Cobblemon.preInitialize(this@CobblemonNeoForge)
@@ -111,24 +116,23 @@ class CobblemonNeoForge : CobblemonImplementation {
             addListener(networkManager::registerMessages)
             addListener(EventPriority.HIGH, ::onBuildContents)
             addListener(::onAddPackFindersEvent)
-            addListener(::loadRecipeCategory)
+            addListener(::modifyDefaultComponents)
         }
         with(NeoForge.EVENT_BUS) {
             addListener(::onDataPackSync)
             addListener(::onLogin)
+            addListener(::onRespawn)
+            addListener(::onDimensionChange)
             addListener(::onLogout)
             addListener(::wakeUp)
-            addListener(::handleBlockStripping)
             addListener(::registerCommands)
             addListener(::onReload)
             addListener(::addCobblemonStructures)
-            addListener(::onVillagerTradesRegistry)
-            addListener(::onWanderingTraderRegistry)
             addListener(::onLootTableLoad)
         }
         NeoForgePlatformEventHandler.register()
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            CobblemonNeoForgeClient.init()
+        if (dist == Dist.CLIENT) {
+            CobblemonNeoForgeClient.init(modEventBus)
         }
     }
 
@@ -160,12 +164,10 @@ class CobblemonNeoForge : CobblemonImplementation {
             .forEach {
                 val subPath = if (it.packType == PackType.CLIENT_RESOURCES) "resourcepacks" else "datapacks"
                 var packLocation = cobblemonResource("$subPath/${it.id}")
-                var resourcePath = modFile.owningFile.file.findResource(packLocation.path)
-
                 var version = modFile.version
 
                 var pack = Pack.readMetaAndCreate(PackLocationInfo("mod/$packLocation", it.displayName, PackSource.BUILT_IN, Optional.of(KnownPack("neoforge", "mod/$packLocation", version.toString()))),
-                    BuiltInPackSource.fromName { PathPackResources(it, resourcePath) },
+                    JarContentsPackResources.JarContentsResourcesSupplier(modFile.owningFile.file.contents, packLocation.path),
                     it.packType,
                     PackSelectionConfig(it.activationBehaviour == ResourcePackActivationBehaviour.ALWAYS_ENABLED, Position.TOP, false)
                 )
@@ -186,9 +188,6 @@ class CobblemonNeoForge : CobblemonImplementation {
         }
         event.register(Registries.PLACEMENT_MODIFIER_TYPE) {
             CobblemonPlacementModifierTypes.touch()
-        }
-        event.register(Registries.DECORATED_POT_PATTERN) {
-            CobblemonSherds.registerSherds()
         }
 
         event.register(Registries.STRUCTURE_PROCESSOR) {
@@ -224,11 +223,24 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     fun onDataPackSync(event: OnDatapackSyncEvent) {
-        Cobblemon.dataProvider.sync(event.player ?: return)
+        val recipients = event.player?.let { listOf(it) } ?: event.playerList.players
+        val server = event.playerList.server
+        com.cobblemon.mod.common.net.messages.client.cooking.SeasoningRecipeIndexPacket.fromRecipes(server.recipeManager).sendToPlayers(recipients)
+        event.player?.let { Cobblemon.dataProvider.sync(it) }
+        com.cobblemon.mod.common.net.messages.client.cooking.CookingRecipesPacket.fromRecipes(server.recipeManager).forEach { it.sendToPlayers(recipients) }
     }
 
     fun onLogin(event: PlayerEvent.PlayerLoggedInEvent) {
+        (event.entity as? ServerPlayer)?.let(NeoForgeShoulderAttachments::syncFromNative)
         this.hasBeenSynced.add(event.entity.uuid)
+    }
+
+    fun onRespawn(event: PlayerEvent.PlayerRespawnEvent) {
+        (event.entity as? ServerPlayer)?.let(NeoForgeShoulderAttachments::syncFromNative)
+    }
+
+    fun onDimensionChange(event: PlayerEvent.PlayerChangedDimensionEvent) {
+        (event.entity as? ServerPlayer)?.let(NeoForgeShoulderAttachments::syncFromNative)
     }
 
     fun onLogout(event: PlayerEvent.PlayerLoggedOutEvent) {
@@ -238,7 +250,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     override fun isModInstalled(id: String) = ModList.get().isLoaded(id)
 
     override fun environment(): Environment {
-        return if (FMLEnvironment.dist.isClient) Environment.CLIENT else Environment.SERVER
+        return if (dist.isClient) Environment.CLIENT else Environment.SERVER
     }
 
     override fun registerPermissionValidator() {
@@ -246,7 +258,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerSoundEvents() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonSounds.resourceKey) { helper ->
                 CobblemonSounds.register { identifier, sounds -> helper.register(identifier, sounds) }
             }
@@ -254,7 +266,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerDataComponents() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonItemComponents.resourceKey) { helper ->
                 CobblemonItemComponents.register { identifier, ComponentType ->  helper.register(identifier, ComponentType)}
             }
@@ -262,7 +274,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerEntityDataSerializers() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS) { helper ->
                 helper.register(Vec3DataSerializer.ID, Vec3DataSerializer)
                 helper.register(StringSetDataSerializer.ID, StringSetDataSerializer)
@@ -272,12 +284,14 @@ class CobblemonNeoForge : CobblemonImplementation {
                 helper.register(IdentifierDataSerializer.ID, IdentifierDataSerializer)
                 helper.register(UUIDSetDataSerializer.ID, UUIDSetDataSerializer)
                 helper.register(NPCPlayerTextureSerializer.ID, NPCPlayerTextureSerializer)
+                helper.register(OptionalUUIDDataSerializer.ID, OptionalUUIDDataSerializer)
+                helper.register(ShoulderDataSerializer.ID, ShoulderDataSerializer)
             }
         }
     }
 
     override fun registerBlocks() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonBlocks.resourceKey) { helper ->
                 CobblemonBlocks.register { identifier, block -> helper.register(identifier, block) }
             }
@@ -285,7 +299,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerParticles() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonParticles.resourceKey) { helper ->
                 CobblemonParticles.register { identifier, particleType -> helper.register(identifier, particleType) }
             }
@@ -293,7 +307,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerMenu() {
-        with(MOD_BUS) {
+        with(modEventBus) {
             addListener<RegisterEvent> { event ->
                 event.register(CobblemonMenuType.resourceKey) { helper ->
                     CobblemonMenuType.register { identifier, item -> helper.register(identifier, item) }
@@ -302,26 +316,21 @@ class CobblemonNeoForge : CobblemonImplementation {
         }
     }
 
-    private fun handleBlockStripping(e: BlockEvent.BlockToolModificationEvent) {
-        if (e.itemAbility == ItemAbilities.AXE_STRIP) {
-            val start = e.state.block
-            val result = CobblemonBlocks.strippedBlocks()[start] ?: return
-            e.setFinalState(result.withPropertiesOf(e.state))
-        }
-    }
-
     override fun registerRecipeTypes() {
-        with(MOD_BUS) {
+        with(modEventBus) {
             addListener<RegisterEvent> { event ->
                 event.register(CobblemonRecipeTypes.resourceKey) { helper ->
                     CobblemonRecipeTypes.register { identifier, item -> helper.register(identifier, item) }
+                }
+                event.register(Registries.RECIPE_BOOK_CATEGORY) { helper ->
+                    CobblemonRecipeCategories.register { identifier, category -> helper.register(identifier, category) }
                 }
             }
         }
     }
 
     override fun registerItems() {
-        with(MOD_BUS) {
+        with(modEventBus) {
             addListener<RegisterEvent> { event ->
                 event.register(CobblemonItems.resourceKey) { helper ->
                     CobblemonItems.register { identifier, item -> helper.register(identifier, item) }
@@ -344,7 +353,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerEntityTypes() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonEntities.resourceKey) { helper ->
                 CobblemonEntities.register { identifier, type -> helper.register(identifier, type) }
             }
@@ -352,9 +361,9 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerEntityAttributes() {
-        MOD_BUS.addListener<EntityAttributeCreationEvent> { event ->
+        modEventBus.addListener<EntityAttributeCreationEvent> { event ->
             CobblemonEntities.registerAttributes { entityType, builder ->
-                builder.add(NeoForgeMod.NAMETAG_DISTANCE)
+                builder.add(Attributes.NAME_TAG_DISTANCE)
                     .add(NeoForgeMod.SWIM_SPEED)
                     //.add(ForgeMod.ENTITY_GRAVITY)
                 event.put(entityType, builder.build())
@@ -363,7 +372,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerBlockEntityTypes() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonBlockEntities.resourceKey) { helper ->
                 CobblemonBlockEntities.register { identifier, type -> helper.register(identifier, type) }
             }
@@ -371,7 +380,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerPoiTypes() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonPoiTypes.resourceKey) { helper ->
                 CobblemonPoiTypes.register { identifier, type -> helper.register(identifier, type) }
             }
@@ -379,7 +388,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerVillagers() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonVillagerProfessions.resourceKey) { helper ->
                 CobblemonVillagerProfessions.register { identifier, profession -> helper.register(identifier, profession) }
             }
@@ -387,7 +396,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerRecipeSerializers() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonRecipeSerializers.resourceKey) { helper ->
                 CobblemonRecipeSerializers.register { identifier, feature -> helper.register(identifier, feature) }
             }
@@ -395,7 +404,7 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerWorldGenFeatures() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonFeatures.resourceKey) { helper ->
                 CobblemonFeatures.register { identifier, feature -> helper.register(identifier, feature) }
             }
@@ -406,7 +415,7 @@ class CobblemonNeoForge : CobblemonImplementation {
         CobblemonBiomeModifiers.add(feature, step, validTag)
     }
 
-    override fun <A : ArgumentType<*>, T : ArgumentTypeInfo.Template<A>> registerCommandArgument(identifier: ResourceLocation, argumentClass: KClass<A>, serializer: ArgumentTypeInfo<A, T>) {
+    override fun <A : ArgumentType<*>, T : ArgumentTypeInfo.Template<A>> registerCommandArgument(identifier: Identifier, argumentClass: KClass<A>, serializer: ArgumentTypeInfo<A, T>) {
 
         //This is technically a supplier not a function (it is unused), but we need to explicitly say whether its a supplier or a function
         //Idk how to explicitly say its a supplier, so lets just make it a function by specifying a param
@@ -419,11 +428,21 @@ class CobblemonNeoForge : CobblemonImplementation {
         CobblemonCommands.register(e.dispatcher, e.buildContext, e.commandSelection)
     }
 
-    override fun <T : GameRules.Value<T>> registerGameRule(name: String, category: GameRules.Category, type: GameRules.Type<T>): GameRules.Key<T> = GameRules.register(name, category, type)
+    override fun registerGameRule(identifier: Identifier, category: GameRuleCategory, defaultValue: Boolean): GameRule<Boolean> {
+        val rule = GameRule(
+            category, GameRuleType.BOOL, BoolArgumentType.bool(),
+            { visitor, value -> visitor.visitBoolean(value) }, Codec.BOOL,
+            { value -> if (value) 1 else 0 }, defaultValue, FeatureFlagSet.of()
+        )
+        modEventBus.addListener<RegisterEvent> { event ->
+            event.register(Registries.GAME_RULE) { helper -> helper.register(identifier, rule) }
+        }
+        return rule
+    }
 
 
     override fun registerCriteria() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonCriteria.resourceKey) { helper ->
                 CobblemonCriteria.register { identifier, criteria -> helper.register(identifier, criteria) }
             }
@@ -431,39 +450,49 @@ class CobblemonNeoForge : CobblemonImplementation {
     }
 
     override fun registerEntitySubPredicates() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonEntitySubPredicates.resourceKey) { helper ->
                 CobblemonEntitySubPredicates.register { identifier, criteria -> helper.register(identifier, criteria) }
             }
         }
     }
 
-    override fun registerResourceReloader(identifier: ResourceLocation, reloader: PreparableReloadListener, type: PackType, dependencies: Collection<ResourceLocation>) {
+    override fun registerResourceReloader(identifier: Identifier, reloader: PreparableReloadListener, type: PackType, dependencies: Collection<Identifier>) {
         if (type == PackType.SERVER_DATA) {
-            this.reloadableResources += reloader
+            this.reloadableResources += ServerReloader(identifier, reloader, dependencies.toList())
         }
         else {
-            CobblemonNeoForgeClient.registerResourceReloader(reloader)
+            CobblemonNeoForgeClient.registerResourceReloader(identifier, reloader, dependencies)
         }
     }
 
-    private fun onReload(e: AddReloadListenerEvent) {
-        this.reloadableResources.forEach(e::addListener)
+    private fun onReload(e: AddServerReloadListenersEvent) {
+        reloadableResources.forEach {
+            e.addListener(it.identifier, RegistryOpsProvider.wrapReloadListener(it.listener) { _ ->
+                e.serverResources.registryLookup
+            })
+        }
+        reloadableResources.forEach { registration ->
+            registration.dependencies.forEach { dependency -> e.addDependency(dependency, registration.identifier) }
+        }
     }
 
     override fun server(): MinecraftServer? = ServerLifecycleHooks.getCurrentServer()
 
     override fun registerCompostable(item: ItemLike, chance: Float) {
-        // NeoForge uses data-driven files to determine compostable, vanilla code is ignored
-        // eventually we probaly want to datagen the output file maybe?
-        // check neoforged/resources/data/neoforge/data_maps/item/compostables.json for all considered entries
-        // you can easily update this by running the game, putting a breakpoint anywhere that gets triggered in world and then run that in the debugger
-        // ComposterBlock.COMPOSTABLES.entries.filter { it.key.toString().contains("cobblemon") }.sortedBy { it.key.toString() }.map { "\"${it.key}\": {\"chance\": ${it.value}}"}.joinToString(",")
-        // returns one single json setup that you can paste in the compostables.json values block and done
+        CobblemonComposting.register(item, chance)
+    }
+
+    private fun modifyDefaultComponents(event: ModifyDefaultComponentsEvent) {
+        CobblemonComposting.forEach { item, compostable ->
+            event.modify(item, ModifyDefaultComponentsEvent.Initializer { components, _, _ ->
+                components.set(DataComponents.COMPOSTABLE, compostable)
+            })
+        }
     }
 
     override fun registerMobEffects() {
-        MOD_BUS.addListener<RegisterEvent> { event ->
+        modEventBus.addListener<RegisterEvent> { event ->
             event.register(CobblemonMobEffects.resourceKey) { helper ->
                 CobblemonMobEffects.register { identifier, effect ->
                     helper.register(identifier, effect)
@@ -472,34 +501,8 @@ class CobblemonNeoForge : CobblemonImplementation {
         }
     }
 
-    private fun onVillagerTradesRegistry(e: VillagerTradesEvent) {
-        CobblemonTradeOffers.tradeOffersFor(e.type).forEach { tradeOffer ->
-            // Will never be null between 1 n 5
-            e.trades[tradeOffer.requiredLevel]?.addAll(tradeOffer.tradeOffers)
-        }
-    }
-
-    private fun onWanderingTraderRegistry(e: WandererTradesEvent) {
-        CobblemonTradeOffers.resolveWanderingTradeOffers().forEach { tradeOffer ->
-            if (tradeOffer.isRareTrade) e.rareTrades.addAll(tradeOffer.tradeOffers) else e.genericTrades.addAll(tradeOffer.tradeOffers)
-        }
-    }
-
-    private fun loadRecipeCategory(e: RegisterRecipeBookCategoriesEvent) {
-        e.registerBookCategories(CobblemonRecipeBookTypes.COOKING_POT, listOf(
-            COOKING_POT_SEARCH.toVanillaCategory(),
-            COOKING_POT_FOODS.toVanillaCategory(),
-            COOKING_POT_MISC.toVanillaCategory(),
-            COOKING_POT_MEDICINES.toVanillaCategory(),
-            COOKING_POT_COMPLEX_DISHES.toVanillaCategory()
-        ))
-        CobblemonRecipeCategories.customAggregateCategories.forEach { bookType ->
-            e.registerAggregateCategory(bookType.key, bookType.value)
-        }
-    }
-
     private fun onLootTableLoad(e: LootTableLoadEvent) {
-        LootInjector.attemptInjection(e.name) { builder -> e.table.addPool(builder.build()) }
+        LootInjector.attemptInjection(e.name, e.registries) { builder -> e.table.addPool(builder.build()) }
     }
 
     private fun onBuildContents(e: BuildCreativeModeTabContentsEvent) {

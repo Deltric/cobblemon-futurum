@@ -8,14 +8,14 @@
 
 package com.cobblemon.mod.common.block.campfirepot
 
+import net.minecraft.world.phys.Vec3
+import net.minecraft.world.level.redstone.Orientation
+import net.minecraft.world.level.ScheduledTickAccess
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.block.entity.CampfireBlockEntity
 import com.cobblemon.mod.common.item.CampfirePotItem
 import com.cobblemon.mod.common.util.playSoundServer
-import com.mojang.serialization.Codec
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
@@ -43,7 +43,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.block.state.properties.BooleanProperty
-import net.minecraft.world.level.block.state.properties.DirectionProperty
+import net.minecraft.world.level.block.state.properties.EnumProperty
 import net.minecraft.world.level.material.FluidState
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.level.pathfinder.PathComputationType
@@ -57,13 +57,7 @@ import net.minecraft.world.level.block.CampfireBlock as MCCampfireBlock
 @Suppress("OVERRIDE_DEPRECATION")
 class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock(settings), SimpleWaterloggedBlock {
     companion object {
-        val CODEC: MapCodec<CampfireBlock> = RecordCodecBuilder.mapCodec {
-            it.group(
-                propertiesCodec(),
-                Codec.BOOL.fieldOf("isSoul").forGetter(CampfireBlock::isSoul)
-            ).apply(it, ::CampfireBlock)
-        }
-        val ITEM_DIRECTION = DirectionProperty.create("item_facing")
+        val ITEM_DIRECTION = EnumProperty.create("item_facing", Direction::class.java)
         val POWERED = BlockStateProperties.POWERED
         val COOKING = BooleanProperty.create("cooking")
         val LID = BooleanProperty.create("lid")
@@ -122,7 +116,7 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
             return InteractionResult.PASS
         }
 
-        val potItem = blockEntity.getPotItem()?.item as? CampfirePotItem
+        val potItem = blockEntity.getPotItem() ?: ItemStack.EMPTY?.item as? CampfirePotItem
         if (potItem != null) {
             if (!level.isClientSide) {
                 if (player.isCrouching) {
@@ -138,7 +132,7 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
             blockEntity.setPotItem(heldItem.split(1))
 
             level.playSoundServer(
-                position = pos.bottomCenter,
+                position = Vec3.atBottomCenterOf(pos),
                 sound = CobblemonSounds.CAMPFIRE_POT_PLACE,
             )
 
@@ -154,7 +148,7 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
             if (level is Level) {
                 if (!level.isClientSide) {
                     removePotItem(blockEntity, state, level, pos, null, true)
-                    level.playSoundServer(pos.center, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F)
+                    level.playSoundServer(Vec3.atCenterOf(pos), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 1.0F, 1.0F)
                 }
 
                 if (level.isClientSide) for (i in 0..19) MCCampfireBlock.makeParticles(level, pos, false, true)
@@ -170,7 +164,7 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
     private fun removePotItem(blockEntity: CampfireBlockEntity, blockState: BlockState, level: Level, blockPos: BlockPos, player: Player? = null, byWater: Boolean = false) {
         if (!byWater && player != null && !player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty) return
 
-        val potItem = blockEntity.getPotItem()
+        val potItem = blockEntity.getPotItem() ?: ItemStack.EMPTY
 
         if (!byWater && player != null) {
             if (!player.isCreative && potItem != null) {
@@ -187,7 +181,7 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
         }
 
         blockEntity.setPotItem(ItemStack.EMPTY)
-        level.playSoundServer(blockPos.bottomCenter, CobblemonSounds.CAMPFIRE_POT_RETRIEVE)
+        level.playSoundServer(Vec3.atBottomCenterOf(blockPos), CobblemonSounds.CAMPFIRE_POT_RETRIEVE)
 
         Containers.dropContents(level, blockPos, blockEntity)
 
@@ -209,38 +203,27 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
         builder.add(FACING, ITEM_DIRECTION, POWERED, COOKING, LID)
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         return if (direction == state.getValue(FACING) && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-        else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+        else super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun getRenderShape(state: BlockState) = RenderShape.MODEL
 
-    override fun getAnalogOutputSignal(state: BlockState, level: Level, pos: BlockPos): Int {
+    override fun getAnalogOutputSignal(state: BlockState, level: Level, pos: BlockPos, direction: Direction): Int {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos))
     }
 
     override fun hasAnalogOutputSignal(state: BlockState): Boolean = true
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
     override fun isPathfindable(state: BlockState, type: PathComputationType): Boolean = false
 
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         level: Level,
         state: BlockState,
-        blockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
-        return createCookingPotTicker(level, blockEntityType as BlockEntityType<*>, CobblemonBlockEntities.CAMPFIRE) as BlockEntityTicker<T?>?
+        blockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
+        return createCookingPotTicker(level, blockEntityType as BlockEntityType<*>, CobblemonBlockEntities.CAMPFIRE) as BlockEntityTicker<T>?
     }
 
     @Nullable
@@ -275,19 +258,12 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
         }
     }
 
-    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState): ItemStack {
+    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState, includeData: Boolean): ItemStack {
         return if (isSoul) ItemStack(Blocks.SOUL_CAMPFIRE) else ItemStack(Blocks.CAMPFIRE)
     }
 
-    override fun neighborChanged(
-        state: BlockState,
-        level: Level,
-        pos: BlockPos,
-        neighborBlock: Block,
-        neighborPos: BlockPos,
-        movedByPiston: Boolean
-    ) {
-        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston)
+    override fun neighborChanged(state: BlockState, level: Level, pos: BlockPos, neighborBlock: Block, orientation: Orientation?, movedByPiston: Boolean) {
+        super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston)
         val isPowered = level.hasNeighborSignal(pos)
         val blockEntity = level.getBlockEntity(pos) as? CampfireBlockEntity ?: return
 
@@ -301,37 +277,7 @@ class CampfireBlock(settings: Properties, val isSoul: Boolean) : BaseEntityBlock
         return true
     }
 
-    override fun onRemove(
-        state: BlockState,
-        level: Level,
-        pos: BlockPos,
-        newState: BlockState,
-        movedByPiston: Boolean
-    ) {
-        if (!state.`is`(newState.block)) {
-            val blockEntity = level.getBlockEntity(pos)
-            if (blockEntity is CampfireBlockEntity) {
-                if (level is ServerLevel) {
-                    Containers.dropContents(level, pos, blockEntity)
-                    val potItem = blockEntity.getPotItem() ?: ItemStack.EMPTY
-
-                    if (!potItem.isEmpty) {
-                        val direction = state.getValue(FACING) as Direction
-                        val f = 0.25F * direction.stepX.toFloat()
-                        val g = 0.25F * direction.stepZ.toFloat()
-
-                        val itemEntity = ItemEntity(level, pos.x.toDouble() + 0.5 + f.toDouble(), (pos.y + 1).toDouble(), pos.z.toDouble() + 0.5 + g.toDouble(), potItem)
-                        itemEntity.setDefaultPickUpDelay()
-
-                        level.addFreshEntity(itemEntity)
-                    }
-                }
-
-                super.onRemove(state, level, pos, newState, movedByPiston)
-                level.updateNeighbourForOutputSignal(pos, this)
-            } else {
-                super.onRemove(state, level, pos, newState, movedByPiston)
-            }
-        }
+    override fun affectNeighborsAfterRemoval(state: BlockState, level: ServerLevel, pos: BlockPos, movedByPiston: Boolean) {
+        Containers.updateNeighboursAfterDestroy(state, level, pos)
     }
 }

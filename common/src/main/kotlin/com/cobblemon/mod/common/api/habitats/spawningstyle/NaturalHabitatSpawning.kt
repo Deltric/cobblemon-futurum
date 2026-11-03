@@ -8,11 +8,13 @@
 
 package com.cobblemon.mod.common.api.habitats.spawningstyle
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.block.habitat.HabitatBlockEntity
 import com.cobblemon.mod.common.util.DataKeys
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * A habitat spawning style defined by tapping into regular spawning methods. This works by adding to the spawn list
@@ -34,7 +36,7 @@ class NaturalHabitatSpawning(val habitatBlockEntity: HabitatBlockEntity) : Habit
     }
 
     @Transient
-    override val type: ResourceLocation = TYPE
+    override val type: Identifier = TYPE
 
     var replaceSpawns = false
     var rangeOfInfluence = 16
@@ -49,13 +51,13 @@ class NaturalHabitatSpawning(val habitatBlockEntity: HabitatBlockEntity) : Habit
         affectsOverworld = habitatBlockEntity.spawnDetails.any { it.spawnablePositionType.name != "fishing" }
     }
 
-    override fun writeToNBT(nbt: CompoundTag) {
+    override fun save(nbt: ValueOutput) {
         nbt.putBoolean(DataKeys.HABITAT_NATURAL_REPLACE_SPAWNS, replaceSpawns)
         nbt.putInt(DataKeys.HABITAT_NATURAL_RANGE_OF_INFLUENCE, rangeOfInfluence)
     }
 
-    override fun readFromNBT(nbt: CompoundTag) {
-        replaceSpawns = nbt.getBoolean(DataKeys.HABITAT_NATURAL_REPLACE_SPAWNS)
-        rangeOfInfluence = nbt.getInt(DataKeys.HABITAT_NATURAL_RANGE_OF_INFLUENCE)
+    override fun load(nbt: ValueInput) {
+        replaceSpawns = nbt.getBooleanOr(DataKeys.HABITAT_NATURAL_REPLACE_SPAWNS, false)
+        rangeOfInfluence = nbt.getIntOr(DataKeys.HABITAT_NATURAL_RANGE_OF_INFLUENCE, 0)
     }
 }

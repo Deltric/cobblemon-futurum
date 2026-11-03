@@ -7,15 +7,13 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:blue_apricorn",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:blue_apricorn",
-              "properties": {
-                "age": "3"
-              }
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:blue_apricorn",
+            "state": {
+              "age": "3"
             }
-          ]
+          }
         }
       ]
     },
@@ -25,19 +23,22 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:blue_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:block_state_property",
-              "block": "cobblemon:blue_apricorn",
-              "properties": {
-                "age": "3"
+          "condition": {
+            "type": "minecraft:all_of",
+            "terms": [
+              {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:blue_apricorn",
+                "state": {
+                  "age": "3"
+                }
+              },
+              {
+                "chance": 0.1,
+                "type": "minecraft:random_chance"
               }
-            },
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.1
-            }
-          ]
+            ]
+          }
         }
       ]
     }

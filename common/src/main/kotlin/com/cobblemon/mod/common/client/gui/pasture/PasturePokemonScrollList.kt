@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.pasture
 
+import com.cobblemon.mod.common.api.gui.scrollAmount
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
@@ -31,7 +33,7 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.ObjectSelectionList
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -79,16 +81,16 @@ class PasturePokemonScrollList(
         }
     }
 
-    override fun getScrollbarPosition() = x + width - 3
+    override fun scrollBarX() = x + width - 3
 
     public override fun addEntry(entry: PastureSlot) = super.addEntry(entry)
     public override fun removeEntry(entry: PastureSlot) = super.removeEntry(entry)
-    override fun renderSelection(context: GuiGraphics, y: Int, entryWidth: Int, entryHeight: Int, borderColor: Int, fillColor: Int) {}
+    override fun extractSelection(context: GuiGraphicsExtractor, entry: PastureSlot, outlineColor: Int) {}
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         correctSize()
 
-        context.pose().pushPose()
+        context.pose().pushMatrix()
 
         context.enableScissor(
             x,
@@ -98,20 +100,18 @@ class PasturePokemonScrollList(
         )
 
 
-        context.pose().popPose()
-        super.renderWidget(context, mouseX, mouseY, partialTicks)
+        context.pose().popMatrix()
+        super.extractWidgetRenderState(context, mouseX, mouseY, partialTicks)
 
         context.disableScissor()
 
         // Scroll Overlay
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = scrollOverlayResource,
             x = listX,
             y = listY - 13,
             height = 131,
-            width = WIDTH
-        )
+            width = WIDTH)
 
         val config = parent.pasturePCGUIConfiguration
 
@@ -125,36 +125,40 @@ class PasturePokemonScrollList(
         )
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         updateScrollingState(mouseX, mouseY)
         if (scrolling) {
             focused = getEntryAtPosition(mouseX, mouseY)
             isDragging = true
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
-        if (scrolling && scrollbarVisible() && mouseX >= scrollbarPosition) {
+    override fun mouseDragged(event: MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+        if (scrolling && maxScrollAmount() > 0 && mouseX >= scrollBarX()) {
             if (mouseY < this.listY) {
                 scrollAmount = 0.0
             } else if (mouseY > bottom) {
-                scrollAmount = maxScroll.toDouble()
+                scrollAmount = maxScrollAmount().toDouble()
             } else {
                 scrollAmount += deltaY
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     private fun updateScrollingState(mouseX: Double, mouseY: Double) {
-        scrolling = mouseX >= this.scrollbarPosition.toDouble()
-                && mouseX < (this.scrollbarPosition + 3).toDouble()
+        scrolling = mouseX >= this.scrollBarX().toDouble()
+                && mouseX < (this.scrollBarX() + 3).toDouble()
                 && mouseY >= listY
                 && mouseY < bottom
     }
 
-    override fun renderListBackground(context: GuiGraphics) {}
+    override fun extractListBackground(context: GuiGraphicsExtractor) {}
 
     private fun correctSize() {
         setRectangle(WIDTH, HEIGHT, listX, (listY - 4))
@@ -196,47 +200,35 @@ class PasturePokemonScrollList(
 
         override fun getNarration() = pokemon.displayName
 
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            rowTop: Int,
-            rowLeft: Int,
-            rowWidth: Int,
-            rowHeight: Int,
-            mouseX: Int,
-            mouseY: Int,
-            isHovered: Boolean,
-            partialTicks: Float
-        ) {
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, isHovered: Boolean, partialTicks: Float) {
+            val rowTop = this.contentY
+            val rowLeft = this.contentX
+            val rowWidth = this.width
             val x = rowLeft - 4
             val y = rowTop + 2
 
             val matrixStack = context.pose()
-            blitk(
-                matrixStack = matrixStack,
-                texture = if (isOwned()) slotOwnerResource else slotResource,
-                x = x,
-                y = y,
-                height = SLOT_HEIGHT,
-                width = rowWidth,
-                vOffset = if (isHovered) SLOT_HEIGHT else 0,
-                textureHeight = SLOT_HEIGHT * 2
-            )
+            blitk(context = context,
+            texture = if (isOwned()) slotOwnerResource else slotResource,
+            x = x,
+            y = y,
+            height = SLOT_HEIGHT,
+            width = rowWidth,
+            vOffset = if (isHovered) SLOT_HEIGHT else 0,
+            textureHeight = SLOT_HEIGHT * 2)
 
             // Render Pokémon
-            matrixStack.pushPose()
-            matrixStack.translate(x + 11 + (StorageSlot.SIZE / 2.0), y - 1.0, 0.0)
-            matrixStack.scale(2.5F, 2.5F, 1F)
+            matrixStack.pushMatrix()
+            matrixStack.translate((x + 11 + (StorageSlot.SIZE / 2.0)).toFloat(), (y - 1.0).toFloat())
+            matrixStack.scale((2.5F).toFloat(), (2.5F).toFloat())
             state.currentAspects = pokemon.aspects
-            drawProfilePokemon(
-                species = pokemon.species,
-                matrixStack = matrixStack,
+            drawProfilePokemon(species = pokemon.species,
+                context = context,
                 rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                 state = state,
                 partialTicks = partialTicks,
-                scale = 4.5F
-            )
-            matrixStack.popPose()
+                scale = 4.5F)
+            matrixStack.popMatrix()
 
             val heldItem = pokemon.heldItem
             if (!heldItem.isEmpty) {
@@ -245,7 +237,7 @@ class PasturePokemonScrollList(
                     x = x + 23.5,
                     y = y + 13.0,
                     scale = 0.5,
-                    matrixStack = matrixStack
+                    context = context
                 )
             }
 
@@ -267,36 +259,36 @@ class PasturePokemonScrollList(
             )
 
             if ("male" in pokemon.aspects || "female" in pokemon.aspects) {
-                blitk(
-                    matrixStack = matrixStack,
-                    texture = if ("male" in pokemon.aspects) PartySlotWidget.genderIconMale else PartySlotWidget.genderIconFemale,
-                    x = (x + 56.5) / SCALE,
-                    y = (y + 24) / SCALE,
-                    height = 7,
-                    width = 5,
-                    scale = SCALE
-                )
+                blitk(context = context,
+            texture = if ("male" in pokemon.aspects) PartySlotWidget.genderIconMale else PartySlotWidget.genderIconFemale,
+            x = (x + 56.5) / SCALE,
+            y = (y + 24) / SCALE,
+            height = 7,
+            width = 5,
+            scale = SCALE)
             }
 
             if (canUnpasture()) {
                 if (canDefend() == true) {
                     conflictButton.setPos(x + 44, y + 3)
-                    conflictButton.render(context, mouseX, mouseY, partialTicks)
+                    conflictButton.extractRenderState(context, mouseX, mouseY, partialTicks)
                 }
 
                 moveButton.setPos(x + 2, y + 11)
-                moveButton.render(context, mouseX, mouseY, partialTicks)
+                moveButton.extractRenderState(context, mouseX, mouseY, partialTicks)
             }
         }
 
-        override fun mouseClicked(mouseX: Double, mouseY: Double, delta: Int): Boolean {
+        override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+            val mouseX = event.x()
+            val mouseY = event.y()
             if (canUnpasture()) {
                 if (canDefend() == true && conflictButton.isHovered(mouseX, mouseY)) {
-                    conflictButton.onPress()
+                    conflictButton.onPress(event)
                     return true
                 }
                 if (moveButton.isHovered(mouseX, mouseY)) {
-                    moveButton.onPress()
+                    moveButton.onPress(event)
                     return true
                 }
             }

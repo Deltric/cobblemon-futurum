@@ -13,18 +13,18 @@ import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class SummaryTab(
     pX: Int, pY: Int,
     val label: MutableComponent? = null,
-    val icon: ResourceLocation? = null,
+    val icon: Identifier? = null,
     onPress: OnPress
 ): Button(pX, pY, WIDTH, HEIGHT, label ?: Component.empty(), onPress, DEFAULT_NARRATION), CobblemonRenderable {
     companion object {
@@ -37,33 +37,29 @@ class SummaryTab(
 
     private var isActive = false
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val matrices = context.pose()
         if (isActive) {
-            blitk(
-                matrixStack = matrices,
-                texture = tabResource,
-                x = x,
-                y = y,
-                width = width,
-                height = height
-            )
+            blitk(context = context,
+            texture = tabResource,
+            x = x,
+            y = y,
+            width = width,
+            height = height)
         }
 
         if (icon !== null) {
-            blitk(
-                matrixStack = matrices,
-                texture = icon,
-                x = (x + 15.5) / SCALE,
-                y = (y + 3.5) / SCALE,
-                width = 17,
-                height = 17,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = icon,
+            x = (x + 15.5) / SCALE,
+            y = (y + 3.5) / SCALE,
+            width = 17,
+            height = 17,
+            scale = SCALE)
         }
 
         if (label !== null && isMouseOver(pMouseX.toDouble(), pMouseY.toDouble())) {
-            context.renderTooltip(Minecraft.getInstance().font, label, pMouseX, pMouseY)
+            context.setTooltipForNextFrame(Minecraft.getInstance().font, label, pMouseX, pMouseY)
         }
     }
 

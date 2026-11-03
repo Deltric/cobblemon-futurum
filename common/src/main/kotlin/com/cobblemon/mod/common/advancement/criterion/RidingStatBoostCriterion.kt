@@ -13,15 +13,15 @@ import com.cobblemon.mod.common.api.riding.stats.RidingStat
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.server.level.ServerPlayer
 import java.util.Optional
 
 class RidingStatBoostContext(val pokemon: PokemonEntity)
 
 class RidingStatBoostCriterion(
-    playerCtx: Optional<ContextAwarePredicate>,
+    playerCtx: Optional<Holder<LootItemCondition>>,
     val requiresOwner: Boolean = true,
     val rideStat: String,
     val statValue : Double,
@@ -30,7 +30,7 @@ class RidingStatBoostCriterion(
 
     companion object {
         val CODEC: Codec<RidingStatBoostCriterion> by lazy {RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter { it.playerCtx },
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter { it.playerCtx },
             Codec.BOOL.optionalFieldOf("requires_owner", true).forGetter { it.requiresOwner },
             Codec.STRING.optionalFieldOf("ride_stat", "any").forGetter { it.rideStat },
             Codec.DOUBLE.optionalFieldOf("stat_value", 0.0).forGetter { it.statValue },
@@ -39,7 +39,7 @@ class RidingStatBoostCriterion(
     }
 
     override fun matches(player: ServerPlayer, context: RidingStatBoostContext) : Boolean {
-        if (requiresOwner && context.pokemon.ownerUUID != player.uuid) {
+        if (requiresOwner && context.pokemon.ownerReference?.uuid != player.uuid) {
             return false
         }
         RidingStyle.entries.forEach { ridingStyle ->

@@ -10,11 +10,12 @@ package com.cobblemon.mod.common.block.grower
 
 import com.cobblemon.mod.common.world.feature.CobblemonConfiguredFeatures
 import net.minecraft.world.level.block.grower.TreeGrower
-import java.util.*
+import net.minecraft.util.random.WeightedList
 
 class SaccharineTreeGrower() : TreeGrower(
         "saccharine_tree",
-        Optional.empty(),
-        Optional.of(CobblemonConfiguredFeatures.SACCHARINE_TREE_KEY),
-        Optional.empty()
+        WeightedList.of(CobblemonConfiguredFeatures.SACCHARINE_TREE_KEY),
+        WeightedList.of(),
+        WeightedList.of(),
+        CobblemonConfiguredFeatures.SACCHARINE_TREE_KEY
 )

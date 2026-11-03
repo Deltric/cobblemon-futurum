@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer
 import com.bedrockk.molang.runtime.value.DoubleValue
 import com.cobblemon.mod.common.entity.MoLangScriptingEntity
 import com.cobblemon.mod.common.util.giveOrDropItemStack
@@ -24,7 +25,7 @@ import net.minecraft.util.Mth
 import net.minecraft.util.RandomSource
 import net.minecraft.world.Containers
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.ItemInteractionResult
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -52,7 +53,7 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 
-class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
+class SaccharineLeafBlock(settings: Properties) : LeavesBlock(AmbientLeavesBlockSoundPlayer.noAmbientSound(), settings) {
     companion object {
         val AGE: IntegerProperty = BlockStateProperties.AGE_2
         val DISTANCE: IntegerProperty = BlockStateProperties.DISTANCE
@@ -138,7 +139,7 @@ class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
         level: BlockGetter,
         pos: BlockPos,
         context: CollisionContext
-    ): VoxelShape? {
+    ): VoxelShape {
 
         if (context is EntityCollisionContext) {
             val entity = context.entity
@@ -230,7 +231,7 @@ class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
                     val blockState = level.getBlockState(blockPos)
                     val voxelShape2 = blockState.getCollisionShape(level, blockPos)
                     val f = voxelShape2.max(Direction.Axis.Y)
-                    if ((f < 1.0 || !blockState.isSolidRender(level, blockPos)) && blockState.fluidState.isEmpty) {
+                    if ((f < 1.0 || !blockState.isSolidRender()) && blockState.fluidState.isEmpty) {
                         this.addHoneyParticle(level, pos, voxelShape, pos.y.toDouble() - 0.05)
                     }
                 }
@@ -270,14 +271,14 @@ class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
         player: Player,
         hand: InteractionHand,
         hit: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         if (!state.getValue(WATERLOGGED)) {
             val itemStack = player.getItemInHand(hand)
             val isGlassBottle = itemStack.`is`(Items.GLASS_BOTTLE)
             val isHoneyBottle = itemStack.`is`(Items.HONEY_BOTTLE)
 
             if (isGlassBottle && isAtMaxAge(state)) {
-                if (level.isClientSide) return ItemInteractionResult.SUCCESS
+                if (level.isClientSide) return InteractionResult.SUCCESS
                 // Decrement stack if not in creative mode
                 itemStack.consume(1, player)
 
@@ -292,9 +293,9 @@ class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS)
                 level.setBlock(pos, state.setValue(AGE, 0), UPDATE_CLIENTS)
                 level.gameEvent(null, GameEvent.BLOCK_CHANGE, pos)
-                return ItemInteractionResult.SUCCESS
+                return InteractionResult.SUCCESS
             } else if (isHoneyBottle && !isAtMaxAge(state)) {
-                if (level.isClientSide) return ItemInteractionResult.SUCCESS
+                if (level.isClientSide) return InteractionResult.SUCCESS
 
                 // Decrement stack if not in creative mode
                 if (!player.isCreative) {
@@ -310,7 +311,7 @@ class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
                 level.playSound(null, pos, SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS)
                 level.setBlock(pos, state.setValue(AGE, 2), UPDATE_CLIENTS)
                 level.gameEvent(null, GameEvent.BLOCK_CHANGE, pos)
-                return ItemInteractionResult.SUCCESS
+                return InteractionResult.SUCCESS
             }
         }
 
@@ -345,8 +346,8 @@ class SaccharineLeafBlock(settings: Properties) : LeavesBlock(settings) {
         }
     }
 
-    override fun spawnDestroyParticles(level: Level, player: Player, pos: BlockPos, state: BlockState) {
+    override fun spawnDestroyParticles(level: Level, pos: BlockPos, state: BlockState) {
         spawnDestroyHoneyParticles(level, pos, state)
-        super.spawnDestroyParticles(level, player, pos, state.setValue(AGE, state.getValue(AGE)))
+        super.spawnDestroyParticles(level, pos, state.setValue(AGE, state.getValue(AGE)))
     }
 }

@@ -11,7 +11,7 @@ package com.cobblemon.mod.common.client.gui.pasture
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -37,20 +37,17 @@ class PastureSlotIconConflictButton(
         this.enabled = enabled
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        blitk(
-            matrixStack = context.pose(),
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        blitk(context = context,
             x = xPos,
             y = yPos,
             width = WIDTH,
             height = HEIGHT,
             vOffset = if (isHovered(mouseX.toDouble(), mouseY.toDouble())) HEIGHT else 0,
             textureHeight = HEIGHT * 2,
-            texture = if (enabled) baseActiveResource else baseResource,
-        )
+            texture = if (enabled) baseActiveResource else baseResource)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             x = (xPos + 5) / SCALE,
             y = (yPos + 3) / SCALE,
             width = ICON_SIZE,
@@ -58,8 +55,7 @@ class PastureSlotIconConflictButton(
             vOffset = if (enabled && isHovered(mouseX.toDouble(), mouseY.toDouble())) HEIGHT else 0,
             textureHeight = ICON_SIZE * 2,
             texture = iconResource,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
     fun setPos(x: Int, y: Int) {

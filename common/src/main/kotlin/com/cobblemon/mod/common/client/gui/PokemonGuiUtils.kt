@@ -18,18 +18,19 @@ import com.cobblemon.mod.common.entity.PoseType
 import com.cobblemon.mod.common.pokemon.RenderablePokemon
 import com.cobblemon.mod.common.util.math.toEulerXYZDegrees
 import com.cobblemon.mod.common.util.toHex
-import com.mojang.blaze3d.platform.Lighting
-import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.util.LightCoordsUtil
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.renderer.rendertype.RenderTypes
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.ModelPreviewRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
+import net.minecraft.world.item.ItemStack
+import com.cobblemon.mod.common.client.render.item.HeldItemRenderer
 import org.joml.Quaternionf
-import org.joml.Vector3f
 import kotlin.math.atan
 
 enum class ProfileTransformType {
@@ -41,7 +42,7 @@ enum class ProfileTransformType {
 
 fun drawProfilePokemon(
     renderablePokemon: RenderablePokemon,
-    matrixStack: PoseStack,
+    context: GuiGraphicsExtractor,
     rotation: Quaternionf,
     poseType: PoseType = PoseType.PROFILE,
     state: PosableState,
@@ -55,10 +56,11 @@ fun drawProfilePokemon(
     a: Float = 1F,
     headYaw: Float = 0f,
     headPitch: Float = 0f,
-    blockLight: Int = 13
+    blockLight: Int = 13,
+    renderHeldItem: Boolean = false
 ) = drawProfilePokemon(
     species = renderablePokemon.species.resourceIdentifier,
-    matrixStack = matrixStack,
+    context = context,
     rotation = rotation,
     poseType = poseType,
     state = state.also { it.currentAspects = renderablePokemon.aspects },
@@ -72,12 +74,13 @@ fun drawProfilePokemon(
     a = a,
     headYaw = headYaw,
     headPitch = headPitch,
-    blockLight = blockLight
+    blockLight = blockLight,
+    heldItem = if (renderHeldItem) renderablePokemon.heldItem else null
 )
 
 fun drawProfilePokemon(
-    species: ResourceLocation,
-    matrixStack: PoseStack,
+    species: Identifier,
+    context: GuiGraphicsExtractor,
     rotation: Quaternionf,
     poseType: PoseType = PoseType.PROFILE,
     state: PosableState,
@@ -92,9 +95,11 @@ fun drawProfilePokemon(
     a: Float = 1F,
     headYaw: Float = 0f,
     headPitch: Float = 0f,
-    blockLight: Int = 13
+    blockLight: Int = 13,
+    heldItem: ItemStack? = null
 ) {
-    RenderSystem.applyModelViewMatrix()
+    val matrixStack = PoseStack()
+    val geometry = ModelGeometry.Builder()
     matrixStack.scale(scale, scale, -scale)
 
     val sprite = VaryingModelRepository.getSprite(species, state, SpriteType.PROFILE)
@@ -104,20 +109,20 @@ fun drawProfilePokemon(
         val model = VaryingModelRepository.getPoser(species, state)
         val texture = VaryingModelRepository.getTexture(species, state)
 
-        val context = RenderContext()
-        model.context = context
-        VaryingModelRepository.getTextureNoSubstitute(species, state).let { context.put(RenderContext.TEXTURE, it) }
+        val renderContext = RenderContext()
+        model.context = renderContext
+        VaryingModelRepository.getTextureNoSubstitute(species, state).let { renderContext.put(RenderContext.TEXTURE, it) }
         val baseScale = PokemonSpecies.getByIdentifier(species)!!.getForm(state.currentAspects).baseScale
-        context.put(RenderContext.SCALE, baseScale)
-        context.put(RenderContext.SPECIES, species)
-        context.put(RenderContext.ASPECTS, state.currentAspects)
-        context.put(RenderContext.RENDER_STATE, RenderContext.RenderState.PROFILE)
-        context.put(RenderContext.POSABLE_STATE, state)
-        context.put(RenderContext.DO_QUIRKS, doQuirks)
+        renderContext.put(RenderContext.SCALE, baseScale)
+        renderContext.put(RenderContext.SPECIES, species)
+        renderContext.put(RenderContext.ASPECTS, state.currentAspects)
+        renderContext.put(RenderContext.RENDER_STATE, RenderContext.RenderState.PROFILE)
+        renderContext.put(RenderContext.POSABLE_STATE, state)
+        renderContext.put(RenderContext.DO_QUIRKS, doQuirks)
 
         state.currentModel = model
 
-        val renderType = RenderType.entityCutout(texture)
+        val renderType = RenderTypes.entityCutoutCull(texture)
 
         state.setPoseToFirstSuitable(poseType)
         state.updatePartialTicks(partialTicks)
@@ -154,34 +159,23 @@ fun drawProfilePokemon(
             matrixStack.scale(profileScale, profileScale, 1 / profileScale)
         }
 
-        matrixStack.mulPose(rotation)
+        matrixStack.rotate(rotation)
 
         model.applyAnimations(null, state, 0F, 0F, 0F, headYaw, headPitch)
 
-        Lighting.setupForEntityInInventory()
-        val entityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
-        rotation.conjugate()
-        entityRenderDispatcher.overrideCameraOrientation(rotation)
-        entityRenderDispatcher.setRenderShadow(true)
-
-        val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
-        val buffer = bufferSource.getBuffer(renderType)
-        val light1 = Vector3f(-1F, 1F, 1.0F)
-        val light2 = Vector3f(1.3F, -1F, 1.0F)
-        RenderSystem.setShaderLights(light1, light2)
-        val packedLight = LightTexture.pack(blockLight, 0)
+        val buffer = geometry.getBuffer(renderType)
+        val packedLight = LightCoordsUtil.pack(blockLight, 0)
 
         val colour = toHex(r, g, b, a)
-        model.withLayerContext(bufferSource, state, VaryingModelRepository.getLayers(species, state)) {
-            model.render(context, matrixStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, colour)
-            bufferSource.endBatch()
+        model.withLayerContext(geometry, state, VaryingModelRepository.getLayers(species, state)) {
+            model.render(renderContext, matrixStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, colour)
         }
         model.setDefault()
-        entityRenderDispatcher.setRenderShadow(true)
-        Lighting.setupFor3DItems()
     } else {
-        renderSprite(matrixStack, sprite)
+        renderSprite(matrixStack, sprite, geometry)
     }
+    heldItem?.let { HeldItemRenderer().extractOnModel(it, state, matrixStack, geometry, LightCoordsUtil.FULL_BRIGHT) }
+    ModelPreviewRenderState.extract(context, geometry.build())
 }
 
 const val HEAD_YAW_FACTOR = 40f

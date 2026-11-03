@@ -10,13 +10,14 @@ package com.cobblemon.mod.common.loot
 
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.util.cobblemonResource
+import net.minecraft.core.HolderGetter
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.level.storage.loot.BuiltInLootTables
 import net.minecraft.world.level.storage.loot.LootPool
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator
+import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders
 import org.jetbrains.annotations.ApiStatus
 
 /**
@@ -60,35 +61,35 @@ object LootInjector {
         BuiltInLootTables.FISHING_TREASURE
     ).apply { addAll(villageHouseBuiltInLootTables) }
 
-    private val injectionIds = injections.map {it.location()}.toSet()
+    private val injectionIds = injections.map {it.identifier()}.toSet()
 
-    private val villageInjectionIds = villageHouseBuiltInLootTables.map { it.location() }.toSet()
+    private val villageInjectionIds = villageHouseBuiltInLootTables.map { it.identifier() }.toSet()
 
     /**
      * Attempts to inject a Cobblemon injection loot table to a loot table being loaded.
      * This will automatically query the existence of an injection.
      *
-     * @param id The [ResourceLocation] of the loot table being loaded.
+     * @param id The [Identifier] of the loot table being loaded.
      * @param provider The job invoked if the injection is possible, this is what the platform needs to do to append the loot table.
      * @return If the injection was made.
      */
-    fun attemptInjection(id: ResourceLocation, provider: (LootPool.Builder) -> Unit): Boolean {
+    fun attemptInjection(id: Identifier, registries: HolderGetter.Provider, provider: (LootPool.Builder) -> Unit): Boolean {
         if (!this.injectionIds.contains(id)) {
             return false
         }
         val resulting = this.convertToPotentialInjected(id)
         Cobblemon.LOGGER.debug("{}: Injected {} to {}", this::class.simpleName, resulting, id)
-        provider(this.injectLootPool(resulting))
+        provider(this.injectLootPool(resulting, registries))
         return true
     }
 
     /**
      * Takes a source ID and converts it into the target injection.
      *
-     * @param source The [ResourceLocation] of the base loot table.
-     * @return The [ResourceLocation] for the expected Cobblemon injection.
+     * @param source The [Identifier] of the base loot table.
+     * @return The [Identifier] for the expected Cobblemon injection.
      */
-    private fun convertToPotentialInjected(source: ResourceLocation): ResourceLocation {
+    private fun convertToPotentialInjected(source: Identifier): Identifier {
         if (this.villageInjectionIds.contains(source)) {
             return VILLAGE_HOUSE
         }
@@ -98,17 +99,17 @@ object LootInjector {
     /**
      * Creates a loot pool builder with our injection.
      *
-     * @param resulting The [ResourceLocation] for our injection table.
+     * @param resulting The [Identifier] for our injection table.
      * @return A [LootPool.Builder] with the [resulting] table.
      */
-    private fun injectLootPool(resulting: ResourceLocation): LootPool.Builder {
+    private fun injectLootPool(resulting: Identifier, registries: HolderGetter.Provider): LootPool.Builder {
         return LootPool.lootPool()
             .add(
                 NestedLootTable
-                    .lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, resulting))
+                    .lootTableReference(registries.getOrThrow(ResourceKey.create(Registries.LOOT_TABLE, resulting)))
                     .setWeight(1)
             )
-            .setBonusRolls(UniformGenerator.between(0F, 1F))
+            .setBonusRolls(ContextFloatProviders.between(0F, 1F))
     }
 
 }

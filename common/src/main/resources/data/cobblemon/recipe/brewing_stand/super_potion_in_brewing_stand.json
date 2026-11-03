@@ -1,11 +1,7 @@
 {
   "type": "cobblemon:brewing_stand",
-  "input": {
-    "tag": "cobblemon:super_potion_ingredients"
-  },
-  "bottle": {
-    "item": "cobblemon:medicinal_brew"
-  },
+  "input": "#cobblemon:super_potion_ingredients",
+  "bottle": "cobblemon:medicinal_brew",
   "result": {
     "id": "cobblemon:super_potion"
   }

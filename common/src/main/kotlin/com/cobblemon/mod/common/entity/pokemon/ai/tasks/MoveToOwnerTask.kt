@@ -91,7 +91,7 @@ object MoveToOwnerTask {
         } else if (!this.canTeleportTo(entity, BlockPos(x, y, z))) {
             return false
         } else {
-            entity.moveTo(
+            entity.snapTo(
                 x.toDouble() + 0.5, y.toDouble(), z.toDouble() + 0.5,
                 entity.yRot,
                 entity.xRot

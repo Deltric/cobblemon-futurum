@@ -16,19 +16,17 @@
     "use_healing_machine": {
       "trigger": "minecraft:any_block_use",
       "conditions": {
-        "location": [
-          {
-            "condition": "minecraft:location_check",
-            "predicate": {
-              "block": {
-                "blocks": "cobblemon:healing_machine",
-                "state": {
-                  "charge": "6"
-                }
+        "location": {
+          "type": "minecraft:location_check",
+          "predicate": {
+            "block": {
+              "blocks": "cobblemon:healing_machine",
+              "state": {
+                "charge": "6"
               }
             }
           }
-        ]
+        }
       }
     }
   },

@@ -11,7 +11,10 @@ package com.cobblemon.mod.common.entity.boat
 import com.cobblemon.mod.common.CobblemonEntities
 import com.cobblemon.mod.common.mixin.accessor.BoatEntityAccessor
 import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
+import java.util.function.Supplier
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat
 import net.minecraft.nbt.StringTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.protocol.Packet
@@ -20,19 +23,29 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerEntity
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.tags.FluidTags
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.vehicle.Boat
+import net.minecraft.world.entity.vehicle.boat.Boat
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
-import net.minecraft.world.level.GameRules
+import net.minecraft.world.level.gamerules.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.WoodType
 
 @Suppress("unused")
-open class CobblemonBoatEntity(entityType: EntityType<out Boat>, world: Level) : Boat(entityType, world) {
+open class CobblemonBoatEntity private constructor(entityType: EntityType<out Boat>, world: Level, drops: BoatDropSupplier) : Boat(entityType, world, drops) {
+
+    private class BoatDropSupplier : Supplier<Item> {
+        lateinit var boat: CobblemonBoatEntity
+        override fun get(): Item = boat.getCobblemonDropItem()
+    }
+
+    init { drops.boat = this }
+
+    constructor(entityType: EntityType<out Boat>, world: Level) : this(entityType, world, BoatDropSupplier())
 
     constructor(world: Level) : this(CobblemonEntities.BOAT, world)
 
@@ -63,7 +76,7 @@ open class CobblemonBoatEntity(entityType: EntityType<out Boat>, world: Level) :
      */
     val baseBlock: Block get() = this.boatType.baseBlock
 
-    override fun getDropItem(): Item = this.boatType.boatItem
+    open fun getCobblemonDropItem(): Item = this.boatType.boatItem
 
     override fun getAddEntityPacket(entityTrackerEntry: ServerEntity): Packet<ClientGamePacketListener> = ClientboundAddEntityPacket(this, entityTrackerEntry)
 
@@ -72,22 +85,14 @@ open class CobblemonBoatEntity(entityType: EntityType<out Boat>, world: Level) :
         builder.define(TYPE_TRACKED_DATA, CobblemonBoatType.APRICORN.ordinal)
     }
 
-    override fun readAdditionalSaveData(nbt: CompoundTag) {
-        if (nbt.contains(TYPE_KEY, Tag.TAG_STRING.toInt())) {
-            this.boatType = CobblemonBoatType.valueOf(nbt.getString(TYPE_KEY))
-        }
+    override fun readAdditionalSaveData(input: ValueInput) {
+        super.readAdditionalSaveData(input)
+        input.getString(TYPE_KEY).ifPresent { boatType = CobblemonBoatType.valueOf(it) }
     }
 
-    override fun addAdditionalSaveData(nbt: CompoundTag) {
-        nbt.put(TYPE_KEY, StringTag.valueOf(this.boatType.name))
-    }
-
-    override fun setVariant(type: Type) {
-        throw UnsupportedOperationException("The vanilla boat type is not present in the Cobblemon implementation use the boatType property")
-    }
-
-    override fun getVariant(): Type {
-        return Type.BAMBOO //have to return something here as otherwise it breaks vanilla interactions (e.g. player getting into boat)
+    override fun addAdditionalSaveData(output: ValueOutput) {
+        super.addAdditionalSaveData(output)
+        output.putString(TYPE_KEY, boatType.name)
     }
 
     override fun getSinglePassengerXOffset(): Float = this.boatType.mountedOffset
@@ -104,7 +109,7 @@ open class CobblemonBoatEntity(entityType: EntityType<out Boat>, world: Level) :
         if (!onGround) {
             return
         }
-        if (this.fallDistance < 3F || accessor.location != Status.ON_LAND) {
+        if (this.fallDistance < 3F || accessor.location != AbstractBoat.Status.ON_LAND) {
             this.resetFallDistance()
             return
         }
@@ -112,13 +117,14 @@ open class CobblemonBoatEntity(entityType: EntityType<out Boat>, world: Level) :
         if (this.level().isClientSide || this.isRemoved) {
             return
         }
-        this.kill()
-        if (this.level().gameRules.getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        val serverLevel = this.level() as ServerLevel
+        this.kill(serverLevel)
+        if ((this.level() as ServerLevel).gameRules.get(GameRules.ENTITY_DROPS)) {
             repeat(3) {
-                this.spawnAtLocation(this.boatType.baseBlock)
+                this.spawnAtLocation(serverLevel, this.boatType.baseBlock)
             }
             repeat(2) {
-                this.spawnAtLocation(Items.STICK)
+                this.spawnAtLocation(serverLevel, Items.STICK)
             }
         }
     }

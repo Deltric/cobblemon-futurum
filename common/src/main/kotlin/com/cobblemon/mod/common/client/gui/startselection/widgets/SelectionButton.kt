@@ -18,7 +18,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
@@ -40,18 +40,16 @@ class SelectionButton(
 
     override fun playDownSound(soundManager: SoundManager) {}
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = buttonResource,
             x = x,
             y = y,
             width = BUTTON_WIDTH,
             height = BUTTON_HEIGHT,
             textureHeight = BUTTON_HEIGHT * 2,
-            vOffset = if (isHovered) BUTTON_HEIGHT else 0
-        )
+            vOffset = if (isHovered) BUTTON_HEIGHT else 0)
 
         drawScaledText(
             context = context,

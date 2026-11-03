@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/agriculture",
-  "criteria": {
-    "has_leek": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:medicinal_leek"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "cobblemon:recipes/agriculture",
+    "criteria": {
+        "has_leek": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:medicinal_leek"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:medicinal_leek_to_magenta_dye"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:medicinal_leek_to_magenta_dye"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    "requirements": [
+        [
+            "has_leek",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:medicinal_leek_to_magenta_dye"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_leek",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:medicinal_leek_to_magenta_dye"
-    ]
-  }
 }

@@ -14,7 +14,9 @@ import com.cobblemon.mod.common.NetworkManager
 import com.cobblemon.mod.common.api.net.NetworkPacket
 import com.cobblemon.mod.common.client.net.data.DataRegistrySyncPacketHandler
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.ResourceLocation
+import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.client.network.ClientPacketDistributor
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import net.neoforged.neoforge.network.registration.HandlerThread
@@ -34,8 +36,8 @@ object CobblemonNeoForgeNetworkManager : NetworkManager {
             .versioned(PROTOCOL_VERSION)
             .executesOn(HandlerThread.NETWORK)
 
-        val syncPackets = HashSet<ResourceLocation>()
-        val asyncPackets = HashSet<ResourceLocation>()
+        val syncPackets = HashSet<Identifier>()
+        val asyncPackets = HashSet<Identifier>()
 
         CobblemonNetwork.s2cPayloads.map { NeoForgePacketInfo(it) }.forEach {
             val handleAsync = it.info.handler is DataRegistrySyncPacketHandler<*, *>
@@ -48,10 +50,12 @@ object CobblemonNeoForgeNetworkManager : NetworkManager {
     }
 
     override fun sendPacketToPlayer(player: ServerPlayer, packet: NetworkPacket<*>) {
-        player.connection.send(packet)
+        PacketDistributor.sendToPlayer(player, packet)
     }
 
     override fun sendToServer(packet: NetworkPacket<*>) {
-        Minecraft.getInstance().connection?.send(packet)
+        if (Minecraft.getInstance().connection != null) {
+            ClientPacketDistributor.sendToServer(packet)
+        }
     }
 }

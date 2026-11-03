@@ -9,9 +9,9 @@
 package com.cobblemon.mod.common.util
 
 import com.cobblemon.mod.common.Cobblemon
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
-fun ResourceLocation.endsWith(suffix: String): Boolean {
+fun Identifier.endsWith(suffix: String): Boolean {
     return this.toString().endsWith(suffix)
 }
 
@@ -23,4 +23,4 @@ fun ResourceLocation.endsWith(suffix: String): Boolean {
  * @param namespace The namespace that if matched with [Identifier.namespace] allows the shortening.
  * @return The resulting string.
  */
-fun ResourceLocation.simplify(namespace: String = Cobblemon.MODID): String = if (this.namespace == namespace) this.path else this.toString()
+fun Identifier.simplify(namespace: String = Cobblemon.MODID): String = if (this.namespace == namespace) this.path else this.toString()

@@ -39,7 +39,9 @@ enum class MoonPhase {
          *
          * @throws IndexOutOfBoundsException if the moon phase cannot be resolved, this should never happen.
          */
-        fun ofWorld(world: Level): MoonPhase = VALUES[world.moonPhase]
+        // Keep the legacy global eight-day cycle for gameplay, including dimensions
+        // whose new visual moon attribute is absent or overridden by a datapack.
+        fun ofWorld(world: Level): MoonPhase = VALUES[Math.floorMod(world.overworldClockTime / 24000L, 8L).toInt()]
     }
 
 }

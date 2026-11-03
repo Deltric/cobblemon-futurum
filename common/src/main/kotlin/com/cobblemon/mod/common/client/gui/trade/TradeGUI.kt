@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.trade
 
+import net.minecraft.client.input.KeyEvent
 import com.cobblemon.mod.common.CobblemonNetwork
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
@@ -35,7 +36,7 @@ import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.toAssetPath
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.resources.sounds.SoundInstance
@@ -173,7 +174,7 @@ class TradeGUI(
             ExitButton(pX = x + 265, pY = y + 6) {
                 playSound(CobblemonSounds.GUI_CLICK)
                 onClose()
-                Minecraft.getInstance().setScreen(null)
+                Minecraft.getInstance().gui.setScreen(null)
             }
         )
 
@@ -259,7 +260,7 @@ class TradeGUI(
         addRenderableWidget(opposingOfferedPokemonMarkings)
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val x = (width - BASE_WIDTH) / 2
         val y = (height - BASE_HEIGHT) / 2
         val matrices = context.pose()
@@ -267,14 +268,12 @@ class TradeGUI(
         // Render Background Resource
         val backgroundX = x + 68
         val backgroundY = y + 23
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = baseBackgroundResource,
             x = backgroundX,
             y = backgroundY,
             width = BASE_BACKGROUND_WIDTH,
-            height = BASE_BACKGROUND_HEIGHT
-        )
+            height = BASE_BACKGROUND_HEIGHT)
 
         if (
             (tradeAnimationProgress in MODEL_SCALE_BUFFER_FRAMES until(TRADE_ANIMATION_FRAMES + MODEL_SCALE_BUFFER_FRAMES)) ||
@@ -285,29 +284,25 @@ class TradeGUI(
                     (REVERSE_ANIMATION_TICK + TRADE_ANIMATION_FRAMES - tradeAnimationProgress)
                 else (tradeAnimationProgress - MODEL_SCALE_BUFFER_FRAMES)
             ) * TRADE_ANIMATION_HEIGHT
-            blitk(
-                matrixStack = matrices,
-                texture = tradeAnimationResource,
-                x = (x + 80.5) / SCALE,
-                y = (y + 31) / SCALE,
-                width = TRADE_ANIMATION_WIDTH,
-                height = TRADE_ANIMATION_HEIGHT,
-                vOffset = frameOffset,
-                textureHeight = TRADE_ANIMATION_HEIGHT * TRADE_ANIMATION_FRAMES,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = tradeAnimationResource,
+            x = (x + 80.5) / SCALE,
+            y = (y + 31) / SCALE,
+            width = TRADE_ANIMATION_WIDTH,
+            height = TRADE_ANIMATION_HEIGHT,
+            vOffset = frameOffset,
+            textureHeight = TRADE_ANIMATION_HEIGHT * TRADE_ANIMATION_FRAMES,
+            scale = SCALE)
 
-            blitk(
-                matrixStack = matrices,
-                texture = tradeAnimationResource,
-                x = (x + 155.5) / SCALE,
-                y = (y + 31) / SCALE,
-                width = TRADE_ANIMATION_WIDTH,
-                height = TRADE_ANIMATION_HEIGHT,
-                vOffset = frameOffset,
-                textureHeight = TRADE_ANIMATION_HEIGHT * TRADE_ANIMATION_FRAMES,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = tradeAnimationResource,
+            x = (x + 155.5) / SCALE,
+            y = (y + 31) / SCALE,
+            width = TRADE_ANIMATION_WIDTH,
+            height = TRADE_ANIMATION_HEIGHT,
+            vOffset = frameOffset,
+            textureHeight = TRADE_ANIMATION_HEIGHT * TRADE_ANIMATION_FRAMES,
+            scale = SCALE)
         }
 
         // Render Model Portraits
@@ -322,22 +317,21 @@ class TradeGUI(
             context.enableScissor(backgroundX, backgroundY, backgroundX + BASE_BACKGROUND_WIDTH, backgroundY +  BASE_BACKGROUND_HEIGHT)
             offeredPokemonModel?.baseScale = scale
             offeredPokemonModel?.offsetY = scaleOffsetY
-            offeredPokemonModel?.render(context, mouseX, mouseY, delta)
+            offeredPokemonModel?.extractRenderState(context, mouseX, mouseY, delta)
 
             opposingOfferedPokemonModel?.baseScale = scale
             opposingOfferedPokemonModel?.offsetY = scaleOffsetY
-            opposingOfferedPokemonModel?.render(context, mouseX, mouseY, delta)
+            opposingOfferedPokemonModel?.extractRenderState(context, mouseX, mouseY, delta)
             context.disableScissor()
         }
 
         // Render Base Resource
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = baseResource,
-            x = x, y = y,
+            x = x,
+            y = y,
             width = BASE_WIDTH,
-            height = BASE_HEIGHT
-        )
+            height = BASE_HEIGHT)
 
         renderInfoLabels(context, x, y)
 
@@ -345,69 +339,59 @@ class TradeGUI(
         renderPokemonInfo(opposingOfferedPokemon, true, context, x, y, mouseX, mouseY)
 
         if (trade.acceptedOppositeOffer) {
-            blitk(
-                matrixStack = matrices,
-                texture = tradeReadyResource,
-                x = x + 85,
-                y = y + 126,
-                width = TRADE_READY_WIDTH,
-                height = TRADE_READY_HEIGHT,
-                vOffset = TRADE_READY_HEIGHT * readyProgress,
-                textureHeight = TRADE_READY_HEIGHT * READY_PROGRESS_LIMIT
-            )
+            blitk(context = context,
+            texture = tradeReadyResource,
+            x = x + 85,
+            y = y + 126,
+            width = TRADE_READY_WIDTH,
+            height = TRADE_READY_HEIGHT,
+            vOffset = TRADE_READY_HEIGHT * readyProgress,
+            textureHeight = TRADE_READY_HEIGHT * READY_PROGRESS_LIMIT)
 
             if (!tradeProcessing) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = tradeReadyTopResource,
-                    x = x + 112,
-                    y = y + 2,
-                    width = TRADE_READY_WIDTH,
-                    height = TRADE_READY_TOP_HEIGHT,
-                    vOffset = TRADE_READY_TOP_HEIGHT * readyProgress,
-                    textureHeight = TRADE_READY_TOP_HEIGHT * READY_PROGRESS_LIMIT
-                )
+                blitk(context = context,
+            texture = tradeReadyTopResource,
+            x = x + 112,
+            y = y + 2,
+            width = TRADE_READY_WIDTH,
+            height = TRADE_READY_TOP_HEIGHT,
+            vOffset = TRADE_READY_TOP_HEIGHT * readyProgress,
+            textureHeight = TRADE_READY_TOP_HEIGHT * READY_PROGRESS_LIMIT)
             }
         }
 
         if (trade.oppositeAcceptedMyOffer.get()) {
-            blitk(
-                matrixStack = matrices,
-                texture = opposingTradeReadyResource,
-                x = x + 180,
-                y = y + 126,
-                width = TRADE_READY_WIDTH,
-                height = TRADE_READY_HEIGHT,
-                vOffset = TRADE_READY_HEIGHT * readyProgress,
-                textureHeight = TRADE_READY_HEIGHT * READY_PROGRESS_LIMIT
-            )
+            blitk(context = context,
+            texture = opposingTradeReadyResource,
+            x = x + 180,
+            y = y + 126,
+            width = TRADE_READY_WIDTH,
+            height = TRADE_READY_HEIGHT,
+            vOffset = TRADE_READY_HEIGHT * readyProgress,
+            textureHeight = TRADE_READY_HEIGHT * READY_PROGRESS_LIMIT)
 
             if (!tradeProcessing) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = opposingTradeReadyTopResource,
-                    x = x + 153,
-                    y = y + 2,
-                    width = TRADE_READY_WIDTH,
-                    height = TRADE_READY_TOP_HEIGHT,
-                    vOffset = TRADE_READY_TOP_HEIGHT * readyProgress,
-                    textureHeight = TRADE_READY_TOP_HEIGHT * READY_PROGRESS_LIMIT
-                )
+                blitk(context = context,
+            texture = opposingTradeReadyTopResource,
+            x = x + 153,
+            y = y + 2,
+            width = TRADE_READY_WIDTH,
+            height = TRADE_READY_TOP_HEIGHT,
+            vOffset = TRADE_READY_TOP_HEIGHT * readyProgress,
+            textureHeight = TRADE_READY_TOP_HEIGHT * READY_PROGRESS_LIMIT)
             }
         }
 
         // Trade animation arrows
         if (tradeAnimationProgress >= (TRADE_ANIMATION_FRAMES + MODEL_SCALE_BUFFER_FRAMES) && tradeAnimationProgress < REVERSE_ANIMATION_TICK) {
-            blitk(
-                matrixStack = matrices,
-                texture = tradeAnimationArrowsResource,
-                x = x + 112,
-                y = y + 2,
-                width = TRADE_ANIMATION_ARROWS_WIDTH,
-                height = TRADE_READY_TOP_HEIGHT,
-                vOffset = (((tradeAnimationProgress - MODEL_SCALE_BUFFER_FRAMES) % TRADE_ANIMATION_ARROWS_FRAMES) - MODEL_SCALE_BUFFER_FRAMES) * TRADE_READY_TOP_HEIGHT,
-                textureHeight = TRADE_READY_TOP_HEIGHT * TRADE_ANIMATION_ARROWS_FRAMES
-            )
+            blitk(context = context,
+            texture = tradeAnimationArrowsResource,
+            x = x + 112,
+            y = y + 2,
+            width = TRADE_ANIMATION_ARROWS_WIDTH,
+            height = TRADE_READY_TOP_HEIGHT,
+            vOffset = (((tradeAnimationProgress - MODEL_SCALE_BUFFER_FRAMES) % TRADE_ANIMATION_ARROWS_FRAMES) - MODEL_SCALE_BUFFER_FRAMES) * TRADE_READY_TOP_HEIGHT,
+            textureHeight = TRADE_READY_TOP_HEIGHT * TRADE_ANIMATION_ARROWS_FRAMES)
         }
 
         // Render usernames
@@ -429,29 +413,30 @@ class TradeGUI(
             shadow = true
         )
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
 
         // Item Tooltip
         if (offeredPokemon != null && !offeredPokemon!!.heldItemNoCopy().isEmpty) {
             val itemX = x + 50
             val itemY = y + 125
             val itemHovered = mouseX.toFloat() in (itemX.toFloat()..(itemX.toFloat() + 16)) && mouseY.toFloat() in (itemY.toFloat()..(itemY.toFloat() + 16))
-            if (itemHovered) context.renderTooltip(Minecraft.getInstance().font, offeredPokemon!!.heldItemNoCopy(), mouseX, mouseY)
+            if (itemHovered) context.setTooltipForNextFrame(Minecraft.getInstance().font, offeredPokemon!!.heldItemNoCopy(), mouseX, mouseY)
         }
 
         if (opposingOfferedPokemon != null && !opposingOfferedPokemon!!.heldItemNoCopy().isEmpty) {
             val itemX = x + 227
             val itemY = y + 125
             val itemHovered = mouseX.toFloat() in (itemX.toFloat()..(itemX.toFloat() + 16)) && mouseY.toFloat() in (itemY.toFloat()..(itemY.toFloat() + 16))
-            if (itemHovered) context.renderTooltip(Minecraft.getInstance().font, opposingOfferedPokemon!!.heldItemNoCopy(), mouseX, mouseY)
+            if (itemHovered) context.setTooltipForNextFrame(Minecraft.getInstance().font, opposingOfferedPokemon!!.heldItemNoCopy(), mouseX, mouseY)
         }
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (minecraft?.options?.keyInventory?.matches(keyCode, scanCode) == true) {
+    override fun keyPressed(event: KeyEvent): Boolean {
+        val keyCode = event.key()
+        if (minecraft?.options?.keyInventory?.matches(event) == true) {
             CancelTradePacket().sendToServer()
             cancelTradeSound()
-            Minecraft.getInstance().setScreen(null)
+            Minecraft.getInstance().gui.setScreen(null)
             return true
         }
 
@@ -461,7 +446,7 @@ class TradeGUI(
                 cancelTradeSound()
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 
     override fun tick() {
@@ -511,9 +496,9 @@ class TradeGUI(
         super.onClose()
     }
 
-    override fun renderBlurredBackground(delta: Float) {}
+    override fun extractBlurredBackground(context: GuiGraphicsExtractor) {}
 
-    override fun renderMenuBackground(context: GuiGraphics) {}
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) {}
 
     private fun setOfferedPokemon(pokemon: Pokemon?, isOpposing: Boolean = false) {
         protectiveTicks = 20
@@ -557,10 +542,10 @@ class TradeGUI(
     }
 
     private fun cancelTradeSound() {
-        if (tradeSoundInstance !== null) Minecraft.getInstance().soundManager.stop(tradeSoundInstance)
+        tradeSoundInstance?.let { Minecraft.getInstance().soundManager.stop(it) }
     }
 
-    private fun renderPokemonInfo(pokemon: Pokemon?, isOpposing: Boolean, context: GuiGraphics, x: Int, y: Int, mouseX: Int, mouseY: Int) {
+    private fun renderPokemonInfo(pokemon: Pokemon?, isOpposing: Boolean, context: GuiGraphicsExtractor, x: Int, y: Int, mouseX: Int, mouseY: Int) {
         if (pokemon != null) {
             val matrices = context.pose()
             // Level
@@ -586,15 +571,13 @@ class TradeGUI(
             // Poké Ball
             val nameXOffset = if (isOpposing) 75 else 0
             val ballResource = pokemon.caughtBall.name.toAssetPath("textures/item/poke_balls/", ".png")
-            blitk(
-                matrixStack = context.pose(),
-                texture = ballResource,
-                x = (x + 73.5 + nameXOffset) / SCALE,
-                y = (y + 12) / SCALE,
-                width = 16,
-                height = 16,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = ballResource,
+            x = (x + 73.5 + nameXOffset) / SCALE,
+            y = (y + 12) / SCALE,
+            width = 16,
+            height = 16,
+            scale = SCALE)
 
             drawScaledText(
                 context = context,
@@ -625,34 +608,30 @@ class TradeGUI(
             val itemY = y + 125
             if (!heldItem.isEmpty) {
                 val textRenderer = Minecraft.getInstance().font
-                context.renderItem(heldItem, itemX, itemY)
-                context.renderItemDecorations(textRenderer, heldItem, itemX, itemY)
+                context.item(heldItem, itemX, itemY)
+                context.itemDecorations(textRenderer, heldItem, itemX, itemY)
             }
 
             // Shiny Icon
             if (pokemon.shiny) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = Summary.iconShinyResource,
-                    x = (x + (if (isOpposing) 213.5 else 71.5)) / SCALE,
-                    y = (y + 33.5) / SCALE,
-                    width = 16,
-                    height = 16,
-                    scale = SCALE
-                )
+                blitk(context = context,
+            texture = Summary.iconShinyResource,
+            x = (x + (if (isOpposing) 213.5 else 71.5)) / SCALE,
+            y = (y + 33.5) / SCALE,
+            width = 16,
+            height = 16,
+            scale = SCALE)
             }
 
-            blitk(
-                matrixStack = matrices,
-                texture = if (pokemon.secondaryType != null) typeSpacerDoubleResource else typeSpacerSingleResource,
-                x = (x + (if (isOpposing) 153 else 73)) / SCALE,
-                y = (y + 113.5) / SCALE,
-                width = TYPE_SPACER_WIDTH,
-                height = TYPE_SPACER_HEIGHT,
-                vOffset = if (isOpposing) TYPE_SPACER_HEIGHT else 0,
-                textureHeight = TYPE_SPACER_HEIGHT * 2,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = if (pokemon.secondaryType != null) typeSpacerDoubleResource else typeSpacerSingleResource,
+            x = (x + (if (isOpposing) 153 else 73)) / SCALE,
+            y = (y + 113.5) / SCALE,
+            width = TYPE_SPACER_WIDTH,
+            height = TYPE_SPACER_HEIGHT,
+            vOffset = if (isOpposing) TYPE_SPACER_HEIGHT else 0,
+            textureHeight = TYPE_SPACER_HEIGHT * 2,
+            scale = SCALE)
 
             TypeIcon(
                 x = x + (if (isOpposing) 187 else 106),
@@ -818,21 +797,19 @@ class TradeGUI(
                 centered = true
             )
         } else {
-            blitk(
-                matrixStack = context.pose(),
-                texture = typeSpacerResource,
-                x = (x + (if (isOpposing) 153 else 73)) / SCALE,
-                y = (y + 113.5) / SCALE,
-                width = TYPE_SPACER_WIDTH,
-                height = TYPE_SPACER_HEIGHT,
-                vOffset = if (isOpposing) TYPE_SPACER_HEIGHT else 0,
-                textureHeight = TYPE_SPACER_HEIGHT * 2,
-                scale = SCALE
-            )
+            blitk(context = context,
+            texture = typeSpacerResource,
+            x = (x + (if (isOpposing) 153 else 73)) / SCALE,
+            y = (y + 113.5) / SCALE,
+            width = TYPE_SPACER_WIDTH,
+            height = TYPE_SPACER_HEIGHT,
+            vOffset = if (isOpposing) TYPE_SPACER_HEIGHT else 0,
+            textureHeight = TYPE_SPACER_HEIGHT * 2,
+            scale = SCALE)
         }
     }
 
-    private fun renderInfoLabels(context: GuiGraphics, x: Int, y: Int) {
+    private fun renderInfoLabels(context: GuiGraphicsExtractor, x: Int, y: Int) {
         drawScaledText(
             context = context,
             font = CobblemonResources.DEFAULT_LARGE,

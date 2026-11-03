@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.habitat
 
+import com.cobblemon.mod.common.api.gui.textColour
 import com.cobblemon.mod.common.api.habitats.HabitatPhaseOrder
 import com.cobblemon.mod.common.api.habitats.HabitatPool
 import com.cobblemon.mod.common.api.habitats.dto.ActivatedHabitatSettingsDTO
@@ -24,7 +25,7 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import java.awt.Color
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
@@ -32,7 +33,7 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class HabitatEditGUI(
     /** The position of the habitat block in the client player's world */
@@ -50,7 +51,7 @@ class HabitatEditGUI(
     /** Use this as reference data for what buckets can be chosen for activated spawns */
     val activatedHabitatBuckets: List<String>,
     /** Use this as reference data for pre-made habitat pools */
-    val pools: Map<ResourceLocation, HabitatPool>,
+    val pools: Map<Identifier, HabitatPool>,
     /** The current settings - edit the properties in here then send it back to the server. */
     val habitatSettingsDTO: HabitatSettingsDTO
 ) : Screen(lang("ui.edit.habitat")), CobblemonRenderable {
@@ -96,20 +97,20 @@ class HabitatEditGUI(
         mimicInput.setMaxLength(80)
         mimicInput.value = habitatSettingsDTO.mimicId.toString()
         mimicInput.setResponder { value ->
-            val id = ResourceLocation.tryParse(value)
+            val id = Identifier.tryParse(value)
             val valid = id != null &&
                 BuiltInRegistries.BLOCK.containsKey(id) &&
-                BuiltInRegistries.BLOCK.get(id).builtInRegistryHolder().`is`(CobblemonBlockTags.HABITAT_MIMICS)
+                BuiltInRegistries.BLOCK.getValue(id).builtInRegistryHolder().`is`(CobblemonBlockTags.HABITAT_MIMICS)
             if (valid) {
                 habitatSettingsDTO.mimicId = id
             }
             mimicInput.setTextColor(if (valid) validTextColor else invalidTextColor)
             setFieldValidity("mimic", valid, "ui.edit.habitat.validation.mimic")
         }
-        val initialMimicId = ResourceLocation.tryParse(mimicInput.value)
+        val initialMimicId = Identifier.tryParse(mimicInput.value)
         val initialMimicValid = initialMimicId != null &&
             BuiltInRegistries.BLOCK.containsKey(initialMimicId) &&
-            BuiltInRegistries.BLOCK.get(initialMimicId).builtInRegistryHolder().`is`(CobblemonBlockTags.HABITAT_MIMICS)
+            BuiltInRegistries.BLOCK.getValue(initialMimicId).builtInRegistryHolder().`is`(CobblemonBlockTags.HABITAT_MIMICS)
         mimicInput.setTextColor(if (initialMimicValid) validTextColor else invalidTextColor)
         setFieldValidity("mimic", initialMimicValid, "ui.edit.habitat.validation.mimic")
         addOptionWidget(mimicInput)
@@ -274,7 +275,7 @@ class HabitatEditGUI(
             Button.builder(getPoolText()) {
                 val currentPool = habitatSettingsDTO.pool
                 val selectedPoolId = if (currentPool?.isReference == true) currentPool.id else null
-                Minecraft.getInstance().setScreen(
+                Minecraft.getInstance().gui.setScreen(
                     HabitatPoolSelectionGUI(
                         isActivated = habitatSettingsDTO.isActivatedSpawning,
                         pools = pools,
@@ -294,7 +295,7 @@ class HabitatEditGUI(
                 val buckets = if (habitatSettingsDTO.isActivatedSpawning) activatedHabitatBuckets else worldBuckets
 
                 if (!pool.isReference) {
-                    Minecraft.getInstance().setScreen(
+                    Minecraft.getInstance().gui.setScreen(
                         HabitatPoolEditorGUI(pool, habitatSettingsDTO.isActivatedSpawning, buckets, spawnablePositionTypes, maxPokemonLevel, this, editable = true)
                     )
                     return@builder
@@ -309,7 +310,7 @@ class HabitatEditGUI(
                     spawns = sourcePool.spawns.toMutableList()
                 }
 
-                Minecraft.getInstance().setScreen(
+                Minecraft.getInstance().gui.setScreen(
                     HabitatPoolEditorGUI(viewPool, habitatSettingsDTO.isActivatedSpawning, buckets, spawnablePositionTypes, maxPokemonLevel, this, editable = false)
                 )
             }.bounds(10, y, buttonWidth, 20).build()
@@ -346,30 +347,30 @@ class HabitatEditGUI(
         return true
     }
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(0, 0, width, height, Color(0, 0, 0, 100).rgb)
         guiGraphics.fill(0, 0, width, headerHeight, Color(0, 0, 0, 150).rgb)
         guiGraphics.fill(0, getFooterTop(), width, height, Color(0, 0, 0, 150).rgb)
-        guiGraphics.drawCenteredString(font, title, width / 2, 8, 0xFFFFFF)
+        guiGraphics.centeredText(font, title, width / 2, 8, textColour(0xFFFFFF))
 
         guiGraphics.enableScissor(0, getOptionsTop(), width, getOptionsBottom())
         optionWidgets.forEach { widget ->
-            widget.render(guiGraphics, mouseX, mouseY, partialTick)
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         }
         val optionsBottom = getOptionsBottom()
         labels.forEach { (label, pos) ->
             if (pos.second >= getOptionsTop() && pos.second + font.lineHeight <= optionsBottom) {
-                guiGraphics.drawString(font, label, pos.first, pos.second, 0xFFFFFF)
+                guiGraphics.text(font, label, pos.first, pos.second, textColour(0xFFFFFF))
             }
         }
         guiGraphics.disableScissor()
 
         footerWidgets.forEach { widget ->
-            widget.render(guiGraphics, mouseX, mouseY, partialTick)
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         }
 
         validationErrors.values.firstOrNull()?.let { errorKey ->
-            guiGraphics.drawString(font, lang(errorKey), 10, validationMessageY, invalidTextColor)
+            guiGraphics.text(font, lang(errorKey), 10, validationMessageY, textColour(invalidTextColor))
         }
     }
 
@@ -414,7 +415,7 @@ class HabitatEditGUI(
         }
     }
 
-    private fun applyPoolSelection(poolId: ResourceLocation?) {
+    private fun applyPoolSelection(poolId: Identifier?) {
         val currentPool = habitatSettingsDTO.pool
         if (poolId == null) {
             if (currentPool.isReference) {
@@ -495,7 +496,7 @@ class HabitatEditGUI(
             blockPos = blockPos,
             settings = habitatSettingsDTO
         ).sendToServer()
-        Minecraft.getInstance().setScreen(null)
+        Minecraft.getInstance().gui.setScreen(null)
     }
 
     private fun updateScrollBounds(contentBottomAtZeroOffset: Int) {

@@ -17,7 +17,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.giveOrDropItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
@@ -37,7 +37,7 @@ interface EVIncreaseItem: PokemonSelectingItem {
         player: ServerPlayer,
         stack: ItemStack,
         pokemon: Pokemon
-    ): InteractionResultHolder<ItemStack> {
+    ): InteractionResult {
         val evsGained = pokemon.evs.add(stat, evIncreaseAmount, ItemEvSource(player, stack, pokemon))
         return if (evsGained > 0) {
             pokemon.entity?.playSound(sound, 1F, 1F)
@@ -45,9 +45,9 @@ interface EVIncreaseItem: PokemonSelectingItem {
             if (!player.hasInfiniteMaterials()) {
                 player.giveOrDropItemStack(ItemStack(Items.GLASS_BOTTLE))
             }
-            InteractionResultHolder.success(stack)
+            InteractionResult.SUCCESS
         } else {
-            InteractionResultHolder.fail(stack)
+            InteractionResult.FAIL
         }
     }
 }

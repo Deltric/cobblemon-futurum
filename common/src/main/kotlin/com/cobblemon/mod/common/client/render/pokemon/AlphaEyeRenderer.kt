@@ -20,8 +20,8 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
 
@@ -78,7 +78,7 @@ fun renderAlphaEyeBloom(
     partialTicks: Float,
     camPos: Vec3,
     poseStack: PoseStack,
-    bufferSource: MultiBufferSource
+    bufferSource: ModelGeometry.Builder
 ) {
     val clientDelegate = entity.delegate as PokemonClientDelegate
     if ("alpha_eyes" !in clientDelegate.currentAspects) return
@@ -99,7 +99,7 @@ fun renderAlphaEyeBloom(
         val eyeLocalPos = wrapper.matrix.getTranslation(Vector3f()).toVec3d()
         val eyeWorldPos = entityPos.add(eyeLocalPos)
         val toCam = camPos.subtract(eyeWorldPos).normalize()
-        val camUp = Minecraft.getInstance().gameRenderer.mainCamera.upVector.toVec3d()
+        val camUp = Minecraft.getInstance().gameRenderer.mainCamera().upVector().let { Vec3(it.x().toDouble(), it.y().toDouble(), it.z().toDouble()) }
         val camPerp = camUp.cross(toCam).normalize()
 
         // Have the bloom shrink depending upon if you're looking at the eye from the side or behind.
@@ -122,7 +122,7 @@ fun renderAlphaEyeBloom(
 
         // Render bloom using concentric "rings" (its all just triangle pizza in the end)
         val rings = 5 //TODO: is this too many?
-        val consumer = bufferSource.getBuffer(RenderType.dragonRays()) // rgba flat color triangle rendering
+        val consumer = bufferSource.getBuffer(RenderTypes.dragonRays()) // rgba flat color triangle rendering
 
         for (ring in 0 until rings) {
             val t0 = ring.toFloat() / rings
@@ -182,11 +182,11 @@ fun renderEyeTrail(
     entity: PokemonEntity,
     camPos: Vec3,
     poseStack: PoseStack,
-    bufferSource: MultiBufferSource
+    bufferSource: ModelGeometry.Builder
 ) {
     if (positions.size < 2) return
 
-    val consumer = bufferSource.getBuffer(RenderType.lightning())
+    val consumer = bufferSource.getBuffer(RenderTypes.lightning())
     val entityPos = entity.getPosition(partialTicks)
     val matrix = poseStack.last().pose()
     val n = positions.size
@@ -251,11 +251,11 @@ fun doAlphaEyeRendering(
     entity: PokemonEntity,
     partialTicks: Float,
     poseStack: PoseStack,
-    bufferSource: MultiBufferSource
+    bufferSource: ModelGeometry.Builder
 ) {
 
     val clientDelegate = entity.delegate as PokemonClientDelegate
-    val camPos = Minecraft.getInstance().gameRenderer.mainCamera.position
+    val camPos = Minecraft.getInstance().gameRenderer.mainCamera().position()
 
     val visibleLocators = clientDelegate.locatorStates.filter { (locator, _) -> clientDelegate.isLocatorVisible(locator) }
 

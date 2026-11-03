@@ -1,29 +1,23 @@
 {
   "type": "minecraft:block",
-  "functions": [
-    {
-      "function": "minecraft:explosion_decay"
-    }
-  ],
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "block": "cobblemon:galarica_nut_bush",
-          "condition": "minecraft:block_state_property",
-          "properties": {
-            "age": "3"
-          }
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "cobblemon:galarica_nuts"
         }
       ],
-      "functions": [
+      "rolls": 1.0,
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "cobblemon:galarica_nut_bush",
+        "state": {
+          "age": "3"
+        }
+      },
+      "modifier": [
         {
           "add": false,
           "count": {
@@ -31,37 +25,35 @@
             "max": 3.0,
             "min": 2.0
           },
-          "function": "minecraft:set_count"
+          "type": "minecraft:set_count"
         },
         {
           "enchantment": "minecraft:fortune",
           "formula": "minecraft:uniform_bonus_count",
-          "function": "minecraft:apply_bonus",
           "parameters": {
             "bonusMultiplier": 1
-          }
+          },
+          "type": "minecraft:apply_bonus"
         }
-      ],
-      "rolls": 1.0
+      ]
     },
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "block": "cobblemon:galarica_nut_bush",
-          "condition": "minecraft:block_state_property",
-          "properties": {
-            "age": "2"
-          }
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "cobblemon:galarica_nuts"
         }
       ],
-      "functions": [
+      "rolls": 1.0,
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "cobblemon:galarica_nut_bush",
+        "state": {
+          "age": "2"
+        }
+      },
+      "modifier": [
         {
           "add": false,
           "count": {
@@ -69,19 +61,23 @@
             "max": 2.0,
             "min": 1.0
           },
-          "function": "minecraft:set_count"
+          "type": "minecraft:set_count"
         },
         {
           "enchantment": "minecraft:fortune",
           "formula": "minecraft:uniform_bonus_count",
-          "function": "minecraft:apply_bonus",
           "parameters": {
             "bonusMultiplier": 1
-          }
+          },
+          "type": "minecraft:apply_bonus"
         }
-      ],
-      "rolls": 1.0
+      ]
     }
   ],
-  "random_sequence": "cobblemon:blocks/galarica_nut_bush"
+  "random_sequence": "cobblemon:blocks/galarica_nut_bush",
+  "modifier": [
+    {
+      "type": "minecraft:explosion_decay"
+    }
+  ]
 }

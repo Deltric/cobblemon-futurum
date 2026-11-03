@@ -30,7 +30,11 @@ class PokemonPropertiesArgumentType: ArgumentType<PokemonProperties> {
         fun properties() = PokemonPropertiesArgumentType()
 
         fun <S> getPokemonProperties(context: CommandContext<S>, name: String): PokemonProperties {
-            return context.getArgument(name, PokemonProperties::class.java)
+            // Datapack functions cache their Brigadier parse before our data
+            // registries finish loading. Resolve against the execution-time
+            // registry, and give each invocation its own mutable properties.
+            val parsed = context.getArgument(name, PokemonProperties::class.java)
+            return PokemonProperties.parse(parsed.originalString)
         }
     }
 

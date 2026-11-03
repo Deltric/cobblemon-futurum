@@ -8,16 +8,18 @@
 
 package com.cobblemon.mod.common.api.pokedex.entry
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.util.readIdentifier
 import com.cobblemon.mod.common.util.readString
 import com.cobblemon.mod.common.util.writeIdentifier
 import com.cobblemon.mod.common.util.writeString
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class PokedexEntry(
-    val id: ResourceLocation,
-    val speciesId: ResourceLocation,
+    val id: Identifier,
+    val speciesId: Identifier,
     val displayAspects: MutableSet<String> = mutableSetOf(),
     val conditionAspects: MutableSet<String> = mutableSetOf(),
     val forms: MutableList<PokedexForm> = mutableListOf(),
@@ -89,7 +91,7 @@ class PokedexEntry(
                 form
             }
             val variations = buffer.readList { PokedexCosmeticVariation().also { it.decode(buffer) } }
-            return PokedexEntry(id, entryId, displayAspects, conditionAspects, forms, variations)
+            return PokedexEntry(id, entryId, displayAspects, conditionAspects, forms.toMutableList(), variations.toMutableList())
         }
     }
 }

@@ -21,13 +21,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractClientPlayer.class)
 public class AbstractClientPlayerMixin {
     @Inject(
-        method = "getFieldOfViewModifier()F",
+        method = "getFieldOfViewModifier(ZF)F",
         at = @At(
             value = "HEAD"
         ),
         cancellable = true
     )
-    public void cobblemon$getPokedexFovMultiplier(CallbackInfoReturnable<Float> cir) {
+    public void cobblemon$getPokedexFovMultiplier(boolean firstPerson, float effectScale, CallbackInfoReturnable<Float> cir) {
         PokedexUsageContext usageContext = CobblemonClient.INSTANCE.getPokedexUsageContext();
         if (usageContext.getScanningGuiOpen()) {
             cir.setReturnValue(usageContext.getFovMultiplier());

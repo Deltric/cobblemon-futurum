@@ -12,7 +12,7 @@ import com.cobblemon.mod.common.api.spawning.influence.SpawningInfluence
 import com.cobblemon.mod.common.api.spawning.spawner.Spawner
 import com.cobblemon.mod.common.util.server
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 
 open class SpawnCause(
     val spawner: Spawner,
@@ -25,7 +25,7 @@ open class SpawnCause(
 
     val entity: Entity?
         get() =
-            if (entityType == EntityType.PLAYER) {
+            if (entityType == EntityTypes.PLAYER) {
                 entityUUID?.let {
                     server()?.playerList?.getPlayer(it)
                 }

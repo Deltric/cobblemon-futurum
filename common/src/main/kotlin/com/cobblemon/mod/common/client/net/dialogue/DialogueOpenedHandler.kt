@@ -15,11 +15,11 @@ import net.minecraft.client.Minecraft
 
 object DialogueOpenedHandler: ClientNetworkPacketHandler<DialogueOpenedPacket> {
     override fun handle(packet: DialogueOpenedPacket, client: Minecraft) {
-        val currentScreen = client.screen as? DialogueScreen
+        val currentScreen = client.gui.screen() as? DialogueScreen
         if (currentScreen != null && currentScreen.dialogueId == packet.dialogueDTO.dialogueId) {
             currentScreen.update(packet.dialogueDTO)
         } else {
-            client.setScreen(DialogueScreen(packet.dialogueDTO))
+            client.gui.setScreen(DialogueScreen(packet.dialogueDTO))
         }
     }
 }

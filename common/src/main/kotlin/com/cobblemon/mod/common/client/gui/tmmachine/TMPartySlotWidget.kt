@@ -23,7 +23,7 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -60,7 +60,7 @@ class TMPartySlotWidget(
         private val learnedLabel = lang("ui.tm_machine.learned")
     }
 
-    private fun getResource(): ResourceLocation = when (teachable) {
+    private fun getResource(): Identifier = when (teachable) {
         CAN_LEARN -> if (clickable) slotLearnableResource else slotLearnableDisabledResource
         CANNOT_LEARN -> slotDisabledResource
         LEARNED -> slotLearnedResource
@@ -74,48 +74,42 @@ class TMPartySlotWidget(
         else -> null
     }
 
-    override fun renderWidget(context: net.minecraft.client.gui.GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractContents(context: net.minecraft.client.gui.GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         state.currentAspects = pokemon?.aspects ?: emptySet()
         val matrices = context.pose()
 
         if (pokemon != null) {
-            blitk(
-                matrixStack = matrices,
-                texture = getResource(),
-                x = x,
-                y = y,
-                width = width,
-                height = height,
-                vOffset = if (clickable && isMouseOver(mouseX.toDouble(), mouseY.toDouble())) height else 0,
-                textureHeight = height * 2,
-            )
+            blitk(context = context,
+            texture = getResource(),
+            x = x,
+            y = y,
+            width = width,
+            height = height,
+            vOffset = if (clickable && isMouseOver(mouseX.toDouble(), mouseY.toDouble())) height else 0,
+            textureHeight = height * 2)
 
             val ballIcon = cobblemonResource("textures/gui/ball/" + pokemon.caughtBall.name.path + ".png")
             val ballHeight = 22
-            blitk(
-                matrixStack = matrices,
-                texture = ballIcon,
-                x = (x - 2) / HALF_SCALE,
-                y = (y - 3) / HALF_SCALE,
-                height = ballHeight,
-                width = 18,
-                textureHeight = ballHeight * 2,
-                scale = HALF_SCALE
-            )
+            blitk(context = context,
+            texture = ballIcon,
+            x = (x - 2) / HALF_SCALE,
+            y = (y - 3) / HALF_SCALE,
+            height = ballHeight,
+            width = 18,
+            textureHeight = ballHeight * 2,
+            scale = HALF_SCALE)
 
             // Render Pokémon
-            matrices.pushPose()
-            matrices.translate(x + (PORTRAIT_DIAMETER / 2.0) - 2, y - 1.0, 0.0)
-            matrices.scale(2.5F, 2.5F, 1F)
-            drawProfilePokemon(
-                species = pokemon.species.resourceIdentifier,
-                matrixStack = matrices,
+            matrices.pushMatrix()
+            matrices.translate((x + (PORTRAIT_DIAMETER / 2.0) - 2).toFloat(), (y - 1.0).toFloat())
+            matrices.scale((2.5F).toFloat(), (2.5F).toFloat())
+            drawProfilePokemon(species = pokemon.species.resourceIdentifier,
+                context = context,
                 rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                 state = state,
                 scale = 4.5F,
-                partialTicks = delta
-            )
-            matrices.popPose()
+                partialTicks = delta)
+            matrices.popMatrix()
 
             drawScaledTextJustifiedRight(
                 context = context,
@@ -127,15 +121,13 @@ class TMPartySlotWidget(
             )
 
             if (pokemon.gender != Gender.GENDERLESS) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = if (pokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
-                    x = (x + 51) / HALF_SCALE,
-                    y = (y + 19) / HALF_SCALE,
-                    height = 8,
-                    width = 6,
-                    scale = HALF_SCALE
-                )
+                blitk(context = context,
+            texture = if (pokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
+            x = (x + 51) / HALF_SCALE,
+            y = (y + 19) / HALF_SCALE,
+            height = 8,
+            width = 6,
+            scale = HALF_SCALE)
             }
 
             drawScaledTextJustifiedRight(
@@ -166,20 +158,18 @@ class TMPartySlotWidget(
                     x = x + 15.0,
                     y = y + 13.5,
                     scale = HALF_SCALE.toDouble(),
-                    matrixStack = matrices
+                    context = context
                 )
             }
         } else {
-            blitk(
-                matrixStack = matrices,
-                texture = slotDisabledResource,
-                x = x + 55,
-                y = y,
-                width = 5,
-                height = height,
-                textureWidth = width,
-                textureHeight = height * 2
-            )
+            blitk(context = context,
+            texture = slotDisabledResource,
+            x = x + 55,
+            y = y,
+            width = 5,
+            height = height,
+            textureWidth = width,
+            textureHeight = height * 2)
         }
     }
 

@@ -18,13 +18,13 @@ class SynchronizeActiveTMPacket(val tm: TechnicalMachine?): NetworkPacket<Synchr
     override val id = ID
 
     override fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeNullable(tm?.id) { pb, value -> pb.writeResourceLocation(value) }
+        buffer.writeNullable(tm?.id) { pb, value -> pb.writeIdentifier(value) }
     }
 
     companion object {
         val ID = cobblemonResource("synchronize_active_tm")
         fun decode(buffer: RegistryFriendlyByteBuf): SynchronizeActiveTMPacket {
-            val resourceLocation = buffer.readNullable { it.readResourceLocation() }
+            val resourceLocation = buffer.readNullable { it.readIdentifier() }
             if (resourceLocation == null) return SynchronizeActiveTMPacket(null)
             val tm = TechnicalMachines.tmMap[resourceLocation]
             return SynchronizeActiveTMPacket(tm)

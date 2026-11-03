@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.block.entity
 
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.cobblemon.mod.common.CobblemonSounds
@@ -36,13 +40,15 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.FastColor
+import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceKey
+import net.minecraft.world.item.crafting.Recipe
+import net.minecraft.util.ARGB
 import net.minecraft.world.ContainerHelper
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Inventory
-import net.minecraft.world.entity.player.StackedContents
+import net.minecraft.world.entity.player.StackedItemContents
 import net.minecraft.world.inventory.*
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -133,7 +139,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
                     campfireBlockEntity.particleEntityHandler(
                         position = position,
                         level = level,
-                        particle = ResourceLocation("cobblemon", "broth_bubbles")
+                        particle = Identifier.fromNamespaceAndPath("cobblemon", "broth_bubbles")
                     )
                 }
 
@@ -144,7 +150,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
         }
 
         fun serverTick(level: Level, pos: BlockPos, state: BlockState, campfireBlockEntity: CampfireBlockEntity) {
-            if (level.isClientSide) return
+            if (level !is ServerLevel) return
 
             var hasChanged = false
 
@@ -153,7 +159,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
             fun <T : CookingPotRecipeBase> fetchRecipe(
                 recipeType: RecipeType<T>
             ): Optional<RecipeHolder<CookingPotRecipeBase>> {
-                val optional = level.recipeManager.getRecipeFor(recipeType, craftingInput, level)
+                val optional = level.recipeAccess().getRecipeFor(recipeType, craftingInput, level)
                 @Suppress("UNCHECKED_CAST")
                 return optional.map { it as RecipeHolder<CookingPotRecipeBase> }
             }
@@ -170,7 +176,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
             else {
                 val cookingPotRecipe = optionalRecipe
                 val recipe = cookingPotRecipe.value()
-                val cookedItem = recipe.assemble(craftingInput, level.registryAccess())
+                val cookedItem = recipe.assemble(craftingInput)
                 val resultSlotItem = campfireBlockEntity.getItem(0)
 
                 recipe.applySeasoning(cookedItem, campfireBlockEntity.getSeasonings().filter { it.`is`(recipe.seasoningTag) })
@@ -211,7 +217,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
                             )
 
                             level.playSoundServer(
-                                position = pos.bottomCenter,
+                                position = Vec3.atBottomCenterOf(pos),
                                 sound = CobblemonSounds.CAMPFIRE_POT_COOK,
                             )
 
@@ -237,7 +243,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
     private var cookingProgress: Int = 0
     private var cookingTotalTime: Int = COOKING_TOTAL_TIME
     private var items: NonNullList<ItemStack> = NonNullList.withSize(ITEMS_SIZE, ItemStack.EMPTY)
-    private val recipesUsed: Object2IntOpenHashMap<ResourceLocation> = Object2IntOpenHashMap()
+    private val recipesUsed: Object2IntOpenHashMap<ResourceKey<Recipe<*>>> = Object2IntOpenHashMap()
     private val quickCheck: RecipeManager.CachedCheck<CraftingInput, *> =
         RecipeManager.createCheck(CobblemonRecipeTypes.COOKING_POT_COOKING)
     private var potComponent: PotComponent? = null
@@ -249,7 +255,23 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
     /** Used to know if we should be changing the colour of the broth or if we can go with the previous colour. */
     var lastSeasoningStacks = listOf<ItemStack>()
 
+    override fun preRemoveSideEffects(pos: BlockPos, state: BlockState) {
+        super.preRemoveSideEffects(pos, state)
+        val world = level as? ServerLevel ?: return
+        val potItem = getPotItem() ?: ItemStack.EMPTY
+        if (!potItem.isEmpty) {
+            val direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING)
+            val xOffset = 0.25F * direction.stepX.toFloat()
+            val zOffset = 0.25F * direction.stepZ.toFloat()
+            val itemEntity = ItemEntity(world, pos.x + 0.5 + xOffset, (pos.y + 1).toDouble(), pos.z + 0.5 + zOffset, potItem)
+            itemEntity.setDefaultPickUpDelay()
+            world.addFreshEntity(itemEntity)
+        }
+    }
+
     var dataAccess: ContainerData = object : ContainerData {
+
+
         override fun get(index: Int): Int {
             return when (index) {
                 COOKING_PROGRESS_INDEX -> this@CampfireBlockEntity.cookingProgress
@@ -274,7 +296,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
         }
     }
 
-    fun particleEntityHandler(position: Vec3, level: Level, particle: ResourceLocation): ParticleStorm {
+    fun particleEntityHandler(position: Vec3, level: Level, particle: Identifier): ParticleStorm {
         val wrapper = MatrixWrapper()
         val matrix = PoseStack()
         wrapper.updateMatrix(matrix.last().pose())
@@ -290,10 +312,10 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
             sourceAlive = { blockState.getValue(CampfireBlock.COOKING) },
             sourceVisible = { blockState.getValue(CampfireBlock.COOKING) },
             getParticleColor = {
-                val red = FastColor.ARGB32.red(bubbleColor) / 255F
-                val green = FastColor.ARGB32.green(bubbleColor) / 255F
-                val blue = FastColor.ARGB32.blue(bubbleColor) / 255F
-                val alpha = FastColor.ARGB32.alpha(bubbleColor) / 255F
+                val red = ARGB.red(bubbleColor) / 255F
+                val green = ARGB.green(bubbleColor) / 255F
+                val blue = ARGB.blue(bubbleColor) / 255F
+                val alpha = ARGB.alpha(bubbleColor) / 255F
 
                 Vector4f(red, green, blue, alpha)
             }
@@ -305,13 +327,14 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
     }
 
     fun consumeCraftingIngredients(recipe: CookingPotRecipeBase, level: Level, pos: BlockPos, state: BlockState,  campfireBlockEntity: CampfireBlockEntity) {
-        val remainderItems = mutableMapOf<Item, Int>() //This is so we don't spawn multiple entities for buckets
+        val remainderItems = mutableListOf<ItemStack>() // Coalesce identical remainders without losing their components.
 
         fun consumeItem(slot: Int) {
             val itemInSlot = getItem(slot)
             if (!itemInSlot.isEmpty) {
-                if (itemInSlot.item.hasCraftingRemainingItem()) {
-                    remainderItems[itemInSlot.item.craftingRemainingItem!!] = (remainderItems[itemInSlot.item.craftingRemainingItem!!] ?: 0) + 1
+                itemInSlot.item.craftingRemainder?.create()?.let { remainder ->
+                    val existing = remainderItems.firstOrNull { ItemStack.isSameItemSameComponents(it, remainder) }
+                    if (existing == null) remainderItems.add(remainder) else existing.grow(remainder.count)
                 }
                 itemInSlot.shrink(1)
                 if (itemInSlot.count <= 0) setItem(slot, ItemStack.EMPTY)
@@ -329,7 +352,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
         val container = HopperBlockEntity.getContainerAt(level, pos.relative(direction))
 
         for (remainder in remainderItems) {
-            var remainderItem = ItemStack(remainder.key, remainder.value)
+            var remainderItem = remainder
 
             if (container != null) {
                 remainderItem = HopperBlockEntity.addItem(campfireBlockEntity, container, remainderItem, direction.opposite)
@@ -388,7 +411,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
     }
 
     override fun getRecipeUsed() = null
-    override fun fillStackedContents(contents: StackedContents) {
+    override fun fillStackedContents(contents: StackedItemContents) {
         for (itemStack in this.items) {
             contents.accountSimpleStack(itemStack);
         }
@@ -408,35 +431,21 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
         level?.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS)
     }
 
-    override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
-        super.saveAdditional(tag, registries)
-
-        tag.putInt("CookingProgress", this.cookingProgress)
-
-        ContainerHelper.saveAllItems(tag, this.items, registries)
-        potComponent?.let { component ->
-            PotComponent.CODEC.encodeStart(NbtOps.INSTANCE, component)
-                .result()
-                ?.ifPresent { encoded -> tag.put("PotComponent", encoded) }
-        }
+    override fun saveAdditional(tag: ValueOutput) {
+        super.saveAdditional(tag)
+        tag.putInt("CookingProgress", cookingProgress)
+        ContainerHelper.saveAllItems(tag, items)
+        tag.storeNullable("PotComponent", PotComponent.CODEC, potComponent)
     }
 
-    override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
-        super.loadAdditional(tag, registries)
-
-        this.cookingProgress = tag.getInt("CookingProgress")
-
-        // Minecraft doesn't save empty item stacks to the items tag, so we have to manually clear them
-        // otherwise they would never clear and seasonings would always render wrongly
-
+    override fun loadAdditional(tag: ValueInput) {
+        super.loadAdditional(tag)
+        cookingProgress = tag.getIntOr("CookingProgress", 0)
+        // Empty stacks are omitted from the list; clear old render state before loading.
         clearContent()
-        ContainerHelper.loadAllItems(tag, this.items, registries)
-
-        if (tag.contains("PotComponent")) {
-            val component = PotComponent.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("PotComponent"))
-                .result()
-                ?.orElse(null)
-            potComponent = component
+        ContainerHelper.loadAllItems(tag, items)
+        tag.child("PotComponent").ifPresent {
+            potComponent = tag.read("PotComponent", PotComponent.CODEC).orElse(null)
         }
     }
 
@@ -469,7 +478,7 @@ class CampfireBlockEntity(pos: BlockPos, state: BlockState) : BaseContainerBlock
     fun toggleLid(isOpen: Boolean) {
         level?.let { lvl ->
             lvl.playSoundServer(
-                position = blockPos.center,
+                position = Vec3.atCenterOf(blockPos),
                 sound = if (isOpen) CobblemonSounds.CAMPFIRE_POT_OPEN else CobblemonSounds.CAMPFIRE_POT_CLOSE
             )
             lvl.gameEvent(

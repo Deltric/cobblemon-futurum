@@ -8,7 +8,6 @@
 
 package com.cobblemon.mod.common.item.group
 
-import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonItemComponents
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.riding.stats.RidingStat
@@ -20,7 +19,7 @@ import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.CreativeModeTab.DisplayItemsGenerator
 import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters
@@ -62,22 +61,21 @@ object CobblemonItemGroups {
         ItemStack(CobblemonItems.BLACK_AUGURITE)
     }
 
-    @JvmStatic val BLOCKS get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(BLOCKS_KEY)
-    @JvmStatic val UTILITY_ITEMS get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(UTILITY_ITEMS_KEY)
-    @JvmStatic val AGRICULTURE get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(AGRICULTURE_KEY)
-    @JvmStatic val ARCHAEOLOGY get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(ARCHAEOLOGY_KEY)
-    @JvmStatic val CONSUMABLES get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(CONSUMABLES_KEY)
-    @JvmStatic val HELD_ITEMS get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(HELD_ITEMS_KEY)
-    @JvmStatic val EVOLUTION_ITEMS get() = BuiltInRegistries.CREATIVE_MODE_TAB.get(EVOLUTION_ITEMS_KEY)
+    @JvmStatic val BLOCKS get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(BLOCKS_KEY)
+    @JvmStatic val UTILITY_ITEMS get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(UTILITY_ITEMS_KEY)
+    @JvmStatic val AGRICULTURE get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(AGRICULTURE_KEY)
+    @JvmStatic val ARCHAEOLOGY get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(ARCHAEOLOGY_KEY)
+    @JvmStatic val CONSUMABLES get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CONSUMABLES_KEY)
+    @JvmStatic val HELD_ITEMS get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(HELD_ITEMS_KEY)
+    @JvmStatic val EVOLUTION_ITEMS get() = BuiltInRegistries.CREATIVE_MODE_TAB.getValue(EVOLUTION_ITEMS_KEY)
 
-    @JvmStatic val BUILDING_BLOCKS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("building_blocks")), this::blocksInjections)
-    @JvmStatic val COLORED_BLOCKS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("colored_blocks")), this::coloredBlocksInjections)
-    @JvmStatic val FUNCTIONAL_BLOCKS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("functional_blocks")), this::functionalBlocksInjections)
-    @JvmStatic val REDSTONE_BLOCKS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("redstone_blocks")), this::redstoneBlocksInjections)
-    @JvmStatic val FOOD_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("food_and_drinks")), this::foodInjections)
-    @JvmStatic val TOOLS_AND_UTILITIES_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("tools_and_utilities")), this::toolsAndUtilitiesInjections)
-    @JvmStatic val INGREDIENTS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("ingredients")), this::ingredientsInjections)
-    @JvmStatic val OP_BLOCKS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), ResourceLocation.parse("op_blocks")), this::opBlocksInjections)
+    @JvmStatic val COLORED_BLOCKS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("colored_blocks")), this::coloredBlocksInjections)
+    @JvmStatic val FUNCTIONAL_BLOCKS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("functional_blocks")), this::functionalBlocksInjections)
+    @JvmStatic val REDSTONE_BLOCKS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("redstone_blocks")), this::redstoneBlocksInjections)
+    @JvmStatic val FOOD_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("food_and_drinks")), this::foodInjections)
+    @JvmStatic val TOOLS_AND_UTILITIES_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("tools_and_utilities")), this::toolsAndUtilitiesInjections)
+    @JvmStatic val INGREDIENTS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("ingredients")), this::ingredientsInjections)
+    @JvmStatic val OP_BLOCKS_INJECTIONS = this.inject(ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.parse("op_blocks")), this::opBlocksInjections)
 
     fun register(consumer: (holder: ItemGroupHolder) -> CreativeModeTab) {
         ALL.forEach(consumer::invoke)
@@ -93,7 +91,7 @@ object CobblemonItemGroups {
         val key: ResourceKey<CreativeModeTab>,
         val displayIconProvider: () -> ItemStack,
         val entryCollector: DisplayItemsGenerator,
-        val displayName: Component = Component.translatable("itemGroup.${key.location().namespace}.${key.location().path}")
+        val displayName: Component = Component.translatable("itemGroup.${key.identifier().namespace}.${key.identifier().path}")
     )
 
     private fun create(name: String, entryCollector: DisplayItemsGenerator, displayIconProvider: () -> ItemStack): ResourceKey<CreativeModeTab> {
@@ -300,7 +298,7 @@ object CobblemonItemGroups {
             )
             stack.set(
                 DataComponents.CUSTOM_MODEL_DATA,
-                CustomModelData(i)
+                CustomModelData(listOf(i.toFloat()), emptyList(), emptyList(), emptyList())
             )
             entries.accept(stack)
         }
@@ -852,24 +850,6 @@ object CobblemonItemGroups {
         CobblemonItems.pokeBalls.forEach(entries::accept)
         CobblemonItems.pokeRods.forEach(entries::accept)
         CobblemonItems.pokedexes.forEach(entries::accept)
-    }
-
-    private fun blocksInjections(injector: Injector) {
-        if(Cobblemon.implementation.isModInstalled("adorn")) { //adorn modifies vanilla block tab and if we don't follow suit we crash the game
-            injector.putLast(CobblemonItems.APRICORN_LOG)
-            injector.putLast(CobblemonItems.APRICORN_WOOD)
-            injector.putLast(CobblemonItems.STRIPPED_APRICORN_LOG)
-            injector.putLast(CobblemonItems.STRIPPED_APRICORN_WOOD)
-            injector.putLast(CobblemonItems.APRICORN_PLANKS)
-            injector.putLast(CobblemonItems.APRICORN_STAIRS)
-            injector.putLast(CobblemonItems.APRICORN_SLAB)
-            injector.putLast(CobblemonItems.APRICORN_FENCE)
-            injector.putLast(CobblemonItems.APRICORN_FENCE_GATE)
-            injector.putLast(CobblemonItems.APRICORN_DOOR)
-            injector.putLast(CobblemonItems.APRICORN_TRAPDOOR)
-            injector.putLast(CobblemonItems.APRICORN_BUTTON)
-            injector.putLast(CobblemonItems.APRICORN_PRESSURE_PLATE)
-        }
     }
 
     private fun coloredBlocksInjections(injector: Injector) {

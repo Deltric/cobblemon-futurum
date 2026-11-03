@@ -8,15 +8,17 @@
 
 package com.cobblemon.mod.common.block.tmmachine
 
+import net.minecraft.world.phys.Vec3
+import net.minecraft.server.level.ServerLevel
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.block.entity.TMMachineBlockEntity
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.playSoundServer
 import com.cobblemon.mod.common.util.toVec3d
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceKey
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.Containers
@@ -101,11 +103,6 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
             Shapes.box(0.3125, 0.9375, 0.0, 0.375, 1.0, 1.0)
         )
 
-        val CODEC: MapCodec<TMMachineBlock> = RecordCodecBuilder.mapCodec { instance ->
-            instance.group(
-                Properties.CODEC.fieldOf("properties").forGetter { it.properties }
-            ).apply(instance, ::TMMachineBlock)
-        }
     }
 
     init {
@@ -126,14 +123,14 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
         else createTickerHelper(serverType, clientType, TMMachineBlockEntity::serverTick)
     }
 
-    override fun fallOn(level: Level, state: BlockState, pos: BlockPos, entity: Entity, fallDistance: Float) {
+    override fun fallOn(level: Level, state: BlockState, pos: BlockPos, entity: Entity, fallDistance: Double) {
         if (!level.isClientSide && (entity is LivingEntity) &&
             (entity.bbWidth * entity.bbWidth * entity.bbHeight > 0.512F) &&
             (entity.y >= (pos.y + 0.55)) &&
             state.hasProperty(OPEN) && state.getValue(OPEN)
         ) {
             level.setBlockAndUpdate(pos, state.setValue(OPEN, false))
-            level.playSoundServer(position = pos.bottomCenter, sound = CobblemonSounds.TM_MACHINE_CLOSE, volume = 1F, pitch = 1F)
+            level.playSoundServer(position = Vec3.atBottomCenterOf(pos), sound = CobblemonSounds.TM_MACHINE_CLOSE, volume = 1F, pitch = 1F)
         }
     }
 
@@ -156,7 +153,7 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
                     val isOpen = state.getValue(OPEN)
                     level.setBlockAndUpdate(pos, state.setValue(OPEN, !isOpen))
                     level.playSoundServer(
-                        position = pos.bottomCenter,
+                        position = Vec3.atBottomCenterOf(pos),
                         sound = if (isOpen) CobblemonSounds.TM_MACHINE_CLOSE else CobblemonSounds.TM_MACHINE_OPEN,
                         volume = 1F,
                         pitch = 1F
@@ -165,10 +162,10 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
             } else {
                 val serverPlayer = player as? ServerPlayer
                 if (serverPlayer != null) {
-                    val recipeId = cobblemonResource("tm_machine")
+                    val recipeId = ResourceKey.create(Registries.RECIPE, cobblemonResource("tm_machine"))
                     val recipeOpt = level.server?.recipeManager?.byKey(recipeId)
                     recipeOpt?.ifPresent { recipe ->
-                        if (!serverPlayer.recipeBook.contains(recipe)) {
+                        if (!serverPlayer.recipeBook.contains(recipe.id())) {
                             serverPlayer.awardRecipes(listOf(recipe))
                         }
                     }
@@ -180,14 +177,12 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
                 }
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide)
+        return if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(FACING, WATERLOGGED, EMPTY, ACTIVE, OPEN, DISPENSED)
     }
-
-    override fun codec(): MapCodec<TMMachineBlock> = CODEC
 
     override fun getRenderShape(state: BlockState): RenderShape = RenderShape.MODEL
 
@@ -208,9 +203,8 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
 
     override fun getShape(state: BlockState, getter: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape = if (state.getValue(OPEN)) SHAPE_OPEN else SHAPE
 
-    override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, movedByPiston: Boolean) {
-        Containers.dropContentsOnDestroy(state, newState, level, pos)
-        super.onRemove(state, level, pos, newState, movedByPiston)
+    override fun affectNeighborsAfterRemoval(state: BlockState, level: ServerLevel, pos: BlockPos, movedByPiston: Boolean) {
+        Containers.updateNeighboursAfterDestroy(state, level, pos)
     }
 
     override fun isSignalSource(state: BlockState): Boolean = false
@@ -227,7 +221,7 @@ class TMMachineBlock(properties: Properties) : BaseEntityBlock(properties), Simp
         return scaled.coerceIn(0, 15)
     }*/
 
-    override fun getAnalogOutputSignal(state: BlockState, level: Level, pos: BlockPos): Int {
+    override fun getAnalogOutputSignal(state: BlockState, level: Level, pos: BlockPos, direction: Direction): Int {
         val be = level.getBlockEntity(pos) as? TMMachineBlockEntity ?: return 0
 
         // Have comparator output act like a progress bar when burning because that might be super dope to see without going into the menu

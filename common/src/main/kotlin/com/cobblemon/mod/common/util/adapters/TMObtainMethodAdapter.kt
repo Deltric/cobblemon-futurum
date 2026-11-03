@@ -22,7 +22,7 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 object TMObtainMethodAdapter : JsonSerializer<ObtainMethod>, JsonDeserializer<ObtainMethod> {
     private const val VARIANT = "variant"
@@ -36,7 +36,7 @@ object TMObtainMethodAdapter : JsonSerializer<ObtainMethod>, JsonDeserializer<Ob
         this.register(PlayerYObtainMethod::class, PlayerYObtainMethod.ID)
     }
 
-    fun register(type: KClass<out ObtainMethod>, identifier: ResourceLocation) {
+    fun register(type: KClass<out ObtainMethod>, identifier: Identifier) {
         val existing = this.types.put(identifier.toString(), type)
         if (existing != null) {
             Cobblemon.LOGGER.debug(

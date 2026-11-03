@@ -31,11 +31,11 @@ class DrowsySensor : Sensor<PokemonEntity>(20) {
 
     companion object {
         fun drowsyLogic(entity: PokemonEntity) {
-            val world = entity.level()
+            val world = entity.level() as? ServerLevel ?: return
             val rest = entity.behaviour.resting
             val isDrowsy = entity.brain.getMemorySafely(CobblemonMemories.POKEMON_DROWSY).orElse(false)
             val hurtLately = entity.brain.hasMemoryValue(MemoryModuleType.HURT_BY)
-            val shouldBeDrowsy = rest.canSleep && !hurtLately && (world.dayTime.toInt() % 24000) in rest.times && !entity.brain.hasMemoryValue(MemoryModuleType.ANGRY_AT)
+            val shouldBeDrowsy = rest.canSleep && !hurtLately && (world.overworldClockTime.toInt() % 24000) in rest.times && !entity.brain.hasMemoryValue(MemoryModuleType.ANGRY_AT)
             val forcedAsleep = entity.pokemon.status?.status == Statuses.SLEEP
 
             if (entity.isBattling) {

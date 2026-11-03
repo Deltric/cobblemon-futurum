@@ -25,7 +25,7 @@ object ReloadShowdownCommand {
 
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val command = Commands.literal("reloadshowdown")
-            .requires { it.hasPermission(4) }
+            .requires(Commands.hasPermission(Commands.LEVEL_OWNERS))
             .executes(::execute)
         dispatcher.register(command)
     }

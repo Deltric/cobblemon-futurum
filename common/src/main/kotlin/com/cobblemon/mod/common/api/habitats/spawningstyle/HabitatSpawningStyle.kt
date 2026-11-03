@@ -8,8 +8,10 @@
 
 package com.cobblemon.mod.common.api.habitats.spawningstyle
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Holds habitat block specific details about the methodology behind how the habitat block will spawn Pokémon. This is
@@ -21,8 +23,8 @@ import net.minecraft.resources.ResourceLocation
  * @since February 14th, 2026
  */
 sealed interface HabitatSpawningStyle {
-    val type: ResourceLocation
+    val type: Identifier
 
-    fun writeToNBT(nbt: CompoundTag)
-    fun readFromNBT(nbt: CompoundTag)
+    fun save(nbt: ValueOutput)
+    fun load(nbt: ValueInput)
 }

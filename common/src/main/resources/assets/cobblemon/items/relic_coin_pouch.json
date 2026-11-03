@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/relic_coin_pouch_case"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "cobblemon:item/relic_coin_pouch"
+    }
+  }
+}

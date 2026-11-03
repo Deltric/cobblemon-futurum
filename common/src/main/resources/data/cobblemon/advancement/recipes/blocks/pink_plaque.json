@@ -5,7 +5,9 @@
             "conditions": {
                 "items": [
                     {
-                        "items": ["minecraft:iron_ingot"]
+                        "items": [
+                            "minecraft:iron_ingot"
+                        ]
                     }
                 ]
             },
@@ -13,7 +15,9 @@
         },
         "has_the_recipe": {
             "conditions": {
-                "recipe": "cobblemon:pink_plaque"
+                "recipes": [
+                    "cobblemon:pink_plaque"
+                ]
             },
             "trigger": "minecraft:recipe_unlocked"
         }

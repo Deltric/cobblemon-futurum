@@ -298,7 +298,7 @@ object GeneralMoLangFunctions {
         functions["create_itemstack"] = { params ->
             val itemId = params.getString(0).asIdentifierDefaultingNamespace()
             try {
-                val item = BuiltInRegistries.ITEM.get(itemId)
+                val item = BuiltInRegistries.ITEM.getValue(itemId)
                 val count = params.getIntOrNull(1) ?: 1
                 val itemStack = ItemStack(item, count)
                 ObjectValue(itemStack)

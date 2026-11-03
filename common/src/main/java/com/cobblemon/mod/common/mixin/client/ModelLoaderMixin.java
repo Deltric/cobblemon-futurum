@@ -8,88 +8,39 @@
 
 package com.cobblemon.mod.common.mixin.client;
 
-import com.cobblemon.mod.common.client.CobblemonBakingOverrides;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.resources.model.BlockStateModelLoader;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.resources.model.ClientItemInfoLoader;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Arrays;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-@Mixin(ModelBakery.class)
+/** Retains add-on discovery of egg/TM sprites while allowing explicit 26.3 item definitions to win. */
+@Mixin(ClientItemInfoLoader.class)
 public abstract class ModelLoaderMixin {
-    @Shadow abstract UnbakedModel getModel(ResourceLocation resourceLocation);
-
-    @Shadow protected abstract void registerModel(ModelResourceLocation modelId, UnbakedModel unbakedModel);
-
-    @Shadow protected abstract void loadItemModelAndDependencies(ResourceLocation resourceLocation);
-
-    @Unique
-    List<String> dynamicFolders = Arrays.asList("egg", "tm");
-
-    @Inject(
-            method = "<init>",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
-                    ordinal = 1
-            )
-    )
-    public void loadCustomItemModels(BlockColors blockColors,
-                                     ProfilerFiller profiler,
-                                     Map<ResourceLocation, BlockModel> jsonUnbakedModels,
-                                     Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>> blockStates,
-                                     CallbackInfo ci
-    ) {
-        /*
-         * The models/item/*.json's only get loaded if there's an item in the registry that actually asks for it. It
-         * naively looks for things in the root with an item ID and calls upon it, and some of those JSONs reference
-         * other model JSONs and so it cascades a little bit. Used for block models but more importantly here, sprites.
-         *
-         * The thing about the eggs (and TMs) is, we really want the eggs to be addon-compatible in a way that doesn't restrict
-         * the species that can have eggs, so we can't pre-plan all of them. This mixin looks for the things inside the
-         * egg subfolder (which won't get loaded automagically) and manually inserts them into the unbaked model list so
-         * Minecraft loads them for us. We'll then dynamically call these models from the ItemRendererMixin; so it's
-         * hacky at the init stage and hacky at the render stage. Pretty cool in the gameplay stage though.
-         *
-         * - Hiro
-         */
-
-        dynamicFolders.forEach(folder -> {
-            Map<ResourceLocation, Resource> map = Minecraft.getInstance().getResourceManager().listResources("models/item/" + folder, (t) -> true);
-            map.forEach((key, value) -> {
-                ResourceLocation resourceLocation = new ResourceLocation(key.getNamespace(), key.getPath().replace("models/item/", "").replace(".json", ""));
-                this.loadItemModelAndDependencies(resourceLocation);
-            });
-        });
-    }
-
-    @Inject(
-            method = "<init>",
-            at = @At("TAIL")
-    )
-    public void init(BlockColors blockColors,
-                     ProfilerFiller profiler,
-                     Map<ResourceLocation, BlockModel> jsonUnbakedModels,
-                     Map<ResourceLocation, List<BlockStateModelLoader.LoadedJson>> blockStates,
-                     CallbackInfo ci) {
-        CobblemonBakingOverrides.INSTANCE.getModels().forEach(bakingOverride -> {
-            var unbakedModel = this.getModel(bakingOverride.getModelLocation());
-            this.registerModel(bakingOverride.getModelIdentifier(), unbakedModel);
-        });
+    @Inject(method = "scheduleLoad", at = @At("RETURN"), cancellable = true)
+    private static void cobblemon$dynamicItemDefinitions(ResourceManager manager, Executor executor,
+            CallbackInfoReturnable<CompletableFuture<ClientItemInfoLoader.LoadedClientInfos>> cir) {
+        cir.setReturnValue(cir.getReturnValue().thenApplyAsync(loaded -> {
+            var models = new HashMap<>(loaded.contents());
+            for (String folder : List.of("egg", "tm")) {
+                manager.listResources("models/item/" + folder, id -> id.getPath().endsWith(".json")).forEach((file, resource) -> {
+                    String path = file.getPath().substring("models/".length(), file.getPath().length() - ".json".length());
+                    Identifier cuboidId = file.withPath(path);
+                    Identifier itemId = file.withPath(path.substring("item/".length()));
+                    models.putIfAbsent(itemId, new ClientItem(
+                            new CuboidItemModelWrapper.Unbaked(cuboidId, Optional.empty(), List.of()), ClientItem.Properties.DEFAULT));
+                });
+            }
+            return new ClientItemInfoLoader.LoadedClientInfos(models);
+        }, executor));
     }
 }

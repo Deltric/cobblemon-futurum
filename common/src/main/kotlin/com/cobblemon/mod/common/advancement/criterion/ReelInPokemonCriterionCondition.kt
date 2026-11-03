@@ -12,22 +12,22 @@ import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import java.util.Optional
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
-class ReelInPokemonContext(val species : ResourceLocation, val baitId: ResourceLocation)
+class ReelInPokemonContext(val species : Identifier, val baitId: Identifier)
 
 class ReelInPokemonCriterionCondition(
-        playerCtx: Optional<ContextAwarePredicate>,
+        playerCtx: Optional<Holder<LootItemCondition>>,
         val species: String,
         val baitId: String // also allows "cobblemon:empty_bait" to indicate that no bait is allowed for this criterion to match
 ) : SimpleCriterionCondition<ReelInPokemonContext>(playerCtx) {
 
     companion object {
         val CODEC: Codec<ReelInPokemonCriterionCondition> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter { it.playerCtx },
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter { it.playerCtx },
             Codec.STRING.optionalFieldOf("species", "any").forGetter { it.species },
             Codec.STRING.optionalFieldOf("baitId", "any").forGetter { it.baitId }
         ).apply(it, { playerCtx, pokemonId, baitId -> ReelInPokemonCriterionCondition(playerCtx, pokemonId, baitId) }) }

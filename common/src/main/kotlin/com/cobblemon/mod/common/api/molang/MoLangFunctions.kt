@@ -70,7 +70,7 @@ import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.nbt.Tag
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.TagKey
@@ -310,7 +310,7 @@ object MoLangFunctions {
             }
         }
 
-    fun <T> Holder<T>.asMoLangValue(key: ResourceKey<Registry<T>>): ObjectValue<Holder<T>> {
+    fun <T : Any> Holder<T>.asMoLangValue(key: ResourceKey<Registry<T>>): ObjectValue<Holder<T>> {
         val value =
             ObjectValue(
                 obj = this,
@@ -318,18 +318,18 @@ object MoLangFunctions {
                     it
                         .unwrapKey()
                         .get()
-                        .location()
+                        .identifier()
                         .toString()
                 },
             )
         value.functions["is_in"] =
             Function put@{ params: MoParams ->
-                val tag = TagKey.create(key, ResourceLocation.parse(params.getString(0).replace("#", "")))
+                val tag = TagKey.create(key, Identifier.parse(params.getString(0).replace("#", "")))
                 return@put DoubleValue(if (value.obj.`is`(tag)) 1.0 else 0.0)
             }
         value.functions["is_of"] =
             Function put@{ params: MoParams ->
-                val identifier = ResourceLocation.parse(params.getString(0))
+                val identifier = Identifier.parse(params.getString(0))
                 return@put DoubleValue(if (value.obj.`is`(identifier)) 1.0 else 0.0)
             }
         return value
@@ -455,11 +455,11 @@ object MoLangFunctions {
     fun readMoValueFromNBT(nbt: Tag): MoValue =
         when (nbt) {
             is DoubleTag -> {
-                DoubleValue(nbt.asDouble)
+                DoubleValue(nbt.value())
             }
 
             is StringTag -> {
-                StringValue(nbt.asString)
+                StringValue(nbt.value())
             }
 
             is ListTag -> {
@@ -475,7 +475,7 @@ object MoLangFunctions {
 
             is CompoundTag -> {
                 val variable = VariableStruct(hashMapOf())
-                nbt.allKeys.toList().forEach { key ->
+                nbt.keySet().toList().forEach { key ->
                     val value = readMoValueFromNBT(nbt[key]!!)
                     variable.map[key] = value
                 }
@@ -489,5 +489,5 @@ object MoLangFunctions {
 }
 
 // TODO: this one is unused. Should we move it to [MoLangFunctions] object?
-fun Either<ResourceLocation, ExpressionLike>.runScript(runtime: MoLangRuntime) =
+fun Either<Identifier, ExpressionLike>.runScript(runtime: MoLangRuntime) =
     map({ CobblemonScripts.run(it, runtime) }, { it.resolve(runtime) })

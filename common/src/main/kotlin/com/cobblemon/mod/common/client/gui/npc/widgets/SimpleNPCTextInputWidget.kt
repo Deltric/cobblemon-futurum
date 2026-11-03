@@ -8,23 +8,24 @@
 
 package com.cobblemon.mod.common.client.gui.npc.widgets
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.drawScaledText
-import net.minecraft.Util
+import net.minecraft.util.Util
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Style
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import kotlin.math.floor
 
 class SimpleNPCTextInputWidget(
     getter: () -> String,
-    val texture: ResourceLocation? = null,
+    val texture: Identifier? = null,
     private val setter: (String) -> Unit,
     posX: Int,
     posY: Int,
@@ -62,8 +63,10 @@ class SimpleNPCTextInputWidget(
         super.setFocused(focused)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        val clickedState = super.mouseClicked(mouseX, mouseY, button)
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+        val clickedState = super.mouseClicked(event, doubleClick)
 
         if (wrap) {
             val splitLines = Minecraft.getInstance().font.splitter.splitLines(value, width - 8, Style.EMPTY)
@@ -86,23 +89,21 @@ class SimpleNPCTextInputWidget(
                     }
                 }
 
-                this.moveCursorTo(maxOf(0, unwrappedLine.length - 1), Screen.hasShiftDown())
+                this.moveCursorTo(maxOf(0, unwrappedLine.length - 1), event.hasShiftDown())
             }
         }
 
         return clickedState
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (texture != null) {
-            blitk(
-                matrixStack = context.pose(),
-                x = x,
-                y = y,
-                width = width,
-                height = height,
-                texture = texture
-            )
+            blitk(context = context,
+            x = x,
+            y = y,
+            width = width,
+            height = height,
+            texture = texture)
         }
 
         if (wrap) {
@@ -135,7 +136,7 @@ class SimpleNPCTextInputWidget(
             if (showCursor && !value.isEmpty() && cursorPosition != value.length) {
                 val startToCursorWidth = Minecraft.getInstance().font.width((cursorLine.substring(0, cursorLinePos).text()))
                 context.fill(
-                    RenderType.guiTextHighlight(),
+                    RenderPipelines.GUI_TEXT_HIGHLIGHT,
                     x + startToCursorWidth - 1,
                     y + cursorLineIndex * 10 + 1,
                     x + startToCursorWidth,
@@ -144,7 +145,7 @@ class SimpleNPCTextInputWidget(
                 )
             }
         } else {
-            super.renderWidget(context, mouseX, mouseY, delta)
+            super.extractWidgetRenderState(context, mouseX, mouseY, delta)
         }
     }
 }

@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.bold
@@ -19,7 +20,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundEvent
@@ -100,16 +101,14 @@ class PartyWidget(
         }
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val matrices = context.pose()
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = backgroundResource,
             x = x,
             y = y,
             width = width,
-            height = height
-        )
+            height = height)
 
         // Label
         drawScaledText(
@@ -122,31 +121,35 @@ class PartyWidget(
             shadow = true
         )
 
-        swapButton.render(context, pMouseX, pMouseY, pPartialTicks)
+        swapButton.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = swapButtonIconResource,
             x = (x + 90) / SCALE,
             y = (y - 6) / SCALE,
             width = 12,
             height = 17,
-            scale = SCALE
-        )
+            scale = SCALE)
 
-        partySlots.forEach { it.render(context, pMouseX, pMouseY, pPartialTicks) }
+        partySlots.forEach { it.extractRenderState(context, pMouseX, pMouseY, pPartialTicks) }
 
         if (draggedSlot != null) {
-            matrices.pushPose()
-            matrices.translate(0.0, 0.0, 500.0)
-            draggedSlot!!.render(context, pMouseX, pMouseY, pPartialTicks)
-            matrices.popPose()
+            matrices.pushMatrix()
+            context.nextStratum()
+            matrices.translate((0.0).toFloat(), (0.0).toFloat())
+            draggedSlot!!.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
+            matrices.popMatrix()
         }
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
+        isActive && (super.isMouseOver(mouseX, mouseY) || swapButton.isMouseOver(mouseX, mouseY))
+
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val pMouseX = event.x()
+        val pMouseY = event.y()
         if (swapButton.isHovered) {
-            swapButton.onPress()
+            swapButton.onPress(event)
             swapButton.buttonActive = swapEnabled
         }
 
@@ -169,10 +172,12 @@ class PartyWidget(
                 }
             }
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
+        val pMouseX = event.x()
+        val pMouseY = event.y()
         if (swapEnabled) {
             if (swapSource != null) {
                 val index = getIndexFromPos(pMouseX, pMouseY)

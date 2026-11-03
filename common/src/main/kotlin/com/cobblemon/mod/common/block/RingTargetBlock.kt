@@ -8,8 +8,8 @@
 
 package com.cobblemon.mod.common.block.decor
 
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.item.context.BlockPlaceContext
@@ -53,7 +53,7 @@ class RingTargetBlock(settings: Properties) : TargetBlock(settings), SimpleWater
         return null
     }
 
-    override fun getFluidState(blockState: BlockState): FluidState? {
+    override fun getFluidState(blockState: BlockState): FluidState {
         return if (blockState.getValue(WATERLOGGED)) Fluids.WATER.getSource(false) else super.getFluidState(blockState)
     }
 
@@ -77,19 +77,12 @@ class RingTargetBlock(settings: Properties) : TargetBlock(settings), SimpleWater
         }
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
         return if (direction.opposite == state.getValue(FACING) && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-        else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+        else super.updateShape(state, world, ticks, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun rotate(state: BlockState, rotation: Rotation): BlockState {
@@ -101,10 +94,6 @@ class RingTargetBlock(settings: Properties) : TargetBlock(settings), SimpleWater
     }
 
     companion object {
-        val CODEC: MapCodec<RingTargetBlock> = RecordCodecBuilder.mapCodec {
-            it.group(
-                propertiesCodec()
-        ).apply(it, ::RingTargetBlock) }
 
         val OUTPUT_POWER = BlockStateProperties.POWER;
 

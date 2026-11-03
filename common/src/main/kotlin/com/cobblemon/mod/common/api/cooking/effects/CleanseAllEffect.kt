@@ -12,15 +12,16 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.entity.Entity
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.LivingEntity
 
 class CleanseAllEffect : MobEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF) {
-    override fun isInstantenous() = true
-    override fun applyInstantenousEffect(source: Entity?, indirect: Entity?, target: LivingEntity, amplifier: Int, proximity: Double) {
+    override fun isInstantaneous() = true
+    override fun applyInstantaneousEffect(level: ServerLevel, source: Entity?, indirect: Entity?, target: LivingEntity, amplifier: Int, proximity: Double) {
         target.removeAllEffects()
     }
 
-    override fun applyEffectTick(livingEntity: LivingEntity, amplifier: Int): Boolean {
+    override fun applyEffectTick(level: ServerLevel, livingEntity: LivingEntity, amplifier: Int): Boolean {
         if (livingEntity is ServerPlayer){
             livingEntity.removeAllEffects()
         }

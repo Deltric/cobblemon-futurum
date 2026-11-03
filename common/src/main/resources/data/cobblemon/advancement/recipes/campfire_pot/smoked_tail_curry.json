@@ -1,32 +1,34 @@
 {
-  "parent": "cobblemon:recipes/campfire_pot",
-  "criteria": {
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:campfire_pot/smoked_tail_curry"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    "parent": "cobblemon:recipes/campfire_pot",
+    "criteria": {
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:campfire_pot/smoked_tail_curry"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        },
+        "has_tail": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": "cobblemon:tasty_tail"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        }
     },
-    "has_tail": {
-      "conditions": {
-        "items": [
-          {
-            "items": "cobblemon:tasty_tail"
-          }
+    "requirements": [
+        [
+            "has_the_recipe",
+            "has_tail"
         ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:campfire_pot/smoked_tail_curry"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_the_recipe",
-      "has_tail"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:campfire_pot/smoked_tail_curry"
-    ]
-  }
 }

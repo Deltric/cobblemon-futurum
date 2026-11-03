@@ -12,7 +12,8 @@ import com.cobblemon.mod.common.block.TypeGemClusterBlock
 import com.cobblemon.mod.common.block.TypeGemCoreBlock
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerPlayer
 import java.util.*
@@ -20,12 +21,12 @@ import java.util.*
 class PlantTypeGemContext(val pos: BlockPos, val block: TypeGemClusterBlock)
 
 class PlantTypeGemCriterion(
-    playerCtx: Optional<ContextAwarePredicate>
+    playerCtx: Optional<Holder<LootItemCondition>>
 ): SimpleCriterionCondition<PlantTypeGemContext>(playerCtx) {
 
     companion object {
         val CODEC: Codec<PlantTypeGemCriterion> = RecordCodecBuilder.create { it.group(
-            ContextAwarePredicate.CODEC.optionalFieldOf("player").forGetter(PlantTypeGemCriterion::playerCtx)
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(PlantTypeGemCriterion::playerCtx)
         ).apply(it, ::PlantTypeGemCriterion) }
     }
 

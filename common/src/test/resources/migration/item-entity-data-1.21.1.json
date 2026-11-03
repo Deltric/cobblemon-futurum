@@ -1,0 +1,1407 @@
+{
+  "oak_boat/missing_id": {
+    "source": {
+      "id": "minecraft:oak_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          }
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "oak_boat/explicit_old_id": {
+    "source": {
+      "id": "minecraft:oak_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:boat"
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "oak_boat/explicit_unknown_id": {
+    "source": {
+      "id": "minecraft:oak_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat"
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "spruce_boat/missing_id": {
+    "source": {
+      "id": "minecraft:spruce_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          }
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "spruce_boat/explicit_old_id": {
+    "source": {
+      "id": "minecraft:spruce_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:boat"
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "spruce_boat/explicit_unknown_id": {
+    "source": {
+      "id": "minecraft:spruce_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat"
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "oak_chest_boat/missing_id": {
+    "source": {
+      "id": "minecraft:oak_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 19,
+                "minecraft:custom_data": {
+                  "fixture": {
+                    "ratio": 0.125
+                  }
+                }
+              }
+            }
+          ],
+          "id": "minecraft:chest_boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "oak_chest_boat/explicit_old_id": {
+    "source": {
+      "id": "minecraft:oak_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:chest_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:chest_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 19,
+                "minecraft:custom_data": {
+                  "fixture": {
+                    "ratio": 0.125
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "oak_chest_boat/explicit_unknown_id": {
+    "source": {
+      "id": "minecraft:oak_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "spruce_chest_boat/missing_id": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 19,
+                "minecraft:custom_data": {
+                  "fixture": {
+                    "ratio": 0.125
+                  }
+                }
+              }
+            }
+          ],
+          "id": "minecraft:chest_boat"
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "spruce_chest_boat/explicit_old_id": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:chest_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:chest_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 19,
+                "minecraft:custom_data": {
+                  "fixture": {
+                    "ratio": 0.125
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "spruce_chest_boat/explicit_unknown_id": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "example:custom_boat",
+          "Items": [
+            {
+              "Slot": 3,
+              "id": "minecraft:stone",
+              "Count": 7,
+              "tag": {
+                "CustomModelData": 19,
+                "fixture": {
+                  "ratio": 0.125
+                }
+              }
+            }
+          ]
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "bundle/nested_chest_boat": {
+    "source": {
+      "id": "minecraft:bundle",
+      "Count": 7,
+      "tag": {
+        "Items": [
+          {
+            "id": "minecraft:oak_chest_boat",
+            "Count": 3,
+            "tag": {
+              "EntityTag": {
+                "Type": "spruce",
+                "unknown_entity": {
+                  "ratio": 0.375,
+                  "nested": [
+                    7,
+                    "keep"
+                  ]
+                },
+                "Items": [
+                  {
+                    "Slot": 3,
+                    "id": "minecraft:stone",
+                    "Count": 7,
+                    "tag": {
+                      "CustomModelData": 19,
+                      "fixture": {
+                        "ratio": 0.125
+                      }
+                    }
+                  }
+                ]
+              },
+              "fixture": {
+                "ratio": 0.625,
+                "text": "keep"
+              },
+              "CustomModelData": 42
+            }
+          }
+        ],
+        "fixture": {
+          "ratio": 0.625
+        }
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:bundle",
+      "count": 7,
+      "components": {
+        "minecraft:bundle_contents": [
+          {
+            "id": "minecraft:oak_chest_boat",
+            "count": 3,
+            "components": {
+              "minecraft:custom_model_data": 42,
+              "minecraft:entity_data": {
+                "Type": "spruce",
+                "unknown_entity": {
+                  "ratio": 0.375,
+                  "nested": [
+                    7,
+                    "keep"
+                  ]
+                },
+                "Items": [
+                  {
+                    "Slot": 3,
+                    "id": "minecraft:stone",
+                    "count": 7,
+                    "components": {
+                      "minecraft:custom_model_data": 19,
+                      "minecraft:custom_data": {
+                        "fixture": {
+                          "ratio": 0.125
+                        }
+                      }
+                    }
+                  }
+                ],
+                "id": "minecraft:chest_boat"
+              },
+              "minecraft:custom_data": {
+                "fixture": {
+                  "ratio": 0.625,
+                  "text": "keep"
+                }
+              }
+            }
+          }
+        ],
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625
+          }
+        }
+      }
+    }
+  },
+  "chest_boat/nested_chest_boat": {
+    "source": {
+      "id": "minecraft:oak_chest_boat",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:chest_boat",
+          "Items": [
+            {
+              "id": "minecraft:oak_chest_boat",
+              "Count": 3,
+              "tag": {
+                "EntityTag": {
+                  "Type": "spruce",
+                  "unknown_entity": {
+                    "ratio": 0.375,
+                    "nested": [
+                      7,
+                      "keep"
+                    ]
+                  },
+                  "Items": [
+                    {
+                      "Slot": 3,
+                      "id": "minecraft:stone",
+                      "Count": 7,
+                      "tag": {
+                        "CustomModelData": 19,
+                        "fixture": {
+                          "ratio": 0.125
+                        }
+                      }
+                    }
+                  ]
+                },
+                "fixture": {
+                  "ratio": 0.625,
+                  "text": "keep"
+                },
+                "CustomModelData": 42
+              }
+            }
+          ]
+        },
+        "fixture": {
+          "ratio": 0.625,
+          "text": "keep"
+        },
+        "CustomModelData": 42
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:oak_chest_boat",
+      "count": 7,
+      "components": {
+        "minecraft:custom_model_data": 42,
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "unknown_entity": {
+            "ratio": 0.375,
+            "nested": [
+              7,
+              "keep"
+            ]
+          },
+          "id": "minecraft:chest_boat",
+          "Items": [
+            {
+              "id": "minecraft:oak_chest_boat",
+              "count": 3,
+              "components": {
+                "minecraft:custom_model_data": 42,
+                "minecraft:entity_data": {
+                  "Type": "spruce",
+                  "unknown_entity": {
+                    "ratio": 0.375,
+                    "nested": [
+                      7,
+                      "keep"
+                    ]
+                  },
+                  "Items": [
+                    {
+                      "Slot": 3,
+                      "id": "minecraft:stone",
+                      "count": 7,
+                      "components": {
+                        "minecraft:custom_model_data": 19,
+                        "minecraft:custom_data": {
+                          "fixture": {
+                            "ratio": 0.125
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "id": "minecraft:chest_boat"
+                },
+                "minecraft:custom_data": {
+                  "fixture": {
+                    "ratio": 0.625,
+                    "text": "keep"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "minecraft:custom_data": {
+          "fixture": {
+            "ratio": 0.625,
+            "text": "keep"
+          }
+        }
+      }
+    }
+  },
+  "shulker_nested_boat": {
+    "source": {
+      "id": "minecraft:shulker_box",
+      "Count": 7,
+      "tag": {
+        "BlockEntityTag": {
+          "Items": [
+            {
+              "id": "minecraft:spruce_chest_boat",
+              "Count": 1,
+              "tag": {
+                "EntityTag": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "id": "minecraft:stone",
+                      "Count": 7,
+                      "Slot": 2,
+                      "tag": {
+                        "CustomModelData": 43,
+                        "opaque": {
+                          "fraction": 0.375
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Slot": 3
+            }
+          ]
+        }
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:shulker_box",
+      "count": 7,
+      "components": {
+        "minecraft:container": [
+          {
+            "slot": 3,
+            "item": {
+              "id": "minecraft:spruce_chest_boat",
+              "count": 1,
+              "components": {
+                "minecraft:entity_data": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "Slot": 2,
+                      "id": "minecraft:stone",
+                      "count": 7,
+                      "components": {
+                        "minecraft:custom_model_data": 43,
+                        "minecraft:custom_data": {
+                          "opaque": {
+                            "fraction": 0.375
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "id": "minecraft:chest_boat"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "chest_minecart_nested_boat": {
+    "source": {
+      "id": "minecraft:chest_minecart",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "Items": [
+            {
+              "id": "minecraft:spruce_chest_boat",
+              "Count": 1,
+              "tag": {
+                "EntityTag": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "id": "minecraft:stone",
+                      "Count": 7,
+                      "Slot": 2,
+                      "tag": {
+                        "CustomModelData": 43,
+                        "opaque": {
+                          "fraction": 0.375
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Slot": 4
+            }
+          ]
+        }
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:chest_minecart",
+      "count": 7,
+      "components": {
+        "minecraft:entity_data": {
+          "Items": [
+            {
+              "Slot": 4,
+              "id": "minecraft:spruce_chest_boat",
+              "count": 1,
+              "components": {
+                "minecraft:entity_data": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "Slot": 2,
+                      "id": "minecraft:stone",
+                      "count": 7,
+                      "components": {
+                        "minecraft:custom_model_data": 43,
+                        "minecraft:custom_data": {
+                          "opaque": {
+                            "fraction": 0.375
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "id": "minecraft:chest_boat"
+                }
+              }
+            }
+          ],
+          "id": "minecraft:chest_minecart"
+        }
+      }
+    }
+  },
+  "armor_stand_nested_boat": {
+    "source": {
+      "id": "minecraft:armor_stand",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "ArmorItems": [
+            {
+              "id": "minecraft:spruce_chest_boat",
+              "Count": 1,
+              "tag": {
+                "EntityTag": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "id": "minecraft:stone",
+                      "Count": 7,
+                      "Slot": 2,
+                      "tag": {
+                        "CustomModelData": 43,
+                        "opaque": {
+                          "fraction": 0.375
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:armor_stand",
+      "count": 7,
+      "components": {
+        "minecraft:entity_data": {
+          "ArmorItems": [
+            {
+              "id": "minecraft:spruce_chest_boat",
+              "count": 1,
+              "components": {
+                "minecraft:entity_data": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "Slot": 2,
+                      "id": "minecraft:stone",
+                      "count": 7,
+                      "components": {
+                        "minecraft:custom_model_data": 43,
+                        "minecraft:custom_data": {
+                          "opaque": {
+                            "fraction": 0.375
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "id": "minecraft:chest_boat"
+                }
+              }
+            }
+          ],
+          "id": "minecraft:armor_stand"
+        }
+      }
+    }
+  },
+  "unknown_entity_nested_boat": {
+    "source": {
+      "id": "minecraft:chest_minecart",
+      "Count": 7,
+      "tag": {
+        "EntityTag": {
+          "id": "example:opaque",
+          "Items": [
+            {
+              "id": "minecraft:spruce_chest_boat",
+              "Count": 1,
+              "tag": {
+                "EntityTag": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "id": "minecraft:stone",
+                      "Count": 7,
+                      "Slot": 2,
+                      "tag": {
+                        "CustomModelData": 43,
+                        "opaque": {
+                          "fraction": 0.375
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Slot": 4
+            }
+          ]
+        }
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:chest_minecart",
+      "count": 7,
+      "components": {
+        "minecraft:entity_data": {
+          "id": "example:opaque",
+          "Items": [
+            {
+              "id": "minecraft:spruce_chest_boat",
+              "Count": 1,
+              "tag": {
+                "EntityTag": {
+                  "Type": "spruce",
+                  "Items": [
+                    {
+                      "id": "minecraft:stone",
+                      "Count": 7,
+                      "Slot": 2,
+                      "tag": {
+                        "CustomModelData": 43,
+                        "opaque": {
+                          "fraction": 0.375
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Slot": 4
+            }
+          ]
+        }
+      }
+    }
+  },
+  "legacy_missing_Count": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "id": "minecraft:stone",
+              "Count": 7,
+              "Slot": 2,
+              "tag": {
+                "CustomModelData": 43
+              }
+            }
+          ]
+        }
+      }
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "Slot": 2,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 43
+              }
+            }
+          ],
+          "id": "minecraft:chest_boat"
+        }
+      }
+    }
+  },
+  "legacy_nonnumeric_Count": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "id": "minecraft:stone",
+              "Count": 7,
+              "Slot": 2,
+              "tag": {
+                "CustomModelData": 43
+              }
+            }
+          ]
+        }
+      },
+      "Count": "opaque"
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "Slot": 2,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 43
+              }
+            }
+          ],
+          "id": "minecraft:chest_boat"
+        }
+      },
+      "Count": "opaque"
+    }
+  },
+  "legacy_zero_Count": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "id": "minecraft:stone",
+              "Count": 7,
+              "Slot": 2,
+              "tag": {
+                "CustomModelData": 43
+              }
+            }
+          ]
+        }
+      },
+      "Count": 0
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "count": 0,
+      "components": {
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "Slot": 2,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 43
+              }
+            }
+          ],
+          "id": "minecraft:chest_boat"
+        }
+      }
+    }
+  },
+  "legacy_negative_Count": {
+    "source": {
+      "id": "minecraft:spruce_chest_boat",
+      "tag": {
+        "EntityTag": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "id": "minecraft:stone",
+              "Count": 7,
+              "Slot": 2,
+              "tag": {
+                "CustomModelData": 43
+              }
+            }
+          ]
+        }
+      },
+      "Count": -3
+    },
+    "canonical_1_21_1": {
+      "id": "minecraft:spruce_chest_boat",
+      "count": -3,
+      "components": {
+        "minecraft:entity_data": {
+          "Type": "spruce",
+          "Items": [
+            {
+              "Slot": 2,
+              "id": "minecraft:stone",
+              "count": 7,
+              "components": {
+                "minecraft:custom_model_data": 43
+              }
+            }
+          ],
+          "id": "minecraft:chest_boat"
+        }
+      }
+    }
+  }
+}

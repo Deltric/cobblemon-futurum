@@ -23,14 +23,18 @@
         "predicates": [
           {
             "type": "minecraft:matching_blocks",
-            "offset": [0, 1, 0],
+            "offset": [
+              0,
+              1,
+              0
+            ],
             "blocks": "minecraft:air"
           },
           {
             "type": "minecraft:would_survive",
             "state": {
-              "Name": "cobblemon:revival_herb",
-              "Properties": {
+              "id": "cobblemon:revival_herb",
+              "properties": {
                 "is_wild": "true"
               }
             }

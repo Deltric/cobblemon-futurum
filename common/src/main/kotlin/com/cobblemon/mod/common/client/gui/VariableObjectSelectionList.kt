@@ -8,13 +8,14 @@
 
 package com.cobblemon.mod.common.client.gui
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.gui.blitk
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.CommonComponents
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import kotlin.math.floor
 
 open class VariableObjectSelectionList(x: Int, y: Int, width: Int, height: Int): AbstractWidget(x, y, width, height, CommonComponents.EMPTY) {
@@ -67,7 +68,7 @@ open class VariableObjectSelectionList(x: Int, y: Int, width: Int, height: Int):
         listHeight += entry.height
     }
 
-    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun extractWidgetRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
         var stackHeight = -scrollAmount.toInt()
         guiGraphics.enableScissor(x, y, x + width, y + height)
         children.forEachIndexed { index, entry ->
@@ -106,18 +107,20 @@ open class VariableObjectSelectionList(x: Int, y: Int, width: Int, height: Int):
         return true
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val pMouseX = event.x()
+        val pMouseY = event.y()
         val entry = getEntryAtPosition(pMouseX.toInt(), pMouseY.toInt())
         if (entry != null) {
-            return entry.mouseClicked(pMouseX, pMouseY, pButton)
+            return entry.mouseClicked(event, doubleClick)
         }
         return false
     }
 
-    override fun mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
         return children.any {
-            it.mouseReleased(pMouseX, pMouseY, pButton)
-        } || super.mouseReleased(pMouseX, pMouseY, pButton)
+            it.mouseReleased(event)
+        } || super.mouseReleased(event)
     }
 
     fun getRowTop(entry: Entry): Int {
@@ -144,10 +147,10 @@ open class VariableObjectSelectionList(x: Int, y: Int, width: Int, height: Int):
 
         override fun isFocused(): Boolean = widgetFocused
 
-        abstract fun render(guiGraphics: GuiGraphics, index: Int, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTick: Float)
+        abstract fun render(guiGraphics: GuiGraphicsExtractor, index: Int, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTick: Float)
     }
 
     inner class EmptySeparator(height: Int): Entry(height) {
-        override fun render(guiGraphics: GuiGraphics, index: Int, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTick: Float) {}
+        override fun render(guiGraphics: GuiGraphicsExtractor, index: Int, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTick: Float) {}
     }
 }

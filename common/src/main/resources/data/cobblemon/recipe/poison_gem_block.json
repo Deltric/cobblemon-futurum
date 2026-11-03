@@ -6,9 +6,7 @@
     "##"
   ],
   "key": {
-    "#": {
-      "item": "cobblemon:poison_gem"
-    }
+    "#": "cobblemon:poison_gem"
   },
   "result": {
     "id": "cobblemon:poison_gem_block",

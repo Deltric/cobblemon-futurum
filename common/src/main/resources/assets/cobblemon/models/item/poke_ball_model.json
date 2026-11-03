@@ -1,6 +1,7 @@
 {
 	"texture_size": [64, 32],
 	"textures": {
+		"particle": "#layer0",
 		"layer0": "cobblemon:item/poke_balls/models/poke_ball"
 	},
 	"elements": [

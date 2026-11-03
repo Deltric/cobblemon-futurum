@@ -10,6 +10,8 @@ package com.cobblemon.mod.common.mixin;
 
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.CobblemonEntities;
+import net.minecraft.world.phys.Vec3;
 import com.cobblemon.mod.common.mixin.accessor.BeeDataAccessor;
 import com.cobblemon.mod.common.mixin.accessor.BeehiveBlockEntityAccessor;
 import com.cobblemon.mod.common.mixin.accessor.BlockEntityAccessor;
@@ -43,7 +45,7 @@ public abstract class BeehiveBlockEntityMixin {
         if (player != null) {
             final BeehiveBlockEntity blockEntity = (BeehiveBlockEntity) (Object) this;
             // if the block is sedated or the player is too far away, no aggro should be applied
-            if (blockEntity.isSedated() || player.position().distanceToSqr(blockEntity.getBlockPos().getCenter()) > 16.0)
+            if (blockEntity.isSedated() || player.position().distanceToSqr(Vec3.atCenterOf(blockEntity.getBlockPos())) > 16.0)
                 return;
             // from this point need to access private members of the block entity
             final BeehiveBlockEntityAccessor blockEntityAccessor = (BeehiveBlockEntityAccessor) this;
@@ -53,10 +55,7 @@ public abstract class BeehiveBlockEntityMixin {
             storedList.removeIf((beeData) -> {
                         BeehiveBlockEntity.Occupant occupant = ((BeeDataAccessor) beeData).invokeToOccupant();
                         // Checking the for the tag allows us to make sure it's one of our pokemon before trying to rehydrate it into an entity
-                        boolean isPokemon = false;
-                        if (occupant.entityData().contains("id")) {
-                            isPokemon = "cobblemon:pokemon".equals(occupant.entityData().getUnsafe().getString("id"));
-                        }
+                        boolean isPokemon = occupant.entityData().type() == CobblemonEntities.POKEMON;
                         if (isPokemon) {
                             return BeehiveBlockEntityAccessor.releaseOccupant(
                                     ((BlockEntityAccessor) blockEntityAccessor).getLevel(),

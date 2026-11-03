@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.net.messages.server.riding
 
+import com.cobblemon.mod.common.util.readVec3
+import com.cobblemon.mod.common.util.writeVec3
 import com.cobblemon.mod.common.api.net.NetworkPacket
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.network.RegistryFriendlyByteBuf

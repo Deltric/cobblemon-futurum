@@ -6,7 +6,7 @@ plugins {
     id("java")
     id("java-library")
     id("maven-publish")
-    id("dev.architectury.loom")
+    id("dev.architectury.loom-no-remap")
     id("net.nemerosa.versioning")
 }
 
@@ -42,11 +42,8 @@ publishing {
 
     publications {
         create<MavenPublication>(project.name) {
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
-
-            @Suppress("UnstableApiUsage")
-            loom.disableDeprecatedPomGeneration(this)
+            artifact(if (project.name == "common") tasks.jar else tasks.named<Jar>("shadowJar"))
+            artifact(tasks.named<Jar>("sourcesJar"))
 
             groupId = "com.cobblemon"
             artifactId = project.findProperty("maven.artifactId")?.toString() ?: project.name

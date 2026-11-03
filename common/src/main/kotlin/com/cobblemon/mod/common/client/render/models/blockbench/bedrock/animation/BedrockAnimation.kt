@@ -32,7 +32,7 @@ import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
@@ -105,7 +105,7 @@ class BedrockParticleKeyframe(
 
 class BedrockSoundKeyframe(
     seconds: Float,
-    val sound: ResourceLocation
+    val sound: Identifier
 ): BedrockEffectKeyframe(seconds) {
     override fun run(entity: Entity?, state: PosableState) {
         val soundEvent = SoundEvent.createVariableRangeEvent(sound) // Means we don't need to setup a sound registry entry for every single thing
@@ -297,8 +297,8 @@ class MolangBoneValue(
     override fun resolve(time: Double, runtime: MoLangRuntime): Vec3 {
         val environment = runtime.environment
         environment.setSimpleVariable("anim_time", DoubleValue(time))
-        environment.setSimpleVariable("camera_rotation_x", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera.rotation().x.toDouble()))
-        environment.setSimpleVariable("camera_rotation_y", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera.rotation().y.toDouble()))
+        environment.setSimpleVariable("camera_rotation_x", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera().rotation().x.toDouble()))
+        environment.setSimpleVariable("camera_rotation_y", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera().rotation().y.toDouble()))
         return Vec3(
             runtime.resolveDouble(x),
             runtime.resolveDouble(y) * yMul,

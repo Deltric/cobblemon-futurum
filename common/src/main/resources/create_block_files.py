@@ -38,9 +38,9 @@ loot_table_template = {
       "type": "minecraft:item",
       "name": "cobblemon:{}".format(id)
     }],
-    "conditions": [{
-      "condition": "minecraft:survives_explosion"
-    }]
+    "condition": {
+      "type": "minecraft:survives_explosion"
+    }
   }]
 }
 print("Generated loot table template")
@@ -58,7 +58,7 @@ with open(assets_dir + "/models/item/{}.json".format(id), "x") as f:
   json.dump(item_model_template, f, indent=3)
 print("Created item model file")
 
-with open(data_dir + "/loot_tables/blocks/{}.json".format(id), "x") as f:
+with open(data_dir + "/loot_table/blocks/{}.json".format(id), "x") as f:
   json.dump(loot_table_template, f, indent=3)
 print("Created loot table file")
 print("------------------------")

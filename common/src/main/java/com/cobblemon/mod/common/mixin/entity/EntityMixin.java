@@ -11,20 +11,11 @@ package com.cobblemon.mod.common.mixin.entity;
 import com.cobblemon.mod.common.OrientationControllable;
 import com.cobblemon.mod.common.duck.RidePassenger;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +23,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
@@ -40,11 +30,21 @@ public abstract class EntityMixin {
 
     @Shadow @Nullable public abstract Entity getVehicle();
 
-    @Inject(method = "updateInWaterStateAndDoWaterCurrentPushing", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;wasTouchingWater:Z", ordinal = 1), cancellable = true)
-    public void cobblemon$verifyActuallyTouchingWater(CallbackInfo ci) {
-        if(this.getVehicle() instanceof PokemonEntity) {
-            ci.cancel();
-        }
+    // Mounted riders keep fluid tracking/current forces, but do not acquire the
+    // swimming flag or entry splash/fall-reset side effects from intersecting water.
+    @WrapOperation(method = "updateFluidInteraction", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;resetFallDistance()V"))
+    private void cobblemon$preventMountedWaterFallReset(Entity entity, Operation<Void> original) {
+        if (!(getVehicle() instanceof PokemonEntity)) original.call(entity);
+    }
+
+    @WrapOperation(method = "updateFluidInteraction", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;doWaterSplashEffect()V"))
+    private void cobblemon$preventMountedWaterSplash(Entity entity, Operation<Void> original) {
+        if (!(getVehicle() instanceof PokemonEntity)) original.call(entity);
+    }
+
+    @WrapOperation(method = "updateFluidInteraction", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;wasTouchingWater:Z", opcode = org.objectweb.asm.Opcodes.PUTFIELD))
+    private void cobblemon$verifyActuallyTouchingWater(Entity entity, boolean touchingWater, Operation<Void> original) {
+        if (!touchingWater || !(getVehicle() instanceof PokemonEntity)) original.call(entity, touchingWater);
     }
 
     @WrapOperation(
@@ -82,7 +82,7 @@ public abstract class EntityMixin {
     @Unique
     private void cobblemon$getCustomEyePos(CallbackInfoReturnable<Vec3> cir) {
         var entity = (Entity)(Object)this;
-        if (entity.level().isClientSide) return;
+        if (entity.level().isClientSide()) return;
         if (!(entity instanceof Player player)) return;
         if (!(player instanceof RidePassenger ridePassenger)) return;
         if (!(player.getVehicle() instanceof OrientationControllable vehicle)) return;
@@ -99,56 +99,28 @@ public abstract class EntityMixin {
             method = "push(Lnet/minecraft/world/entity/Entity;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(DDD)V", ordinal = 0)
     )
-    public void cobblemon$customPusherLogic(Entity pusher, double x, double y, double z,
-                                            Operation<Void> original,
-                                            @Local(argsOnly = true) Entity pushee,
-                                            @Local(name = "e") double e, @Local(name = "d") double d,
-                                            @Share("pusherIsPlayerOrPokemon") LocalBooleanRef pusherIsPlayerOrPokemon,
-                                            @Share("pusheeIsPlayerOrPokemon") LocalBooleanRef pusheeIsPlayerOrPokemon,
-                                            @Share("pusheeReceivedForce")LocalFloatRef pusheeReceivedForce) {
-        pusherIsPlayerOrPokemon.set(pusher instanceof PokemonEntity || pusher instanceof Player);
-        pusheeIsPlayerOrPokemon.set(pushee instanceof PokemonEntity || pushee instanceof Player);
-
-        if (!pusheeIsPlayerOrPokemon.get() || !pusherIsPlayerOrPokemon.get()) {
-            original.call(pusher, x, y, z);
-            return;
-        }
-
-        /**********************************************
-         * Custom portion of the code:
-         * Handle collisions with weight in mind. Use
-         * the weight value of pokemon to determine
-         * which side gets what portion of the total
-         * force.
-         *********************************************/
-        // Weights in hectograms
-        // Check to see if the pusher or pushee is a player. 200ish pounds. Steve's like a 6'6 miner
-        var pusherWeight = pusher instanceof PokemonEntity pusherPokemon ? pusherPokemon.getPokemon().getSpecies().getWeight() : 900F;
-        var pusheeWeight = pushee instanceof PokemonEntity pusheePokemon ? pusheePokemon.getPokemon().getSpecies().getWeight() : 900F;
-
-        // Calculate the portion of force received for both entities. Bigger receives less from the
-        // collision than the smaller one.
-        var totalWeight = pusherWeight + pusheeWeight;
-        var pusherReceivedForce = pusheeWeight / totalWeight * 2F;
-        pusheeReceivedForce.set((pusherWeight / totalWeight) * 2F);
-
-        original.call(pusher, -d * pusherReceivedForce, 0.0, -e * pusherReceivedForce);
+    private void cobblemon$customPusherLogic(Entity pusher, double x, double y, double z,
+                                            Operation<Void> original, @Local(argsOnly = true) Entity pushee) {
+        float force = cobblemon$collisionForce(pusher, pushee);
+        original.call(pusher, x * force, y, z * force);
     }
 
     @WrapOperation(
             method = "push(Lnet/minecraft/world/entity/Entity;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(DDD)V", ordinal = 1)
     )
-    public void cobblemon$customPusheeLogic(Entity pusher, double x, double y, double z, Operation<Void> original,
-                                            @Local(name = "e") double e, @Local(name = "d") double d,
-                                            @Share("pusherIsPlayerOrPokemon") LocalBooleanRef pusherIsPlayerOrPokemon,
-                                            @Share("pusheeIsPlayerOrPokemon") LocalBooleanRef pusheeIsPlayerOrPokemon,
-                                            @Share("pusheeReceivedForce")LocalFloatRef pusheeReceivedForce) {
-        if (!pusheeIsPlayerOrPokemon.get() || !pusherIsPlayerOrPokemon.get()) {
-            original.call(pusher, x, y, z);
-            return;
-        }
+    private void cobblemon$customPusheeLogic(Entity pushee, double x, double y, double z, Operation<Void> original) {
+        float force = cobblemon$collisionForce(pushee, (Entity) (Object) this);
+        original.call(pushee, x * force, y, z * force);
+    }
 
-        original.call(pusher, d * pusheeReceivedForce.get(), 0.0, e * pusheeReceivedForce.get());
+    @Unique
+    private static float cobblemon$collisionForce(Entity receiver, Entity other) {
+        if (!(receiver instanceof PokemonEntity || receiver instanceof Player)
+                || !(other instanceof PokemonEntity || other instanceof Player)) return 1F;
+        // Weights remain hectograms, with the original 900 hg player estimate.
+        float receiverWeight = receiver instanceof PokemonEntity pokemon ? pokemon.getPokemon().getSpecies().getWeight() : 900F;
+        float otherWeight = other instanceof PokemonEntity pokemon ? pokemon.getPokemon().getSpecies().getWeight() : 900F;
+        return otherWeight / (receiverWeight + otherWeight) * 2F;
     }
 }

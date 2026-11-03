@@ -23,7 +23,7 @@ object SaveHabitatBlockSettingsHandler : ServerNetworkPacketHandler<SaveHabitatB
             return
         }
 
-        val world = player.serverLevel()
+        val world = player.level()
         val blockEntity = world.getBlockEntity(packet.blockPos) as? HabitatBlockEntity ?: return // it's broken
         val pre = SaveHabitatBlockSettingsEvent.Pre(
             player = player,

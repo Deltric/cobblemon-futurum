@@ -6,18 +6,10 @@
         "MTA"
     ],
     "key": {
-        "A": {
-            "tag": "c:gems/amethyst"
-        },
-        "T": {
-            "item": "minecraft:tinted_glass"
-        },
-        "E": {
-            "item": "minecraft:ender_pearl"
-        },
-        "M": {
-            "item": "minecraft:phantom_membrane"
-        }
+        "A": "#c:gems/amethyst",
+        "T": "minecraft:tinted_glass",
+        "E": "minecraft:ender_pearl",
+        "M": "minecraft:phantom_membrane"
     },
     "result": {
         "id": "cobblemon:smoke_ball"

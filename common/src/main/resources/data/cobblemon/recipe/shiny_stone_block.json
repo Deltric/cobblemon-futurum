@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "cobblemon:shiny_stone"
-    }
+    "#": "cobblemon:shiny_stone"
   },
   "pattern": [
     "###",

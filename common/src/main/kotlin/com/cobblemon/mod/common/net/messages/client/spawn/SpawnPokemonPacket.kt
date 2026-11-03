@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.net.messages.client.spawn
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.readMap
+import com.cobblemon.mod.common.util.writeCollection
+import com.cobblemon.mod.common.util.writeMap
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.mark.Marks
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
@@ -32,7 +36,7 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
 
 class SpawnPokemonPacket(
@@ -40,7 +44,7 @@ class SpawnPokemonPacket(
     var pokemonUUID: UUID,
     var storageUUID: UUID?,
     var scaleModifier: Float,
-    var speciesId: ResourceLocation,
+    var speciesId: Identifier,
     var gender: Gender,
     var shiny: Boolean,
     var formName: String,
@@ -50,12 +54,12 @@ class SpawnPokemonPacket(
     var beamMode: Byte,
     var platform: PlatformType,
     var nickname: MutableComponent?,
-    var mark: ResourceLocation?,
+    var mark: Identifier?,
     var labelLevel: Int,
     var poseType: PoseType,
     var unbattlable: Boolean,
     var hideLabel: Boolean,
-    var caughtBall: ResourceLocation,
+    var caughtBall: Identifier,
     var spawnYaw: Float,
     var friendship: Int,
     var freezeFrame: Float,
@@ -68,7 +72,7 @@ class SpawnPokemonPacket(
     vanillaSpawnPacket: ClientboundAddEntityPacket,
 ) : SpawnExtraDataEntityPacket<SpawnPokemonPacket, PokemonEntity>(vanillaSpawnPacket) {
 
-    override val id: ResourceLocation = ID
+    override val id: Identifier = ID
 
     constructor(entity: PokemonEntity, vanillaSpawnPacket: ClientboundAddEntityPacket) : this(
         entity.ownerUUID,
@@ -118,7 +122,7 @@ class SpawnPokemonPacket(
         buffer.writeByte(this.beamMode.toInt())
         buffer.writeEnumConstant(this.platform)
         buffer.writeNullable(this.nickname) { _, v -> buffer.writeText(v) }
-        buffer.writeNullable(this.mark) { _, v -> buffer.writeResourceLocation(v) }
+        buffer.writeNullable(this.mark) { _, v -> buffer.writeIdentifier(v) }
         buffer.writeInt(this.labelLevel)
         buffer.writeEnumConstant(this.poseType)
         buffer.writeBoolean(this.unbattlable)
@@ -212,7 +216,7 @@ class SpawnPokemonPacket(
             val beamModeEmitter = buffer.readByte()
             val platform = buffer.readEnumConstant(PlatformType::class.java)
             val nickname = buffer.readNullable { buffer.readText().copy() }
-            val mark = buffer.readNullable { buffer.readResourceLocation() }
+            val mark = buffer.readNullable { buffer.readIdentifier() }
             val labelLevel = buffer.readInt()
             val poseType = buffer.readEnumConstant(PoseType::class.java)
             val unbattlable = buffer.readBoolean()

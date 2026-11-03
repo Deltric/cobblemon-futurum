@@ -58,9 +58,9 @@ class NPCBattleConfiguration {
     }
 
     fun loadFromNBT(nbt: CompoundTag) {
-        canChallenge = nbt.getBoolean(DataKeys.NPC_CAN_CHALLENGE)
-        simultaneousBattles = nbt.getBoolean(DataKeys.NPC_SIMULTANEOUS_BATTLES)
-        healAfterwards = nbt.getBoolean(DataKeys.NPC_HEAL_AFTERWARDS)
+        canChallenge = nbt.getBooleanOr(DataKeys.NPC_CAN_CHALLENGE, false)
+        simultaneousBattles = nbt.getBooleanOr(DataKeys.NPC_SIMULTANEOUS_BATTLES, false)
+        healAfterwards = nbt.getBooleanOr(DataKeys.NPC_HEAL_AFTERWARDS, false)
 //        val partyNBT = nbt.getCompound(DataKeys.NPC_PARTY)
 //        if (!partyNBT.isEmpty) {
 //            val type = partyNBT.getString(DataKeys.NPC_PARTY_TYPE)

@@ -32,7 +32,7 @@ abstract class ClientPlayerActionRequest(expiryTime: Int) : ClientPlayerIcon(exp
             val sender = Minecraft.getInstance().level?.players()?.find { it.uuid == senderID }
             val senderName = sender?.name?.copy()?.aqua() ?: Component.literal("NULL").red()
             val lang = lang(langKey, senderName, *params).yellow()
-            Minecraft.getInstance().player!!.displayClientMessage(lang, false)
+            Minecraft.getInstance().gui.hud.chat.addClientSystemMessage(lang)
         }
     }
 }

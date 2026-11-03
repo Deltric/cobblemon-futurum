@@ -10,8 +10,8 @@ package com.cobblemon.mod.common.advancement.criterion
 
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.advancements.critereon.ContextAwarePredicate
-import net.minecraft.advancements.critereon.EntityPredicate
+import net.minecraft.core.Holder
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition
 import net.minecraft.server.level.ServerPlayer
 import java.util.Optional
 
@@ -24,7 +24,7 @@ import java.util.Optional
 open class CountablePokemonTypeContext(times: Int, var type: String/*, var species: String*/) : CountableContext(times)
 
 class CaughtPokemonCriterion(
-    playerCtx: Optional<ContextAwarePredicate>,
+    playerCtx: Optional<Holder<LootItemCondition>>,
     val type : String,
     //val species: String,
     count: Int
@@ -32,7 +32,7 @@ class CaughtPokemonCriterion(
 
     companion object {
         val CODEC: Codec<CaughtPokemonCriterion> = RecordCodecBuilder.create { it.group(
-            EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(CaughtPokemonCriterion::playerCtx),
+            LootItemCondition.CODEC.optionalFieldOf("player").forGetter(CaughtPokemonCriterion::playerCtx),
             Codec.STRING.optionalFieldOf("type", "any").forGetter(CaughtPokemonCriterion::type),
             //Codec.STRING.optionalFieldOf("species", "any").forGetter(CaughtPokemonCriterion::species),
             Codec.INT.optionalFieldOf("count", 0).forGetter(CaughtPokemonCriterion::count)

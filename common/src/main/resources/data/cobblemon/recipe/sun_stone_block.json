@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "cobblemon:sun_stone"
-    }
+    "#": "cobblemon:sun_stone"
   },
   "pattern": [
     "###",

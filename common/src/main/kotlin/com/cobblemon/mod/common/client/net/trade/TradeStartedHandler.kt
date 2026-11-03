@@ -23,7 +23,7 @@ object TradeStartedHandler : ClientNetworkPacketHandler<TradeStartedPacket> {
         Cobblemon.LOGGER.error("handle trade start from: " + packet.traderId)
         val trade = ClientTrade()
         CobblemonClient.trade = trade
-        Minecraft.getInstance().setScreen(
+        Minecraft.getInstance().gui.setScreen(
             TradeGUI(
                 trade,
                 packet.traderId,

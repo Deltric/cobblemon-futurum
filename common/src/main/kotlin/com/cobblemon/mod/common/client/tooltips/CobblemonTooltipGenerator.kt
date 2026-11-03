@@ -12,7 +12,6 @@ import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.text.gray
 import com.cobblemon.mod.common.item.PokeBallItem
 import com.cobblemon.mod.common.util.asTranslated
-import net.minecraft.core.component.DataComponents
 import net.minecraft.locale.Language
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
@@ -22,7 +21,7 @@ object CobblemonTooltipGenerator : TooltipGenerator() {
     override fun generateTooltip(stack: ItemStack, lines: MutableList<Component>): MutableList<Component>? {
         val resultLines = mutableListOf<Component>()
 
-        if (stack.item.builtInRegistryHolder().unwrapKey().isPresent && stack.item.builtInRegistryHolder().unwrapKey().get().location().namespace == Cobblemon.MODID) {
+        if (stack.item.builtInRegistryHolder().unwrapKey().isPresent && stack.item.builtInRegistryHolder().unwrapKey().get().identifier().namespace == Cobblemon.MODID) {
             val language = Language.getInstance()
             val key = this.baseLangKeyForItem(stack)
             if (language.has(key)) {
@@ -44,6 +43,6 @@ object CobblemonTooltipGenerator : TooltipGenerator() {
             val asPokeball = stack.item as PokeBallItem
             return "item.${asPokeball.pokeBall.name.namespace}.${asPokeball.pokeBall.name.path}.tooltip"
         }
-        return "${stack.descriptionId}.tooltip"
+        return "${stack.item.descriptionId}.tooltip"
     }
 }

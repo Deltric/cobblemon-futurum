@@ -210,9 +210,9 @@ class PokemonServerDelegate : PokemonSideDelegate {
                             val paramString = opponentValue.asString()
                             val playerUUID = paramString.asUUID
                             if (playerUUID != null) {
-                                entity.server!!.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
+                                (entity.level() as ServerLevel).server.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
                             } else {
-                                entity.server!!.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
+                                (entity.level() as ServerLevel).server.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
                             }
                         }
 
@@ -410,9 +410,10 @@ class PokemonServerDelegate : PokemonSideDelegate {
     }
 
     fun doDeathDrops() {
-        if (entity.ownerUUID == null && entity.owner == null && entity.level().gameRules.getBoolean(CobblemonGameRules.DO_POKEMON_LOOT)) {
+        val world = entity.level() as ServerLevel
+        if (entity.ownerUUID == null && entity.owner == null && world.gameRules.get(CobblemonGameRules.DO_POKEMON_LOOT)) {
             val heldItem = (entity as PokemonEntity?)?.pokemon?.heldItemNoCopy() ?: ItemStack.EMPTY
-            if (!heldItem.isEmpty) entity.spawnAtLocation(heldItem.item)
+            if (!heldItem.isEmpty) entity.spawnAtLocation(world, heldItem.item)
 
             val dropTable = (entity.drops ?: entity.pokemon.form.drops)
             val drops = dropTable.getDrops().toMutableList()

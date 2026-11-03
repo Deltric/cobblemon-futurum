@@ -1,0 +1,13 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 2
+  },
+  "gives": {
+    "id": "cobblemon:red_mint_leaf",
+    "count": 1
+  },
+  "max_uses": 8,
+  "xp": 5,
+  "reputation_discount": 0.05
+}

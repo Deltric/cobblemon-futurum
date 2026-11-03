@@ -16,9 +16,9 @@ import com.cobblemon.mod.common.client.CobblemonResources
 import com.cobblemon.mod.common.client.gui.summary.widgets.screens.stats.StatWidget
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.pokemon.Pokemon
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 
@@ -31,42 +31,38 @@ import net.minecraft.world.phys.Vec3
 open class BarSummarySpeciesFeatureRenderer(
     override val name: String,
     val displayName: MutableComponent,
-    val underlay: ResourceLocation,
-    val overlay: ResourceLocation,
+    val underlay: Identifier,
+    val overlay: Identifier,
     val pokemon: Pokemon,
     val min: Int,
     val max: Int,
     val value: Int = 0,
     val colour: Vec3? = null
 ) : SummarySpeciesFeatureRenderer<IntSpeciesFeature> {
-    override fun render(guiGraphics: GuiGraphics, x: Float, y: Float, pokemon: Pokemon, feature: IntSpeciesFeature) {
+    override fun render(guiGraphics: GuiGraphicsExtractor, x: Float, y: Float, pokemon: Pokemon, feature: IntSpeciesFeature) {
         renderElement(guiGraphics, x, y, pokemon, feature.value)
     }
 
-    open fun renderElement(guiGraphics: GuiGraphics, x: Float, y: Float, pokemon: Pokemon, barValue: Int = value) {
+    open fun renderElement(guiGraphics: GuiGraphicsExtractor, x: Float, y: Float, pokemon: Pokemon, barValue: Int = value) {
         val barRatio = ((barValue - min) / (max - min).toFloat()).coerceAtMost(1f)
         val barWidth = Mth.ceil(barRatio * 110)
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = underlay,
             x = x,
             y = y,
             height = 24,
-            width = 116
-        )
+            width = 116)
 
         renderBar(guiGraphics, x, y, barValue, barRatio, barWidth)
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = overlay,
             x = (x + 3) / StatWidget.SCALE,
             y = (y + 13) / StatWidget.SCALE,
             height = 20,
             width = 220,
-            scale = StatWidget.SCALE
-        )
+            scale = StatWidget.SCALE)
 
         // Label
         drawScaledText(
@@ -98,13 +94,12 @@ open class BarSummarySpeciesFeatureRenderer(
         )
     }
 
-    open fun renderBar(guiGraphics: GuiGraphics, x: Float, y: Float, barValue: Int, barRatio: Float, barWidth: Int) {
+    open fun renderBar(guiGraphics: GuiGraphicsExtractor, x: Float, y: Float, barValue: Int, barRatio: Float, barWidth: Int) {
         val red = (colour?.x ?: 255.0) / 255.0
         val green = (colour?.y ?: 255.0) / 255.0
         val blue = (colour?.z ?: 255.0) / 255.0
 
-        blitk(
-            matrixStack = guiGraphics.pose(),
+        blitk(context = guiGraphics,
             texture = CobblemonResources.WHITE,
             x = x + 3,
             y = y + 13,
@@ -112,7 +107,6 @@ open class BarSummarySpeciesFeatureRenderer(
             width = barWidth,
             red = red,
             green = green,
-            blue = blue
-        )
+            blue = blue)
     }
 }

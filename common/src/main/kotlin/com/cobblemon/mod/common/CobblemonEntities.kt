@@ -32,14 +32,14 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
 
     override val registry: Registry<EntityType<*>> = BuiltInRegistries.ENTITY_TYPE
     override val resourceKey: ResourceKey<Registry<EntityType<*>>> = Registries.ENTITY_TYPE
-    
+
     @JvmField
     val POKEMON_KEY = cobblemonResource("pokemon")
     @JvmField
     val POKEMON: EntityType<PokemonEntity> = this.create(
         POKEMON_KEY.path,
         EntityType.Builder.of({ _, world -> PokemonEntity(world) }, MobCategory.CREATURE)
-            .build(POKEMON_KEY.toString())
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, POKEMON_KEY))
     )
 
     @JvmField
@@ -48,7 +48,7 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
     val EMPTY_POKEBALL: EntityType<EmptyPokeBallEntity> = this.create(
         EMPTY_POKEBALL_KEY.path,
         EntityType.Builder.of({ _, world -> EmptyPokeBallEntity(PokeBalls.POKE_BALL, world) }, MobCategory.MISC)
-            .build(EMPTY_POKEBALL_KEY.toString())
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, EMPTY_POKEBALL_KEY))
     )
 
     @JvmField
@@ -57,7 +57,7 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
     val BOAT: EntityType<CobblemonBoatEntity> = this.create(
         BOAT_KEY.path,
         EntityType.Builder.of(::CobblemonBoatEntity, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10)
-            .build(BOAT_KEY.toString())
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, BOAT_KEY))
     )
 
     @JvmField
@@ -66,7 +66,7 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
     val CHEST_BOAT: EntityType<CobblemonChestBoatEntity> = this.create(
         CHEST_BOAT_KEY.path,
         EntityType.Builder.of(::CobblemonChestBoatEntity, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10)
-            .build(CHEST_BOAT_KEY.toString())
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, CHEST_BOAT_KEY))
     )
 
     @JvmField
@@ -75,7 +75,7 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
     val POKE_BOBBER: EntityType<PokeRodFishingBobberEntity> = this.create(
             POKE_BOBBER_KEY.path,
             EntityType.Builder.of(::PokeRodFishingBobberEntity, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(10)
-                    .build(POKE_BOBBER_KEY.toString())
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, POKE_BOBBER_KEY))
     )
 
     @JvmField
@@ -84,7 +84,7 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
     val GENERIC_BEDROCK_ENTITY: EntityType<GenericBedrockEntity> = this.create(
         GENERIC_BEDROCK_ENTITY_KEY.path,
         EntityType.Builder.of({ _, world -> GenericBedrockEntity(world) }, MobCategory.MISC)
-            .build(GENERIC_BEDROCK_ENTITY_KEY.toString())
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, GENERIC_BEDROCK_ENTITY_KEY))
     )
 
     @JvmField
@@ -92,7 +92,7 @@ object CobblemonEntities : PlatformRegistry<Registry<EntityType<*>>, ResourceKey
     @JvmField
     val NPC: EntityType<NPCEntity> = create(
         NPC_KEY.path,
-        EntityType.Builder.of({ _, world -> NPCEntity(world) }, MobCategory.CREATURE).build("$NPC_KEY")
+        EntityType.Builder.of({ _, world -> NPCEntity(world) }, MobCategory.CREATURE).build(ResourceKey.create(Registries.ENTITY_TYPE, NPC_KEY))
     )
 
     fun registerAttributes(consumer: (EntityType<out LivingEntity>, AttributeSupplier.Builder) -> Unit) {

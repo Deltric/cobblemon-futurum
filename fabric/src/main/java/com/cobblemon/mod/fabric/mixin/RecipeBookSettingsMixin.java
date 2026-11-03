@@ -11,39 +11,49 @@ package com.cobblemon.mod.fabric.mixin;
 import com.cobblemon.mod.common.CobblemonRecipeBookTypes;
 import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.world.inventory.RecipeBookType;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.function.UnaryOperator;
 
 @Mixin(RecipeBookSettings.class)
 public class RecipeBookSettingsMixin {
 
-    @Shadow
-    @Final
-    public Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
+    @Unique
+    private RecipeBookSettings.TypeSettings cobblemon$cookingPotSettings = new RecipeBookSettings.TypeSettings(true, true);
 
-    @Inject(method = "<init>(Ljava/util/Map;)V", at = @At("TAIL"))
-    private void cobblemon$init(CallbackInfo ci) {
-        // if you change or add any of these, neoforge uses a separate mechanism
-        // check enumextensions.json and `CobblemonEnumExtensions`
-        states.put(CobblemonRecipeBookTypes.INSTANCE.getCOOKING_POT(), new RecipeBookSettings.TypeSettings(true, true));
+    @Inject(method = "getSettings", at = @At("HEAD"), cancellable = true)
+    private void cobblemon$getCookingPotSettings(RecipeBookType type, CallbackInfoReturnable<RecipeBookSettings.TypeSettings> cir) {
+        if (type.name().equals(CobblemonRecipeBookTypes.COOKING_POT_NAME)) {
+            cir.setReturnValue(cobblemon$cookingPotSettings);
+        }
     }
 
-    // this fixes a disconnect issue with vanilla servers where the network sync relies on the enum we modify in a common mixin to be the same on both sides
-    @Redirect( method = "read(Lnet/minecraft/network/FriendlyByteBuf;)Lnet/minecraft/stats/RecipeBookSettings;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/RecipeBookType;values()[Lnet/minecraft/world/inventory/RecipeBookType;"))
-    private static RecipeBookType[] cobblemon$valuesReadRedirect() {
-        return Arrays.stream(RecipeBookType.values()).filter( recipeBookType -> !CobblemonRecipeBookTypes.INSTANCE.getCOOKING_POT().equals(recipeBookType) ).toArray(RecipeBookType[]::new);
+    @Inject(method = "updateSettings", at = @At("HEAD"), cancellable = true)
+    private void cobblemon$updateCookingPotSettings(RecipeBookType type, UnaryOperator<RecipeBookSettings.TypeSettings> operator, CallbackInfo ci) {
+        if (type.name().equals(CobblemonRecipeBookTypes.COOKING_POT_NAME)) {
+            cobblemon$cookingPotSettings = operator.apply(cobblemon$cookingPotSettings);
+            ci.cancel();
+        }
     }
 
-    @Redirect( method = "write(Lnet/minecraft/network/FriendlyByteBuf;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/RecipeBookType;values()[Lnet/minecraft/world/inventory/RecipeBookType;"))
-    private RecipeBookType[] cobblemon$valuesWriteRedirect() {
-        return Arrays.stream(RecipeBookType.values()).filter( recipeBookType -> !CobblemonRecipeBookTypes.INSTANCE.getCOOKING_POT().equals(recipeBookType) ).toArray(RecipeBookType[]::new);
+    @Inject(method = "copy", at = @At("RETURN"))
+    private void cobblemon$copyCookingPotSettings(CallbackInfoReturnable<RecipeBookSettings> cir) {
+        RecipeBookType type = RecipeBookType.valueOf(CobblemonRecipeBookTypes.COOKING_POT_NAME);
+        RecipeBookSettings copy = cir.getReturnValue();
+        copy.setOpen(type, cobblemon$cookingPotSettings.open());
+        copy.setFiltering(type, cobblemon$cookingPotSettings.filtering());
     }
+
+    @Inject(method = "replaceFrom", at = @At("TAIL"))
+    private void cobblemon$replaceCookingPotSettings(RecipeBookSettings other, CallbackInfo ci) {
+        cobblemon$cookingPotSettings = other.getSettings(RecipeBookType.valueOf(CobblemonRecipeBookTypes.COOKING_POT_NAME));
+    }
+
+    // Native codecs explicitly encode the four vanilla books. Leave them intact:
+    // Fabric previously excluded this custom book from the packet and NBT formats.
 }

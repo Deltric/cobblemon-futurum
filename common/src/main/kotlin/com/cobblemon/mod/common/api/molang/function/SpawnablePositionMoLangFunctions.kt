@@ -24,7 +24,7 @@ object SpawnablePositionMoLangFunctions : AbstractMoLangFunctionHolder<Spawnable
             spawningContext
                 .world
                 .registryAccess()
-                .registryOrThrow(Registries.DIMENSION)
+                .lookupOrThrow(Registries.DIMENSION)
                 .wrapAsHolder(spawningContext.world)
                 .asWorldMoLangValue()
         val biomeValue =

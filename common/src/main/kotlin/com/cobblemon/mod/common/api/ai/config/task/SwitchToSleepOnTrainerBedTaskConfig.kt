@@ -59,9 +59,9 @@ class SwitchToSleepOnTrainerBedTaskConfig : SingleTaskConfig {
                     val blockState = entity.level().getBlockState(blockPos)
                     val bedPos = blockState.getOptionalValue(BedBlock.FACING).orElse(null)
                         ?.let { direction -> blockPos.relative(direction.opposite) }
-                        ?: BlockPos(blockPos)
+                        ?: blockPos.immutable()
 
-                    walkTarget.set(WalkTarget(bedPos.center, 0.35F, 0))
+                    walkTarget.set(WalkTarget(net.minecraft.world.phys.Vec3.atCenterOf(bedPos), 0.35F, 0))
                     entity.brain.setActiveActivityIfPossible(CobblemonActivities.POKEMON_SLEEP_ON_TRAINER_BED)
                     return@Trigger true
                 }

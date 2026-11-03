@@ -48,7 +48,7 @@ class FlowerSensor : Sensor<PokemonEntity>(120) {
             if (isFlower(state)) {
                 val distance = pos.distSqr(Vec3i(centerPos.x, centerPos.y, centerPos.z))
                 if (distance < shortestDist) {
-                    flowerPos = BlockPos(pos)
+                    flowerPos = pos.immutable()
                     shortestDist = distance
                 }
             }

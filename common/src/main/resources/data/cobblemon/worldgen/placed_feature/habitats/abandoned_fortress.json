@@ -49,9 +49,10 @@
             }
         },
         {
-            "type": "minecraft:random_offset",
-            "y_spread": -14,
-            "xz_spread": 0
+            "type": "minecraft:offset",
+            "x": 0,
+            "y": -14,
+            "z": 0
         }
     ]
 }

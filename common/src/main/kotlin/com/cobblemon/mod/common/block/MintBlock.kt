@@ -11,8 +11,6 @@ package com.cobblemon.mod.common.block
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.item.MintLeafItem
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.tags.BlockTags
@@ -64,7 +62,7 @@ class MintBlock(private val mintType: MintType, settings: Properties) : CropBloc
     override fun canSurvive(state: BlockState, world: LevelReader, pos: BlockPos): Boolean {
         val floor = world.getBlockState(pos.below())
         // A bit of a copy pasta but we don't have access to the BlockState being attempted to be placed above on the canPlantOnTop
-        return (world.getRawBrightness(pos, 0) >= 8 || world.canSeeSky(pos)) && ((this.isWild(state) && floor.`is`(BlockTags.DIRT)) || this.mayPlaceOn(floor, world, pos))
+        return (world.getRawBrightness(pos, 0) >= 8 || world.canSeeSky(pos)) && ((this.isWild(state) && floor.`is`(BlockTags.SUBSTRATE_OVERWORLD)) || this.mayPlaceOn(floor, world, pos))
     }
 
     override fun getBaseSeedId(): ItemLike = this.mintType.getSeed()
@@ -79,10 +77,6 @@ class MintBlock(private val mintType: MintType, settings: Properties) : CropBloc
         val growthAmount = if (useRandomGrowthAmount) this.getBonemealAgeIncrease(world) else 1
         val newAge = (this.getAge(state) + growthAmount).coerceAtMost(MATURE_AGE)
         world.setBlock(pos, state.setValue(AGE, newAge), UPDATE_CLIENTS)
-    }
-
-    override fun codec(): MapCodec<out CropBlock> {
-        return CODEC
     }
 
     @Suppress("unused")
@@ -130,10 +124,6 @@ class MintBlock(private val mintType: MintType, settings: Properties) : CropBloc
     }
 
     companion object {
-        val CODEC: MapCodec<MintBlock> = RecordCodecBuilder.mapCodec { it.group(
-            MintType.CODEC.fieldOf("mintType").forGetter(MintBlock::mintType),
-            propertiesCodec()
-        ).apply(it, ::MintBlock) }
 
         val AGE: IntegerProperty = CropBlock.AGE
         const val MATURE_AGE = MAX_AGE

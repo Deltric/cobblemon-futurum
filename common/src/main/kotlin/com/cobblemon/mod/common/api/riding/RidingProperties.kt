@@ -40,7 +40,7 @@ class RidingProperties(
                 buffer.readMap(
                     { buffer.readEnumConstant(RidingStyle::class.java) },
                     {
-                        val key = buffer.readResourceLocation()
+                        val key = buffer.readIdentifier()
                         val behaviour = RidingBehaviourSettingsAdapter.types[key]?.getConstructor()?.newInstance()
                             ?: error("Unknown controller key: $key")
                         behaviour.decode(buffer)
@@ -61,7 +61,7 @@ class RidingProperties(
                 v,
                 { _, style -> buffer.writeEnumConstant(style) },
                 { _, behaviour ->
-                    buffer.writeResourceLocation(behaviour.key)
+                    buffer.writeIdentifier(behaviour.key)
                     behaviour.encode(buffer)
                 }
             )

@@ -1,21 +1,18 @@
 {
   "required": true,
   "package": "com.cobblemon.mod.fabric.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "plugin": "com.cobblemon.mod.fabric.mixin.MixinConfigPlugin",
   "client": [
     "FabricCameraMixin",
-    "GameRendererMixin",
-    "GuiMixin",
-    "RecipeBookCategoriesMixin",
-    "pokeball.ModelLoaderMixin"
+    "FabricGuiRendererMixin",
+    "FabricSoundEngineMixin"
   ],
   "mixins": [
     "EntityMixin",
-    "FabricBrewingStandMenuMixin",
-    "FabricSoundEngineMixin",
     "PlayerMixin",
+    "PlayerShoulderSyncMixin",
     "RecipeBookSettingsMixin",
     "RecipeBookTypeMixin",
     "ServerEntityMixin"

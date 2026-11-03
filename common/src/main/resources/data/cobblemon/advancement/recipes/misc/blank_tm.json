@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/misc",
-  "rewards": {
-    "recipes": [
-      "cobblemon:blank_tm"
-    ]
-  },
-  "criteria": {
-    "has_amethyst_shard": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:amethyst_shard"
-            ]
-          }
+    "parent": "cobblemon:recipes/misc",
+    "rewards": {
+        "recipes": [
+            "cobblemon:blank_tm"
         ]
-      }
     },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "cobblemon:blank_tm"
-      }
-    }
-  },
-  "requirements": [
-    [
-      "has_amethyst_shard",
-      "has_the_recipe"
+    "criteria": {
+        "has_amethyst_shard": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:amethyst_shard"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipes": [
+                    "cobblemon:blank_tm"
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_amethyst_shard",
+            "has_the_recipe"
+        ]
     ]
-  ]
 }

@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.client.render
 
+import net.minecraft.network.chat.Style
+import net.minecraft.util.FormattedCharSequence
+
 /**
  * A utility class for limiting the number of characters that can be rendered by whatever draw operation
  * is about to occur.
@@ -25,10 +28,35 @@ object TextClipping {
 
     @JvmStatic
     fun doWithMaxCharacters(maxCharacters: Int, action: Runnable) {
+        val previousLimit = acceptableRenderCount
+        val previousCount = renderedCount
         acceptableRenderCount = maxCharacters
-        action.run()
-        acceptableRenderCount = -1
         renderedCount = 0
+        try {
+            action.run()
+        } finally {
+            acceptableRenderCount = previousLimit
+            renderedCount = previousCount
+        }
+    }
+
+    private data class VisibleCodepoint(val index: Int, val style: Style, val codepoint: Int)
+
+    @JvmStatic
+    fun captureVisibleText(text: FormattedCharSequence): FormattedCharSequence {
+        if (acceptableRenderCount == -1) return text
+        val visible = mutableListOf<VisibleCodepoint>()
+        text.accept { index, style, codepoint ->
+            if (!canDrawAnotherCharacter()) false
+            else {
+                visible.add(VisibleCodepoint(index, style, codepoint))
+                true
+            }
+        }
+        val captured = visible.toList()
+        return FormattedCharSequence { sink ->
+            captured.all { sink.accept(it.index, it.style, it.codepoint) }
+        }
     }
 
     @JvmStatic

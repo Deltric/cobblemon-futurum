@@ -3,15 +3,9 @@
   "group": "iv_candy",
   "category": "misc",
   "key": {
-    "K": {
-      "item": "cobblemon:kelpsy_berry"
-    },
-    "H": {
-      "item": "minecraft:honeycomb"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_l"
-    }
+    "K": "cobblemon:kelpsy_berry",
+    "H": "minecraft:honeycomb",
+    "E": "cobblemon:exp_candy_l"
   },
   "pattern": [
     "KHK",

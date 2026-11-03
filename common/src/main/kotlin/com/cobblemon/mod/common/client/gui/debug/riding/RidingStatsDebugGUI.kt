@@ -19,7 +19,7 @@ import com.cobblemon.mod.common.net.messages.server.debug.ServerboundUpdateRidin
 import com.cobblemon.mod.common.net.messages.server.debug.ServerboundUpdateRidingStatsPacket
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractSliderButton
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
@@ -101,7 +101,7 @@ class RidingStatsDebugGUI(val vehicle: PokemonEntity) : Screen(lang("ui.debug.ri
                 // Grab the ride settings for the currently being configured style
                 val rideSettings = vehicle.ridingController?.behaviours?.get(ridingStyle) ?: return@builder
                 // Open up GUI for editing the given settings
-                this.minecraft?.setScreen(RideSettingsEditorGUI(this, vehicle, ridingStyle, rideSettings))
+                this.minecraft?.gui?.setScreen(RideSettingsEditorGUI(this, vehicle, ridingStyle, rideSettings))
             }.bounds(10, 240, 200, 20).build()
         )
 
@@ -214,9 +214,9 @@ class RidingStatsDebugGUI(val vehicle: PokemonEntity) : Screen(lang("ui.debug.ri
 
     fun getScaledWidth() = Minecraft.getInstance().window.guiScaledWidth
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(0, 0, width, height, Color(0, 0, 0, 100).rgb)
-        super.render(guiGraphics, mouseX, mouseY, partialTick)
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         drawScaledText(
             context = guiGraphics,
             text = "Pokemon Stats Editor".text(),

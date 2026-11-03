@@ -8,7 +8,10 @@
 
 package com.cobblemon.mod.common.client.keybind
 
+import net.minecraft.client.KeyMapping
+import net.minecraft.resources.Identifier
+
 object KeybindCategories {
-    const val COBBLEMON_CATEGORY = "key.cobblemon.categories.cobblemon"
-    const val COBBLEMON_DEBUG_CATEGORY = "key.cobblemon.categories.cobblemon.debug"
+    val COBBLEMON_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("cobblemon", "general"))
+    val COBBLEMON_DEBUG_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("cobblemon", "debug"))
 }

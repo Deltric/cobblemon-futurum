@@ -9,6 +9,12 @@
 package com.cobblemon.mod.common
 
 import com.cobblemon.mod.common.api.net.NetworkPacket
+import com.cobblemon.mod.common.client.net.cooking.SeasoningRecipeIndexHandler
+import com.cobblemon.mod.common.net.messages.client.cooking.CookingRecipesPacket
+import com.cobblemon.mod.common.client.net.cooking.CookingRecipesHandler
+import com.cobblemon.mod.common.net.messages.client.cooking.SeasoningRecipeIndexPacket
+import com.cobblemon.mod.common.client.net.cooking.CookingPotPreviewHandler
+import com.cobblemon.mod.common.net.messages.client.cooking.CookingPotPreviewPacket
 import com.cobblemon.mod.common.client.net.OpenBehaviourEditorHandler
 import com.cobblemon.mod.common.client.net.PlayerInteractOptionsHandler
 import com.cobblemon.mod.common.client.net.SetClientPlayerDataHandler
@@ -360,6 +366,9 @@ object CobblemonNetwork {
         list.add(PacketRegisterInfo(MoveClientPCPokemonPacket.ID, MoveClientPCPokemonPacket::decode, MoveClientPCPokemonHandler))
         list.add(PacketRegisterInfo(SetPCBoxPacket.ID, SetPCBoxPacket::decode, SetPCBoxHandler))
         list.add(PacketRegisterInfo(SetPCPokemonPacket.ID, SetPCPokemonPacket::decode, SetPCPokemonHandler))
+        list.add(PacketRegisterInfo(CookingPotPreviewPacket.ID, CookingPotPreviewPacket::decode, CookingPotPreviewHandler))
+        list.add(PacketRegisterInfo(SeasoningRecipeIndexPacket.ID, SeasoningRecipeIndexPacket::decode, SeasoningRecipeIndexHandler))
+        list.add(PacketRegisterInfo(CookingRecipesPacket.ID, CookingRecipesPacket::decode, CookingRecipesHandler))
         list.add(PacketRegisterInfo(OpenPCPacket.ID, OpenPCPacket::decode, OpenPCHandler))
         list.add(PacketRegisterInfo(ClosePCPacket.ID, ClosePCPacket::decode, ClosePCHandler))
         list.add(PacketRegisterInfo(SwapClientPokemonPacket.ID, SwapClientPokemonPacket::decode, SwapClientPokemonHandler))

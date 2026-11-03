@@ -20,6 +20,7 @@ import net.minecraft.world.inventory.BrewingStandMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,12 +28,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BrewingStandMenu.class)
 public abstract class BrewingStandMenuMixin {
+    @WrapOperation(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/crafting/PotionIngredient;isPotionInput(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/crafting/RecipeAccess;)Z"))
+    private boolean cobblemon$isPotionBottle(ItemStack stack, RecipeAccess recipes, Operation<Boolean> original, @Local(argsOnly = true) Player player) {
+        return BrewingStandRecipe.Companion.isBottle(stack, player.level()) || original.call(stack, recipes);
+    }
+
 	@Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V", at = @At("TAIL"))
 	private void captureLevel(int containerId, Inventory playerInventory, Container brewingStandContainer, ContainerData brewingStandData, CallbackInfo ci) {
-		var recipeManager = playerInventory.player.level().getRecipeManager();
+		var level = playerInventory.player.level();
 		for (Slot slot : ((BrewingStandMenu) (Object) this).slots) {
 			if (slot instanceof RecipeAwareSlot awareSlot) {
-				awareSlot.setRecipeManager(recipeManager);
+				awareSlot.setRecipeLevel(level);
 			}
 		}
 	}

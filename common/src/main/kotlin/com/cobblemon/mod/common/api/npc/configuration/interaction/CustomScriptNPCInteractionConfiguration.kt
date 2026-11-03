@@ -44,7 +44,7 @@ class CustomScriptNPCInteractionConfiguration : NPCInteractConfiguration {
     }
 
     override fun readFromNBT(compoundTag: CompoundTag) {
-        script = compoundTag.getString(DataKeys.NPC_INTERACT_CUSTOM_SCRIPT).asExpressionLike()
+        script = compoundTag.getStringOr(DataKeys.NPC_INTERACT_CUSTOM_SCRIPT, "").asExpressionLike()
     }
 
     override fun interact(npc: NPCEntity, player: ServerPlayer): Boolean {

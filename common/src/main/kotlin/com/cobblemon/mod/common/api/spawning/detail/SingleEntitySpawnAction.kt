@@ -15,7 +15,7 @@ import com.cobblemon.mod.common.api.spawning.position.SpawnablePosition
 import com.cobblemon.mod.common.util.toVec3d
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.Mob
-import net.minecraft.world.entity.MobSpawnType
+import net.minecraft.world.entity.EntitySpawnReason
 
 /**
  * A spawn action that spawns a single entity. This is the most common type of spawn action.
@@ -37,7 +37,7 @@ abstract class SingleEntitySpawnAction<T : Entity>(
         CobblemonEvents.ENTITY_SPAWN.postThen(SpawnEvent(e, spawnablePosition), ifSucceeded = {
             this.entity.emit(e)
             if (e is Mob) {
-                e.finalizeSpawn(spawnablePosition.world, spawnablePosition.world.getCurrentDifficultyAt(spawnablePosition.position), MobSpawnType.NATURAL, null)
+                e.finalizeSpawn(spawnablePosition.world, spawnablePosition.world.getCurrentDifficultyAt(spawnablePosition.position), EntitySpawnReason.NATURAL, null)
             }
             spawnablePosition.world.addFreshEntity(e)
             shouldSpawn = true

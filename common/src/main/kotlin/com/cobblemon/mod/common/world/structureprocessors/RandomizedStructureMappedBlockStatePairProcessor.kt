@@ -40,12 +40,12 @@ class RandomizedStructureMappedBlockStatePairProcessor(
     val transformer: BlockStateTransformer,
     val rules: List<RuleTest>,
     val probability: Float = 1.0f
-) : StructureProcessor() {
+) : StructureProcessor {
     override fun processBlock(
         world: LevelReader,
         pos: BlockPos,
         pivot: BlockPos,
-        originalBlockInfo: StructureTemplate.StructureBlockInfo,
+        templateRelativePos: BlockPos,
         currentBlockInfo: StructureTemplate.StructureBlockInfo,
         data: StructurePlaceSettings
     ): StructureTemplate.StructureBlockInfo {
@@ -56,7 +56,7 @@ class RandomizedStructureMappedBlockStatePairProcessor(
         }
 
         for (rule in rules) {
-            if (rule.test(currentBlockInfo.state, data.getRandom(pos))) {
+            if (rule.test(currentBlockInfo.state, currentBlockInfo.pos, data.getRandom(pos))) {
                 val (block1, block2) = targetBlockPairs[random.nextInt(targetBlockPairs.size)]
                 val targetState = setOf(block1, block2).random().defaultBlockState().let(transformer::transform)
                 return StructureTemplate.StructureBlockInfo(
@@ -69,7 +69,7 @@ class RandomizedStructureMappedBlockStatePairProcessor(
         return currentBlockInfo
     }
 
-    override fun getType() = CobblemonProcessorTypes.RANDOM_POOLED_STATES
+    override fun codec(): MapCodec<RandomizedStructureMappedBlockStatePairProcessor> = CODEC
 
     companion object {
         val CODEC: MapCodec<RandomizedStructureMappedBlockStatePairProcessor> = RecordCodecBuilder.mapCodec { instance ->

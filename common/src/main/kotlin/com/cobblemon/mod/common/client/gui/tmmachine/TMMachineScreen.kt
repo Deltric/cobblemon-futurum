@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.client.gui.tmmachine
 
+import com.cobblemon.mod.common.api.gui.scrollAmount
+import net.minecraft.client.input.KeyEvent
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.CobblemonNetwork
 import com.cobblemon.mod.common.CobblemonSounds
@@ -48,24 +51,24 @@ import com.cobblemon.mod.common.util.math.toRGB
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import com.cobblemon.mod.common.client.gui.CobblemonContainerScreen
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Inventory
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import kotlin.math.ceil
 
-class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, title: Component) : AbstractContainerScreen<TMMachineMenu>(containerMenu, inventory, title) {
+class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, title: Component) : CobblemonContainerScreen<TMMachineMenu>(containerMenu, inventory, title, WIDTH, HEIGHT) {
     companion object {
         const val HEIGHT = 226
         const val WIDTH = 191
@@ -112,12 +115,12 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
         val screenOverlay = cobblemonResource("textures/gui/tmmachine/screen_overlay.png")
         val scanLines = cobblemonResource("textures/gui/tmmachine/scan_lines.png")
 
-        val logoResourceMap: Map<ResourceLocation, List<String>> = mapOf(
+        val logoResourceMap: Map<Identifier, List<String>> = mapOf(
             cobblemonResource("textures/gui/tmmachine/logo_ct.png") to listOf("fr"),
             cobblemonResource("textures/gui/tmmachine/logo_mt.png") to listOf("es", "it", "pt")
         )
 
-        fun getLogoResource(langCode: String?): ResourceLocation =
+        fun getLogoResource(langCode: String?): Identifier =
             logoResourceMap.entries.find { it.value.contains(langCode?.substringBefore("_")) }?.key ?: logo
     }
 
@@ -143,7 +146,7 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
 
     var ticksElapsed: Int = 0
 
-    var logoResource: ResourceLocation = logo
+    var logoResource: Identifier = logo
     var logoTint: Triple<Double, Double, Double> = ElementalTypes.all().random().secondaryColor.toRGB()
     var logoPosX: Int = 0
     var logoPosY: Int = 0
@@ -162,8 +165,6 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
     var moveInfoTM: TechnicalMachine? = null
 
     override fun init() {
-        imageWidth = WIDTH
-        imageHeight = HEIGHT
 
         super.init()
 
@@ -288,7 +289,7 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                     if (burnActive == 0) {
                         CobblemonNetwork.sendToServer(SetTMMachineContainerDataPacket(
                             TMMachineBlockEntity.REPEAT_PROCESS_INDEX,
-                            if (hasShiftDown()) 1 else 0
+                            if (Minecraft.getInstance().hasShiftDown()) 1 else 0
                         ))
                     }*/
 
@@ -535,68 +536,60 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
         }
     }
 
-    fun renderDiscTypeOverlay(poseStack: PoseStack, isDiscRotating: Boolean, alpha: Float = 1F) {
+    fun renderDiscTypeOverlay(context: GuiGraphicsExtractor, isDiscRotating: Boolean, alpha: Float = 1F) {
         menu.currentlySelectedTM?.let {
             val primaryRgb = it.moveName.elementalType.primaryColor.toRGB()
             val secondaryRgb = it.moveName.elementalType.secondaryColor.toRGB()
-            blitk(
-                matrixStack = poseStack,
-                texture = discBase,
-                x = leftPos + 32,
-                y = topPos + 50,
-                width = DISC_DIAMETER,
-                height = DISC_DIAMETER,
-                red = primaryRgb.first,
-                green = primaryRgb.second,
-                blue = primaryRgb.third,
-                alpha = alpha
-            )
+            blitk(context = context,
+            texture = discBase,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            red = primaryRgb.first,
+            green = primaryRgb.second,
+            blue = primaryRgb.third,
+            alpha = alpha)
 
             if (isDiscRotating) {
                 // Reflective rotation
-                blitk(
-                    matrixStack = poseStack,
-                    texture = discReflectiveRotating,
-                    x = leftPos + 32,
-                    y = topPos + 50,
-                    width = DISC_DIAMETER,
-                    height = DISC_DIAMETER,
-                    vOffset = DISC_DIAMETER * discReflectionFrame,
-                    textureHeight = DISC_DIAMETER * 4,
-                    red = secondaryRgb.first,
-                    green = secondaryRgb.second,
-                    blue = secondaryRgb.third,
-                    alpha = alpha
-                )
+                blitk(context = context,
+            texture = discReflectiveRotating,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            vOffset = DISC_DIAMETER * discReflectionFrame,
+            textureHeight = DISC_DIAMETER * 4,
+            red = secondaryRgb.first,
+            green = secondaryRgb.second,
+            blue = secondaryRgb.third,
+            alpha = alpha)
 
                 // Groove rotation
-                blitk(
-                    matrixStack = poseStack,
-                    texture = discRotating,
-                    x = leftPos + 32,
-                    y = topPos + 50,
-                    width = DISC_DIAMETER,
-                    height = DISC_DIAMETER,
-                    vOffset = DISC_DIAMETER * discRotationFrame,
-                    textureHeight = DISC_DIAMETER * 8,
-                    red = secondaryRgb.first,
-                    green = secondaryRgb.second,
-                    blue = secondaryRgb.third,
-                    alpha = alpha
-                )
+                blitk(context = context,
+            texture = discRotating,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            vOffset = DISC_DIAMETER * discRotationFrame,
+            textureHeight = DISC_DIAMETER * 8,
+            red = secondaryRgb.first,
+            green = secondaryRgb.second,
+            blue = secondaryRgb.third,
+            alpha = alpha)
             } else {
-                blitk(
-                    matrixStack = poseStack,
-                    texture = discReflective,
-                    x = leftPos + 32,
-                    y = topPos + 50,
-                    width = DISC_DIAMETER,
-                    height = DISC_DIAMETER,
-                    red = secondaryRgb.first,
-                    green = secondaryRgb.second,
-                    blue = secondaryRgb.third,
-                    alpha = alpha
-                )
+                blitk(context = context,
+            texture = discReflective,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            red = secondaryRgb.first,
+            green = secondaryRgb.second,
+            blue = secondaryRgb.third,
+            alpha = alpha)
             }
 
             val postCraftTicks = menu.getPostCraftTicks()
@@ -607,112 +600,94 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                     else -> 0F
                 }
 
-                blitk(
-                    matrixStack = poseStack,
-                    texture = discOverlay,
-                    x = leftPos + 32,
-                    y = topPos + 50,
-                    width = DISC_DIAMETER,
-                    height = DISC_DIAMETER,
-                    alpha = opacity
-                )
+                blitk(context = context,
+            texture = discOverlay,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            alpha = opacity)
             }
         }
     }
 
-    fun renderDisc(poseStack: PoseStack, isDiscRotating: Boolean, baseAlpha: Float = 1F, overlayAlpha: Float = 1F) {
-        blitk(
-            matrixStack = poseStack,
+    fun renderDisc(context: GuiGraphicsExtractor, isDiscRotating: Boolean, baseAlpha: Float = 1F, overlayAlpha: Float = 1F) {
+        blitk(context = context,
             texture = discBase,
             x = leftPos + 32,
             y = topPos + 50,
             width = DISC_DIAMETER,
             height = DISC_DIAMETER,
-            alpha = baseAlpha
-        )
+            alpha = baseAlpha)
 
         if (isDiscRotating) {
             // Reflective rotation
-            blitk(
-                matrixStack = poseStack,
-                texture = discReflectiveRotating,
-                x = leftPos + 32,
-                y = topPos + 50,
-                width = DISC_DIAMETER,
-                height = DISC_DIAMETER,
-                vOffset = DISC_DIAMETER * discReflectionFrame,
-                textureHeight = DISC_DIAMETER * 4,
-                alpha = baseAlpha
-            )
+            blitk(context = context,
+            texture = discReflectiveRotating,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            vOffset = DISC_DIAMETER * discReflectionFrame,
+            textureHeight = DISC_DIAMETER * 4,
+            alpha = baseAlpha)
 
             // Groove rotation
-            blitk(
-                matrixStack = poseStack,
-                texture = discRotating,
-                x = leftPos + 32,
-                y = topPos + 50,
-                width = DISC_DIAMETER,
-                height = DISC_DIAMETER,
-                vOffset = DISC_DIAMETER * discRotationFrame,
-                textureHeight = DISC_DIAMETER * 8,
-                alpha = baseAlpha
-            )
+            blitk(context = context,
+            texture = discRotating,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            vOffset = DISC_DIAMETER * discRotationFrame,
+            textureHeight = DISC_DIAMETER * 8,
+            alpha = baseAlpha)
         } else {
-            blitk(
-                matrixStack = poseStack,
-                texture = discReflective,
-                x = leftPos + 32,
-                y = topPos + 50,
-                width = DISC_DIAMETER,
-                height = DISC_DIAMETER,
-                alpha = baseAlpha
-            )
+            blitk(context = context,
+            texture = discReflective,
+            x = leftPos + 32,
+            y = topPos + 50,
+            width = DISC_DIAMETER,
+            height = DISC_DIAMETER,
+            alpha = baseAlpha)
         }
 
         if (menu.getPostCraftTicks() < CRAFT_TICKS) {
-            renderDiscTypeOverlay(poseStack, isDiscRotating, overlayAlpha)
+            renderDiscTypeOverlay(context, isDiscRotating, overlayAlpha)
         }
 
-        blitk(
-            matrixStack = poseStack,
+        blitk(context = context,
             texture = discBorder,
             x = leftPos + 32,
             y = topPos + 50,
             width = DISC_DIAMETER,
             height = DISC_DIAMETER,
-            alpha = baseAlpha
-        )
+            alpha = baseAlpha)
     }
 
-    fun renderMoveInfo(context: GuiGraphics, mouseX: Int, mouseY: Int) {
+    fun renderMoveInfo(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
         val moveTemplate = moveInfoTM?.moveName
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = MovesWidget.movesPowerIconResource,
             x = leftPos + 127.5,
             y = topPos + 7.5,
             width = 5,
-            height = 5
-        )
+            height = 5)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = MovesWidget.movesAccuracyIconResource,
             x = leftPos + 127.5,
             y = topPos + 19.5,
             width = 5,
-            height = 5
-        )
+            height = 5)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = MovesWidget.movesEffectIconResource,
             x = leftPos + 127.5,
             y = topPos + 31.5,
             width = 5,
-            height = 5
-        )
+            height = 5)
 
         drawScaledText(
             context = context,
@@ -778,7 +753,7 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                 val itemX = (leftPos + 129 + (index * 18))
                 val itemY = (topPos + 90)
 
-                val stacks = recipe.ingredient.items
+                val stacks = recipe.ingredient.items().map { it.value().defaultInstance }.toList()
                 if (stacks.isEmpty()) return@forEachIndexed
 
                 val level = Minecraft.getInstance().level ?: return@forEachIndexed
@@ -786,37 +761,36 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
 
                 val itemStack = stacks[index].copy().also { it.count = recipe.count }
 
-                context.renderItem(itemStack, itemX, itemY)
-                context.renderItemDecorations(Minecraft.getInstance().font, itemStack, itemX, itemY)
+                context.item(itemStack, itemX, itemY)
+                context.itemDecorations(Minecraft.getInstance().font, itemStack, itemX, itemY)
 
                 if (
                     menu.carried.isEmpty &&
                     mouseX >= itemX && mouseX < itemX + 16 &&
                     mouseY >= itemY && mouseY < itemY + 16
                 ) {
-                    context.renderTooltip(Minecraft.getInstance().font, itemStack, mouseX, mouseY)
+                    context.setTooltipForNextFrame(Minecraft.getInstance().font, itemStack, mouseX, mouseY)
                 }
             }
         }
     }
 
-    fun renderHeldMoveInfoTooltip(context: GuiGraphics, mouseX: Int, mouseY: Int) {
+    fun renderHeldMoveInfoTooltip(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
         heldStackMove?.let { moveTemplate ->
             val matrices = context.pose()
             val posX = mouseX + 10
             val posY = mouseY - 49
 
-            matrices.pushPose()
-            matrices.translate(0.0F, 0.0F, 1000.0F)
-            blitk(
-                matrixStack = matrices,
-                texture = tooltipMoveInfo,
-                x = posX,
-                y = posY,
-                width = 96,
-                height = 98,
-                alpha = 0.96F
-            )
+            matrices.pushMatrix()
+            context.nextStratum()
+            matrices.translate((0.0F).toFloat(), (0.0F).toFloat())
+            blitk(context = context,
+            texture = tooltipMoveInfo,
+            x = posX,
+            y = posY,
+            width = 96,
+            height = 98,
+            alpha = 0.96F)
 
             drawScaledText(
                 context = context,
@@ -829,32 +803,26 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
 
             TypeIcon(posX + 81, posY + 3.5, moveTemplate.elementalType, small = true).render(context)
 
-            blitk(
-                matrixStack = matrices,
-                texture = MovesWidget.movesPowerIconResource,
-                x = posX + 8.5,
-                y = posY + 15.5,
-                width = 5,
-                height = 5
-            )
+            blitk(context = context,
+            texture = MovesWidget.movesPowerIconResource,
+            x = posX + 8.5,
+            y = posY + 15.5,
+            width = 5,
+            height = 5)
 
-            blitk(
-                matrixStack = matrices,
-                texture = MovesWidget.movesAccuracyIconResource,
-                x = posX + 8.5,
-                y = posY + 27.5,
-                width = 5,
-                height = 5
-            )
+            blitk(context = context,
+            texture = MovesWidget.movesAccuracyIconResource,
+            x = posX + 8.5,
+            y = posY + 27.5,
+            width = 5,
+            height = 5)
 
-            blitk(
-                matrixStack = matrices,
-                texture = MovesWidget.movesEffectIconResource,
-                x = posX + 8.5,
-                y = posY + 39.5,
-                width = 5,
-                height = 5
-            )
+            blitk(context = context,
+            texture = MovesWidget.movesEffectIconResource,
+            x = posX + 8.5,
+            y = posY + 39.5,
+            width = 5,
+            height = 5)
 
             drawScaledText(
                 context = context,
@@ -913,8 +881,8 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                 scale = HALF_SCALE
             )
 
-            matrices.pushPose()
-            matrices.scale(HALF_SCALE, HALF_SCALE, 1F)
+            matrices.pushMatrix()
+            matrices.scale((HALF_SCALE).toFloat(), (HALF_SCALE).toFloat())
             MultiLineLabelK.create(
                 component = moveTemplate.description,
                 width = 79 / HALF_SCALE,
@@ -927,7 +895,7 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                 colour = ColourLibrary.WHITE,
                 shadow = true
             )
-            matrices.popPose()
+            matrices.popMatrix()
 
             drawScaledText(
                 context = context,
@@ -939,53 +907,48 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
             )
             MoveCategoryIcon(x = posX + 78, y = posY + 86, category = moveTemplate.damageCategory).render(context)
 
-            matrices.popPose()
+            matrices.popMatrix()
         }
     }
 
-    fun renderScreenSaver(context: GuiGraphics) {
+    fun renderScreenSaver(context: GuiGraphicsExtractor) {
         val poseStack = context.pose()
         // Screen saver
         if (ticksElapsed > SCREEN_SAVER_TIMEOUT_TICKS) {
             val opacity = Math.max(0.0, Math.min(1.0, (ticksElapsed - SCREEN_SAVER_TIMEOUT_TICKS) * 0.2))
-            poseStack.pushPose()
-            poseStack.translate(0.0, 0.0, 100.0)
-            blitk(
-                matrixStack = poseStack,
-                texture = screenSaver,
-                x = leftPos + 1,
-                y = topPos + 1,
-                width = SCREEN_SAVER_WIDTH,
-                height = SCREEN_SAVER_HEIGHT,
-                alpha = opacity
-            )
+            poseStack.pushMatrix()
+            context.nextStratum()
+            poseStack.translate((0.0).toFloat(), (0.0).toFloat())
+            blitk(context = context,
+            texture = screenSaver,
+            x = leftPos + 1,
+            y = topPos + 1,
+            width = SCREEN_SAVER_WIDTH,
+            height = SCREEN_SAVER_HEIGHT,
+            alpha = opacity)
 
-            blitk(
-                matrixStack = poseStack,
-                texture = logoResource,
-                x = logoPosX / HALF_SCALE,
-                y = logoPosY / HALF_SCALE,
-                width = LOGO_WIDTH,
-                height = LOGO_HEIGHT,
-                scale = HALF_SCALE,
-                red = logoTint.first,
-                green = logoTint.second,
-                blue = logoTint.third,
-                alpha = 0.8 * opacity
-            )
+            blitk(context = context,
+            texture = logoResource,
+            x = logoPosX / HALF_SCALE,
+            y = logoPosY / HALF_SCALE,
+            width = LOGO_WIDTH,
+            height = LOGO_HEIGHT,
+            scale = HALF_SCALE,
+            red = logoTint.first,
+            green = logoTint.second,
+            blue = logoTint.third,
+            alpha = 0.8 * opacity)
 
-            blitk(
-                matrixStack = poseStack,
-                texture = cobblemonResource("textures/white.png"),
-                x = leftPos + 1,
-                y = scanPosY * 0.5,
-                width = SCREEN_SAVER_WIDTH,
-                height = 1,
-                red = 0,
-                green = 0,
-                blue = 0,
-                alpha = 0.1 * opacity
-            )
+            blitk(context = context,
+            texture = cobblemonResource("textures/white.png"),
+            x = leftPos + 1,
+            y = scanPosY * 0.5,
+            width = SCREEN_SAVER_WIDTH,
+            height = 1,
+            red = 0,
+            green = 0,
+            blue = 0,
+            alpha = 0.1 * opacity)
 
             context.enableScissor(
                 leftPos + 1,
@@ -993,28 +956,24 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                 leftPos + 1 + SCREEN_SAVER_WIDTH,
                 topPos + 1 + SCREEN_SAVER_HEIGHT
             )
-            blitk(
-                matrixStack = poseStack,
-                texture = scanLines,
-                x = leftPos + 1,
-                y = topPos + 1 - scanLineOffsetY,
-                width = 118,
-                height = 114,
-                alpha = opacity
-            )
+            blitk(context = context,
+            texture = scanLines,
+            x = leftPos + 1,
+            y = topPos + 1 - scanLineOffsetY,
+            width = 118,
+            height = 114,
+            alpha = opacity)
             context.disableScissor()
 
-            blitk(
-                matrixStack = poseStack,
-                texture = screenOverlay,
-                x = leftPos + 1,
-                y = topPos + 1,
-                width = SCREEN_SAVER_WIDTH,
-                height = SCREEN_SAVER_HEIGHT,
-                alpha = 0.5 * opacity
-            )
+            blitk(context = context,
+            texture = screenOverlay,
+            x = leftPos + 1,
+            y = topPos + 1,
+            width = SCREEN_SAVER_WIDTH,
+            height = SCREEN_SAVER_HEIGHT,
+            alpha = 0.5 * opacity)
 
-            poseStack.popPose()
+            poseStack.popMatrix()
         }
     }
 
@@ -1041,7 +1000,7 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                     // Scroll to move if moves list contains held TM move
                     if (tmList.get().contains(heldStackTm)) {
                         val moveListIndex = tmList.get().indexOf(heldStackTm)
-                        movesScrollingList.scrollAmount = (if (moveListIndex == tmList.get().lastIndex) 1.0 else (moveListIndex / tmList.get().size.toDouble()))* movesScrollingList.maxScroll
+                        movesScrollingList.scrollAmount = (if (moveListIndex == tmList.get().lastIndex) 1.0 else (moveListIndex / tmList.get().size.toDouble()))* movesScrollingList.maxScrollAmount()
                     }
                 }
             }
@@ -1108,13 +1067,13 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
         super.mouseMoved(mouseX, mouseY)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         ticksElapsed = 0
         if (resetScreenSaver()) return false
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun slotClicked(slot: Slot?, slotId: Int, mouseButton: Int, type: ClickType) {
+    override fun slotClicked(slot: Slot?, slotId: Int, mouseButton: Int, type: ContainerInput) {
         super.slotClicked(slot, slotId, mouseButton, type)
         updateHeldStackMove()
         checkForSlotChanges()
@@ -1126,12 +1085,13 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(event: KeyEvent): Boolean {
+        val keyCode = event.key()
         ticksElapsed = 0
         if (resetScreenSaver()) return false
         val searchFocused = this::moveSearchWidget.isInitialized && moveSearchWidget.isFocused
 
-        if (isInventoryKeyPressed(minecraft, keyCode, scanCode)) {
+        if (isInventoryKeyPressed(minecraft, event)) {
             if (searchFocused) { return true }
             else {
                 onClose()
@@ -1150,34 +1110,29 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
             }
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 
-    override fun renderBackground(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {}
+    override fun extractBackground(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {}
 
-    override fun renderBg(guiGraphics: GuiGraphics, partialTick: Float, mouseX: Int, mouseY: Int) {}
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.renderTransparentBackground(graphics)
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractTransparentBackground(graphics)
 
         val matrices = graphics.pose()
-        blitk(
-            matrixStack = matrices,
+        blitk(context = graphics,
             texture = baseResource,
             x = leftPos,
             y = topPos,
             width = WIDTH,
-            height = HEIGHT
-        )
+            height = HEIGHT)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = graphics,
             texture = emptyDiscSlot,
             x = leftPos + 105,
             y = topPos + 116,
             width = 16,
-            height = 16
-        )
+            height = 16)
 
         var label = if (mode != MOVE_SELECT_MODE) "block.cobblemon.tm_machine".asTranslated()
             else ( if (selectedPokemon != null) selectedPokemon!!.getDisplayName() else (if (sortType != null) lang("type.suffix", sortType!!.displayName) else lang("ui.moves")))
@@ -1190,24 +1145,20 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
         )
 
         if (mode == TM_BURN_MODE) {
-            blitk(
-                matrixStack = matrices,
-                texture = tmTray,
-                x = leftPos,
-                y = topPos,
-                width = 120,
-                height = 112
-            )
+            blitk(context = graphics,
+            texture = tmTray,
+            x = leftPos,
+            y = topPos,
+            width = 120,
+            height = 112)
 
             val burnProgressWidth = ceil(menu.getBurnProgressRatio() * 81).toInt()
-            blitk(
-                matrixStack = matrices,
-                texture = CobblemonResources.WHITE,
-                x = leftPos + 33,
-                y = topPos + 36,
-                width = burnProgressWidth,
-                height = 2
-            )
+            blitk(context = graphics,
+            texture = CobblemonResources.WHITE,
+            x = leftPos + 33,
+            y = topPos + 36,
+            width = burnProgressWidth,
+            height = 2)
 
             if (!menu.inventory!!.getItem(TMMachineMenu.BLANK_TM_SLOT).isEmpty) {
                 val postCraftTicks = menu.getPostCraftTicks()
@@ -1218,36 +1169,32 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
                 }
 
                 val overlayOpacity = if (postCraftTicks < CRAFT_TICKS) menu.getBurnProgressRatio() else 0F
-                renderDisc(matrices, (menu.getBurnProgressRatio() < 1F) && isBurnActive(), baseOpacity, overlayOpacity)
+                renderDisc(graphics, (menu.getBurnProgressRatio() < 1F) && isBurnActive(), baseOpacity, overlayOpacity)
             }
         }
 
-        super.render(graphics, mouseX, mouseY, delta)
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
 
         if (mode == TM_BURN_MODE && ::selectedMoveButton.isInitialized) {
             selectedMoveButton.showOverlayBar = !selectedMoveButton.isHovered
 
             if (selectedMoveButton.isHovered) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = moveOverlayBar,
-                    x = selectedMoveButton.x + 85,
-                    y = selectedMoveButton.y + 13,
-                    width = 22,
-                    height = 8
-                )
+                blitk(context = graphics,
+            texture = moveOverlayBar,
+            x = selectedMoveButton.x + 85,
+            y = selectedMoveButton.y + 13,
+            width = 22,
+            height = 8)
 
-                blitk(
-                    matrixStack = matrices,
-                    texture = iconBack,
-                    x = (selectedMoveButton.x + 92) / HALF_SCALE,
-                    y = (selectedMoveButton.y + 13) / HALF_SCALE,
-                    width = 20,
-                    height = 18,
-                    textureHeight = 36,
-                    vOffset = 18,
-                    scale = HALF_SCALE
-                )
+                blitk(context = graphics,
+            texture = iconBack,
+            x = (selectedMoveButton.x + 92) / HALF_SCALE,
+            y = (selectedMoveButton.y + 13) / HALF_SCALE,
+            width = 20,
+            height = 18,
+            textureHeight = 36,
+            vOffset = 18,
+            scale = HALF_SCALE)
             }
         }
 
@@ -1255,13 +1202,13 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
 
         renderMoveInfo(graphics, mouseX, mouseY)
 
-        this.renderTooltip(graphics, mouseX, mouseY)
+        this.extractTooltip(graphics, mouseX, mouseY)
 
         renderHeldMoveInfoTooltip(graphics, mouseX, mouseY)
     }
 
-    override fun renderBlurredBackground(partialTick: Float) {}
-    override fun renderLabels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {}
+    override fun extractBlurredBackground(context: GuiGraphicsExtractor) {}
+    override fun extractLabels(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {}
 
     fun playSound(soundEvent: SoundEvent) {
         Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(soundEvent, 1.0F))
@@ -1271,13 +1218,12 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
         mouseX: Double,
         mouseY: Double,
         guiLeft: Int,
-        guiTop: Int,
-        mouseButton: Int
+        guiTop: Int
     ): Boolean {
         partySlotList.forEach {
             if (it.pokemon != null && it.isMouseOver(mouseX, mouseY)) return false
         }
-        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)
+        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop)
     }
 
     class MoveDescriptionWidget(pX: Int, pY: Int, width: Int, height: Int) : ScrollingWidget<MoveDescriptionWidget.TextSlot>(
@@ -1301,43 +1247,41 @@ class TMMachineScreen(containerMenu: TMMachineMenu, val inventory: Inventory, ti
             scrollAmount = 0.0
         }
 
-        override fun renderScrollbar(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-            val xLeft = this.scrollbarPosition
+        override fun renderScrollbar(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+            val xLeft = this.scrollBarX()
 
             val barHeight = this.bottom - y
 
-            var yBottom = ((barHeight * barHeight).toFloat() / this.maxPosition.toFloat()).toInt()
+            var yBottom = ((barHeight * barHeight).toFloat() / (this.contentHeight() - 4).toFloat()).toInt()
             yBottom = Mth.clamp(yBottom, 16, barHeight - 6)
-            var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScroll + y
+            var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScrollAmount() + y
             if (yTop < y) yTop = y
 
             // Scroll Track
-            blitk(
-                texture = scrollbarTrack,
-                matrixStack = context.pose(),
-                x = xLeft,
-                y = y,
-                width = 2,
-                height = height
-            )
+            blitk(texture = scrollbarTrack,
+            context = context,
+            x = xLeft,
+            y = y,
+            width = 2,
+            height = height)
 
             // Scroll Slide
-            blitk(
-                texture = scrollbarSlide,
-                matrixStack = context.pose(),
-                x = xLeft,
-                y = yTop,
-                width = 2,
-                height = yBottom
-            )
+            blitk(texture = scrollbarSlide,
+            context = context,
+            x = xLeft,
+            y = yTop,
+            width = 2,
+            height = yBottom)
         }
 
-        override fun getScrollbarPosition(): Int {
+        override fun scrollBarX(): Int {
             return left + width - DESCRIPTION_SCROLLBAR_WIDTH
         }
 
         class TextSlot(val text: String) : Slot<TextSlot>() {
-            override fun render(context: GuiGraphics, index: Int, y: Int, x: Int, entryWidth: Int, entryHeight: Int, mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float) {
+            override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float) {
+                val y = this.contentY
+                val x = this.contentX
                 drawScaledText(
                     context = context,
                     text = text.text(),

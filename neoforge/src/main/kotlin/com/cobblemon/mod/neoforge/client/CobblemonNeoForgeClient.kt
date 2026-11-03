@@ -10,6 +10,11 @@ package com.cobblemon.mod.neoforge.client
 
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonClientImplementation
+import com.cobblemon.mod.common.BakingOverride
+import com.cobblemon.mod.common.client.CobblemonBakingOverrides
+import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey
+import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel
+import net.minecraft.client.resources.model.geometry.QuadCollection
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.client.CobblemonClient
@@ -19,32 +24,27 @@ import com.cobblemon.mod.common.client.gui.config.CobblemonConfigScreen
 import com.cobblemon.mod.common.client.keybind.CobblemonKeyBinds
 import com.cobblemon.mod.common.client.pokedex.PokedexType
 import com.cobblemon.mod.common.client.render.atlas.CobblemonAtlases
-import com.cobblemon.mod.common.client.render.item.CobblemonModelPredicateRegistry
-import com.cobblemon.mod.common.client.render.shader.CobblemonShaders
 import com.cobblemon.mod.common.item.PokedexItem
 import com.cobblemon.mod.common.particle.CobblemonParticles
 import com.cobblemon.mod.common.particle.SnowstormParticleType
+import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.isUsingPokedex
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
 import net.minecraft.client.Minecraft
-import net.minecraft.client.color.block.BlockColor
-import net.minecraft.client.color.item.ItemColor
+import net.minecraft.client.color.block.BlockTintSource
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.particle.ParticleProvider
 import net.minecraft.client.particle.SpriteSet
-import net.minecraft.client.renderer.ItemBlockRenderTypes
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.EntityRenderers
-import net.minecraft.client.resources.model.ModelResourceLocation
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
+import net.minecraft.resources.Identifier
 import net.minecraft.server.packs.resources.PreparableReloadListener
 import net.minecraft.server.packs.resources.ReloadableResourceManager
 import net.minecraft.world.InteractionHand
@@ -54,33 +54,45 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
+import net.neoforged.bus.api.IEventBus
 import net.neoforged.fml.ModContainer
 import net.neoforged.fml.ModList
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.neoforge.client.ClientHooks
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.client.event.ModelEvent
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent
+import net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent
-import net.neoforged.neoforge.client.event.RegisterShadersEvent
+import net.neoforged.neoforge.client.event.RegisterParticleGroupsEvent
+import com.cobblemon.mod.common.api.snowstorm.ParticleMaterials
+import com.cobblemon.mod.common.client.render.ModelPreviewRenderer
+import com.cobblemon.mod.common.client.render.ModelPreviewRenderState
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent
+import com.cobblemon.mod.common.client.render.SnowstormParticleGroup
 import net.neoforged.neoforge.client.event.RenderGuiEvent
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers
 import net.neoforged.neoforge.common.NeoForge
-import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 
 object CobblemonNeoForgeClient : CobblemonClientImplementation {
 
-    fun init() {
-        with(MOD_BUS) {
+    private data class ClientReloader(val id: Identifier, val listener: PreparableReloadListener, val dependencies: List<Identifier>)
+    private val clientReloaders = mutableListOf<ClientReloader>()
+
+    fun init(modEventBus: IEventBus) {
+        with(modEventBus) {
             addListener(::onClientSetup)
             addListener(::onKeyMappingRegister)
             addListener(::onRegisterParticleProviders)
-            addListener(::register3dModels)
+            addListener(::onRegisterParticleGroups)
+            addListener(::onRegisterPictureInPictureRenderers)
+            addListener(::registerTextureAtlases)
+            addListener(::registerBakingOverrides)
             addListener(::onRegisterReloadListener)
-            addListener(::onShaderRegistration)
         }
         with(NeoForge.EVENT_BUS) {
             addListener(::onRenderGuiOverlayEvent)
@@ -92,7 +104,6 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
     private fun onClientSetup(event: FMLClientSetupEvent) {
         event.enqueueWork {
             CobblemonClient.initialize(this)
-            CobblemonModelPredicateRegistry.registerPredicates()
         }
         NeoForgeClientPlatformEventHandler.register()
 
@@ -102,34 +113,36 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
         })
     }
 
-    private fun onRegisterReloadListener(event: RegisterClientReloadListenersEvent) {
-        event.registerReloadListener { synchronizer, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor ->
-            val atlasFutures = mutableListOf<CompletableFuture<Void>>()
-            CobblemonAtlases.atlases.forEach {
-                atlasFutures.add(
-                    it.reload(
-                        synchronizer,
-                        manager,
-                        prepareProfiler,
-                        applyProfiler,
-                        prepareExecutor,
-                        applyExecutor
-                    )
-                )
-            }
-            val result = CompletableFuture.allOf(*atlasFutures.toTypedArray()).thenRun {
-                reloadCodedAssets(manager)
-            }
-            result
-        }
-
+    private fun onRegisterPictureInPictureRenderers(event: RegisterPictureInPictureRenderersEvent) {
+        event.register(ModelPreviewRenderState::class.java, ModelPreviewRenderer::singleTarget)
     }
 
-    private fun onShaderRegistration(event: RegisterShadersEvent) {
-        CobblemonShaders.init()
-        CobblemonShaders.SHADERS_TO_REGISTER.forEach { (factory, callback) ->
-            val data = factory(event.resourceProvider)
-            event.registerShader(ShaderInstance(data.resourceFactory, data.shaderName, data.vertexFormat), callback)
+    private fun registerTextureAtlases(event: RegisterTextureAtlasesEvent) {
+        CobblemonAtlases.atlases.forEach { event.register(it.config) }
+    }
+
+    private fun onRegisterReloadListener(event: AddClientReloadListenersEvent) {
+        event.addListener(cobblemonResource("coded_assets"), ResourceManagerReloadListener(::reloadCodedAssets))
+        clientReloaders.forEach { event.addListener(it.id, it.listener) }
+        clientReloaders.forEach { registration ->
+            registration.dependencies.forEach { event.addDependency(it, registration.id) }
+        }
+    }
+
+
+
+    private val bakingOverrideKeys = CobblemonBakingOverrides.models.associateWith { model ->
+        StandaloneModelKey<QuadCollection> { model.modelIdentifier.toString() }
+    }
+
+    override fun getBakingOverride(model: BakingOverride): QuadCollection =
+        checkNotNull(Minecraft.getInstance().modelManager.getStandaloneModel(bakingOverrideKeys.getValue(model))) {
+            "Cobblemon standalone model ${model.modelLocation} was not baked"
+        }
+
+    private fun registerBakingOverrides(event: ModelEvent.RegisterStandalone) {
+        bakingOverrideKeys.forEach { (model, key) ->
+            event.register(key, SimpleUnbakedStandaloneModel.quadCollection(model.modelLocation))
         }
     }
 
@@ -141,24 +154,11 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
         throw UnsupportedOperationException("Forge can't store these early, use CobblemonForgeClient#onRegisterParticleProviders")
     }
 
-    @Suppress("DEPRECATION")
-    override fun registerBlockRenderType(layer: RenderType, vararg blocks: Block) {
-        blocks.forEach { block ->
-            ItemBlockRenderTypes.setRenderLayer(block, layer)
-        }
+    override fun registerBlockColors(provider: BlockTintSource, vararg blocks: Block) {
+        Minecraft.getInstance().blockColors.register(listOf(provider), *blocks)
     }
 
-    @Suppress("DEPRECATION")
-    override fun registerItemColors(provider: ItemColor, vararg items: Item) {
-        Minecraft.getInstance().itemColors.register(provider, *items)
-    }
-
-    @Suppress("DEPRECATION")
-    override fun registerBlockColors(provider: BlockColor, vararg blocks: Block) {
-        Minecraft.getInstance().blockColors.register(provider, *blocks)
-    }
-
-    override fun <T : BlockEntity> registerBlockEntityRenderer(type: BlockEntityType<out T>, factory: BlockEntityRendererProvider<T>) {
+    override fun <T : BlockEntity, S : net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState> registerBlockEntityRenderer(type: BlockEntityType<out T>, factory: BlockEntityRendererProvider<T, S>) {
         BlockEntityRenderers.register(type, factory)
     }
 
@@ -166,24 +166,14 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
         EntityRenderers.register(type, factory)
     }
 
-    private fun register3dModels(event: ModelEvent.RegisterAdditional) {
-        PokeBalls.all().forEach { pokeBall ->
-            event.register(ModelResourceLocation(pokeBall.model3d, "standalone"))
-        }
-        PokedexType.entries.toList().forEach { pokedex ->
-            event.register(ModelResourceLocation(pokedex.getItemModelPath(), "standalone"))
-            event.register(ModelResourceLocation(pokedex.getItemModelPath("scanning"), "standalone"))
-            event.register(ModelResourceLocation(pokedex.getItemModelPath("flat"), "standalone"))
-            event.register(ModelResourceLocation(pokedex.getItemModelPath("flat_off"), "standalone"))
-            event.register(ModelResourceLocation(pokedex.getItemModelPath("off"), "standalone"))
-        }
-        CobblemonItems.wearables.forEach { wearable ->
-            event.register(ModelResourceLocation(wearable.getModel3d(),"standalone"))
-        }
-    }
-
     private fun onKeyMappingRegister(event: RegisterKeyMappingsEvent) {
         CobblemonKeyBinds.register(event::register)
+    }
+
+    private fun onRegisterParticleGroups(event: RegisterParticleGroupsEvent) {
+        ParticleMaterials.RENDER_ORDER.forEach { group ->
+            event.register(group) { engine -> SnowstormParticleGroup(engine, group) }
+        }
     }
 
     private fun onRegisterParticleProviders(event: RegisterParticleProvidersEvent) {
@@ -192,7 +182,37 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
 
     var lastUpdateTime: Long? = null
 
+    private val scannerHiddenLayers = setOf(
+        VanillaGuiLayers.CAMERA_OVERLAYS,
+        VanillaGuiLayers.CROSSHAIR,
+        VanillaGuiLayers.AFTER_CAMERA_DECORATIONS,
+        VanillaGuiLayers.HOTBAR,
+        VanillaGuiLayers.PLAYER_HEALTH,
+        VanillaGuiLayers.ARMOR_LEVEL,
+        VanillaGuiLayers.FOOD_LEVEL,
+        VanillaGuiLayers.VEHICLE_HEALTH,
+        VanillaGuiLayers.AIR_LEVEL,
+        VanillaGuiLayers.CONTEXTUAL_INFO_BAR_BACKGROUND,
+        VanillaGuiLayers.EXPERIENCE_LEVEL,
+        VanillaGuiLayers.CONTEXTUAL_INFO_BAR,
+        VanillaGuiLayers.SELECTED_ITEM_NAME,
+        VanillaGuiLayers.SPECTATOR_TOOLTIP,
+        VanillaGuiLayers.EFFECTS,
+        VanillaGuiLayers.BOSS_OVERLAY,
+        VanillaGuiLayers.DEMO_OVERLAY,
+        VanillaGuiLayers.SCOREBOARD_SIDEBAR,
+        VanillaGuiLayers.OVERLAY_MESSAGE,
+        VanillaGuiLayers.TITLE,
+        VanillaGuiLayers.CHAT,
+        VanillaGuiLayers.TAB_LIST,
+        VanillaGuiLayers.SUBTITLE_OVERLAY
+    )
+
     private fun onRenderGuiOverlayEvent(event: RenderGuiLayerEvent.Pre) {
+        if (pokedexUsageContext.suppressesHud() && event.name in scannerHiddenLayers) {
+            event.isCanceled = true
+            return
+        }
         if (event.name == VanillaGuiLayers.CHAT) {
             val lastUpdateTime = lastUpdateTime
             if (lastUpdateTime != null) {
@@ -234,7 +254,7 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
         }
     }
 
-    internal fun registerResourceReloader(reloader: PreparableReloadListener) {
-        (Minecraft.getInstance().resourceManager as ReloadableResourceManager).registerReloadListener(reloader)
+    internal fun registerResourceReloader(id: Identifier, reloader: PreparableReloadListener, dependencies: Collection<Identifier>) {
+        clientReloaders.add(ClientReloader(id, reloader, dependencies.toList()))
     }
 }

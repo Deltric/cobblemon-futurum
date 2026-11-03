@@ -8,7 +8,6 @@
 
 package com.cobblemon.mod.common.block
 
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -28,12 +27,7 @@ class BigRootBlock(settings: Properties) : RootBlock(settings) {
 
     override fun shearedDrop(): ItemStack = Items.STRING.defaultInstance
 
-    override fun codec(): MapCodec<out Block> {
-        return CODEC
-    }
-
     companion object {
-        val CODEC = simpleCodec(::BigRootBlock)
 
         private val AABB = Shapes.box(0.2, 0.3, 0.2, 0.8, 1.0, 0.8)
     }

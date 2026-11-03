@@ -18,6 +18,8 @@ import com.cobblemon.mod.common.api.pokemon.feature.SynchronizedSpeciesFeaturePr
 import com.cobblemon.mod.common.client.settings.ServerSettings
 import com.cobblemon.mod.common.pokemon.*
 import com.cobblemon.mod.common.util.DataKeys
+import com.cobblemon.mod.common.util.contains
+import com.cobblemon.mod.common.util.getList
 import com.cobblemon.mod.common.util.codec.CodecUtils
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
@@ -79,7 +81,7 @@ internal class ClientPokemonP1(
         other.benchedMoves.copyFrom(this.benchedMoves)
         other.scaleModifier = this.scaleModifier
         this.features.forEach { featureNbt ->
-            val featureId = featureNbt.getString(FEATURE_ID)
+            val featureId = featureNbt.getStringOr(FEATURE_ID, "")
             if (featureId.isEmpty()) {
                 return@forEach
             }

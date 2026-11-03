@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.mechanics
 
+import com.cobblemon.mod.common.util.readMap
+import com.cobblemon.mod.common.util.writeMap
 import com.cobblemon.mod.common.api.apricorn.Apricorn
 import com.cobblemon.mod.common.api.riding.stats.RidingStat
 import com.cobblemon.mod.common.client.pot.CookingQuality

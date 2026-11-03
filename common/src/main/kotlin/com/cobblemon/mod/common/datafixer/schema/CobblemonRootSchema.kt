@@ -9,11 +9,11 @@
 package com.cobblemon.mod.common.datafixer.schema
 
 import com.cobblemon.mod.common.datafixer.CobblemonTypeReferences
+import com.cobblemon.mod.common.datafixer.HistoricalItemStackTemplates
 import com.cobblemon.mod.common.util.DataKeys
 import com.mojang.datafixers.DSL
 import com.mojang.datafixers.schemas.Schema
 import com.mojang.datafixers.types.templates.TypeTemplate
-import net.minecraft.util.datafix.DataFixers
 import net.minecraft.util.datafix.fixes.References
 import net.minecraft.util.datafix.schemas.NamespacedSchema
 import java.util.function.Supplier
@@ -75,14 +75,10 @@ class CobblemonRootSchema(versionKey: Int, parent: Schema?) : Schema(versionKey,
                 )
             )
         }
-        //We steal the definition of the item stack type from the vanilla schema
-        //DO NOT CHANGE THE NUMBER IN HERE.
-        //This is the version of the schema that was being used when THIS schema was made.
-        //Specifically, this schema was pre item components
-        //If you need a different number, make a new schema
-        val vanillaSchema = DataFixers.getDataFixer().getSchema(38180)
+        // Preserve the 1.21.1 definition of native schema 3818.0; the native
+        // template at that same version key has changed since then.
         schema.registerType(true, References.ITEM_STACK) {
-            vanillaSchema.getType(References.ITEM_STACK).buildTemplate()
+            HistoricalItemStackTemplates.beforeComponents()
         }
     }
 

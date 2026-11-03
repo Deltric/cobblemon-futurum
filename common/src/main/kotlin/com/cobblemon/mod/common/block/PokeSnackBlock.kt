@@ -8,13 +8,11 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.item.DyeColor
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.block.entity.PokeSnackBlockEntity
 import com.cobblemon.mod.common.util.rotateShape
 import com.cobblemon.mod.common.util.toEquipmentSlot
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.PrimitiveCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.BlockParticleOption
@@ -25,11 +23,10 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.stats.Stats
 import net.minecraft.tags.ItemTags
-import net.minecraft.util.FastColor
+import net.minecraft.util.ARGB
 import net.minecraft.util.RandomSource
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.item.ItemEntity
@@ -70,22 +67,22 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
         val CANDLE: IntegerProperty = IntegerProperty.create("candle", 0, MapColor.MATERIAL_COLORS.size - 1)
 
         val idToCandleBlock: Map<Int, Block> = mapOf(
-            MapColor.WOOL.id to Blocks.WHITE_CANDLE,
-            MapColor.COLOR_ORANGE.id to Blocks.ORANGE_CANDLE,
-            MapColor.COLOR_MAGENTA.id to Blocks.MAGENTA_CANDLE,
-            MapColor.COLOR_LIGHT_BLUE.id to Blocks.LIGHT_BLUE_CANDLE,
-            MapColor.COLOR_YELLOW.id to Blocks.YELLOW_CANDLE,
-            MapColor.COLOR_LIGHT_GREEN.id to Blocks.LIME_CANDLE,
-            MapColor.COLOR_PINK.id to Blocks.PINK_CANDLE,
-            MapColor.COLOR_GRAY.id to Blocks.GRAY_CANDLE,
-            MapColor.COLOR_LIGHT_GRAY.id to Blocks.LIGHT_GRAY_CANDLE,
-            MapColor.COLOR_CYAN.id to Blocks.CYAN_CANDLE,
-            MapColor.COLOR_PURPLE.id to Blocks.PURPLE_CANDLE,
-            MapColor.COLOR_BLUE.id to Blocks.BLUE_CANDLE,
-            MapColor.COLOR_BROWN.id to Blocks.BROWN_CANDLE,
-            MapColor.COLOR_GREEN.id to Blocks.GREEN_CANDLE,
-            MapColor.COLOR_RED.id to Blocks.RED_CANDLE,
-            MapColor.COLOR_BLACK.id to Blocks.BLACK_CANDLE
+            MapColor.WOOL.id to Blocks.DYED_CANDLE.pick(DyeColor.WHITE),
+            MapColor.COLOR_ORANGE.id to Blocks.DYED_CANDLE.pick(DyeColor.ORANGE),
+            MapColor.COLOR_MAGENTA.id to Blocks.DYED_CANDLE.pick(DyeColor.MAGENTA),
+            MapColor.COLOR_LIGHT_BLUE.id to Blocks.DYED_CANDLE.pick(DyeColor.LIGHT_BLUE),
+            MapColor.COLOR_YELLOW.id to Blocks.DYED_CANDLE.pick(DyeColor.YELLOW),
+            MapColor.COLOR_LIGHT_GREEN.id to Blocks.DYED_CANDLE.pick(DyeColor.LIME),
+            MapColor.COLOR_PINK.id to Blocks.DYED_CANDLE.pick(DyeColor.PINK),
+            MapColor.COLOR_GRAY.id to Blocks.DYED_CANDLE.pick(DyeColor.GRAY),
+            MapColor.COLOR_LIGHT_GRAY.id to Blocks.DYED_CANDLE.pick(DyeColor.LIGHT_GRAY),
+            MapColor.COLOR_CYAN.id to Blocks.DYED_CANDLE.pick(DyeColor.CYAN),
+            MapColor.COLOR_PURPLE.id to Blocks.DYED_CANDLE.pick(DyeColor.PURPLE),
+            MapColor.COLOR_BLUE.id to Blocks.DYED_CANDLE.pick(DyeColor.BLUE),
+            MapColor.COLOR_BROWN.id to Blocks.DYED_CANDLE.pick(DyeColor.BROWN),
+            MapColor.COLOR_GREEN.id to Blocks.DYED_CANDLE.pick(DyeColor.GREEN),
+            MapColor.COLOR_RED.id to Blocks.DYED_CANDLE.pick(DyeColor.RED),
+            MapColor.COLOR_BLACK.id to Blocks.DYED_CANDLE.pick(DyeColor.BLACK)
         )
 
         fun getCandleById(id: Int): Block = idToCandleBlock[id] ?: Blocks.CANDLE
@@ -135,18 +132,13 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
         )
     }
 
-    override fun codec(): MapCodec<PokeSnackBlock> = RecordCodecBuilder.mapCodec { it.group(
-        propertiesCodec(),
-        PrimitiveCodec.BOOL.fieldOf("isLure").forGetter { it.isLure }
-    ).apply(it, ::PokeSnackBlock) }
-
-    override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block?, BlockState?>) {
+    override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(FACING, BITES, CANDLE, BlockStateProperties.LIT)
     }
 
     override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity = PokeSnackBlockEntity(pos, state)
 
-    override fun getShape(state: BlockState, level: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape? {
+    override fun getShape(state: BlockState, level: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape {
         val snackShapes = when (state.getValue(FACING)) {
             Direction.SOUTH -> SOUTH_SHAPES
             Direction.WEST -> WEST_SHAPES
@@ -193,7 +185,7 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
         level.sendBlockUpdated(pos, state, state, UPDATE_CLIENTS)
     }
 
-    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState): ItemStack {
+    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState, includeData: Boolean): ItemStack {
         val blockEntity = level.getBlockEntity(pos) as? PokeSnackBlockEntity ?: return ItemStack.EMPTY
         return blockEntity.toItemStack()
     }
@@ -221,7 +213,7 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
         return super.useWithoutItem(state, level, pos, player, hitResult)
     }
 
-    override fun useItemOn(stack: ItemStack, state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hitResult: BlockHitResult): ItemInteractionResult {
+    override fun useItemOn(stack: ItemStack, state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hitResult: BlockHitResult): InteractionResult {
         if (!isLure) {
             if (stack.`is`(ItemTags.CANDLES) && !hasCandle(state)) {
                 val item = stack.getItem()
@@ -232,7 +224,7 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
                     level.setBlockAndUpdate(pos, state.setValue(CANDLE, getIdByCandle(candle)))
                     level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos)
                     player.awardStat(Stats.ITEM_USED.get(item))
-                    return ItemInteractionResult.SUCCESS
+                    return InteractionResult.SUCCESS
                 }
             }
 
@@ -253,10 +245,10 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
                     else stack.consume(1, player)
 
                     level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos)
-                    return ItemInteractionResult.sidedSuccess(level.isClientSide)
+                    return if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
                 } else if (stack.isEmpty() && isCandleLit(state)) {
                     extinguishCandle(player, state, level, pos)
-                    return ItemInteractionResult.sidedSuccess(level.isClientSide)
+                    return if (level.isClientSide) InteractionResult.SUCCESS else InteractionResult.CONSUME
                 }
             }
         }
@@ -278,9 +270,9 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
 
         if (isLure && random.nextInt(5) == 0) {
             val tint = getTint(level, pos)
-            val red = FastColor.ARGB32.red(tint) / 255F
-            val green = FastColor.ARGB32.green(tint) / 255F
-            val blue = FastColor.ARGB32.blue(tint) / 255F
+            val red = ARGB.red(tint) / 255F
+            val green = ARGB.green(tint) / 255F
+            val blue = ARGB.blue(tint) / 255F
 
             for (i in 0..<random.nextInt(1) + 1) {
                 level.addParticle(
@@ -359,7 +351,7 @@ class PokeSnackBlock(settings: Properties, val isLure: Boolean): BaseEntityBlock
             level.setBlock(pos, state.setValue(BITES, newBites) as BlockState, UPDATE_ALL)
         }
 
-        level.playSound(null, player?.blockPosition() ?: pos, SoundEvents.GENERIC_EAT, if (player != null) SoundSource.PLAYERS else SoundSource.NEUTRAL)
+        level.playSound(null, player?.blockPosition() ?: pos, SoundEvents.GENERIC_EAT.value(), if (player != null) SoundSource.PLAYERS else SoundSource.NEUTRAL)
         spawnEatParticles(level, pos)
 
         player?.let {

@@ -11,7 +11,7 @@ package com.cobblemon.mod.common.client.gui.pokenav
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import com.mojang.blaze3d.vertex.PoseStack
 class PokeNavFillerButton(
     posX: Int, posY: Int,
@@ -21,22 +21,21 @@ class PokeNavFillerButton(
     pTextureWidth: Int, pTextureHeight: Int
 ): PokeNavImageButton(posX, posY, pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, pYDiffText, FILLER, pTextureWidth, pTextureHeight, {}, "".text()) {
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
-        this.applyBlitk(context.pose(), pMouseX, pMouseY, pPartialTicks)
-        context.pose().pushPose()
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+        this.applyBlitk(context, pMouseX, pMouseY, pPartialTicks)
     }
 
-    override fun applyBlitk(matrices: PoseStack, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
-        blitk(
-            matrixStack = matrices,
+    override fun applyBlitk(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+        blitk(context = context,
             texture = FILLER,
-            x = x, y = y + 0.25,
-            width = width, height = height,
+            x = x,
+            y = y + 0.25,
+            width = width,
+            height = height,
             red = RED,
             green = GREEN,
             blue = BLUE,
-            alpha = ALPHA
-        )
+            alpha = ALPHA)
     }
 
     companion object {

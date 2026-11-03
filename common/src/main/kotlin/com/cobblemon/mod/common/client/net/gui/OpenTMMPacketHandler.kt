@@ -14,6 +14,6 @@ import net.minecraft.client.Minecraft
 
 object OpenTMMPacketHandler : ClientNetworkPacketHandler<OpenTMMPacket> {
     override fun handle(packet: OpenTMMPacket, client: Minecraft) {
-        //client.setScreen()
+        //client.gui.setScreen()
     }
 }

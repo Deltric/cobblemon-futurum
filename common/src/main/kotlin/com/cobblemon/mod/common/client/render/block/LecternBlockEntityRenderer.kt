@@ -17,22 +17,19 @@ import com.cobblemon.mod.common.item.PokedexItem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
-import net.minecraft.client.resources.model.ModelResourceLocation
 import net.minecraft.core.Direction
 import net.minecraft.world.item.*
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.state.BlockState
 import org.spongepowered.asm.mixin.Unique
 
-class LecternBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntityRenderer<LecternBlockEntity> {
+class LecternBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) : GeometryBlockEntityRenderer<LecternBlockEntity>() {
 
-    @Unique
-    private val MODEL_PATH = if (Cobblemon.implementation.modAPI == ModAPI.FABRIC) "fabric_resource" else "standalone"
-
-    override fun render(blockEntity: LecternBlockEntity, tickDelta: Float, poseStack: PoseStack, multiBufferSource: MultiBufferSource, light: Int, overlay: Int ) {
+    override fun extractGeometry(blockEntity: LecternBlockEntity, tickDelta: Float, poseStack: PoseStack, multiBufferSource: ModelGeometry.Builder, light: Int, overlay: Int ) {
         if (blockEntity !is LecternBlockEntity) return
         if (!blockEntity.isEmpty()) {
             val blockState = if (blockEntity.level != null) blockEntity.blockState
@@ -41,16 +38,17 @@ class LecternBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) : Blo
 
             poseStack.pushPose()
             poseStack.translate(0.5, 1.17, 0.5)
-            poseStack.mulPose(Axis.YP.rotationDegrees(-yRot))
-            poseStack.mulPose(Axis.XP.rotationDegrees(22.5F))
+            poseStack.rotate(Axis.YP.rotationDegrees(-yRot))
+            poseStack.rotate(Axis.XP.rotationDegrees(22.5F))
             poseStack.translate(0.0, 0.0, 0.13)
 
             if (blockEntity.getItemStack().item is PokedexItem) {
                 val resourceLocation = (blockEntity.getItemStack().item as PokedexItem).type.getItemModelPath(if (blockEntity.hasViewer()) "flat" else "flat_off")
-                val model = Minecraft.getInstance().itemRenderer.itemModelShaper.getModelManager().getModel(ModelResourceLocation(resourceLocation, MODEL_PATH))
-                Minecraft.getInstance().itemRenderer.render(blockEntity.getItemStack(), ItemDisplayContext.GROUND, false, poseStack, multiBufferSource, light, overlay, model)
+                val displayStack = blockEntity.getItemStack().copy()
+                displayStack.set(net.minecraft.core.component.DataComponents.ITEM_MODEL, resourceLocation)
+                NativeModelGeometry.extractItem(displayStack, ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.level, 0)
             } else {
-                Minecraft.getInstance().itemRenderer.renderStatic(blockEntity.getItemStack(), ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.level, 0)
+                NativeModelGeometry.extractItem(blockEntity.getItemStack(), ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.level, 0)
             }
 
             poseStack.popPose()

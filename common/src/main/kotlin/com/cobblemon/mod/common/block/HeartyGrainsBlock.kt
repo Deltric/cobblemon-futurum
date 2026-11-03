@@ -8,11 +8,13 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.level.block.BonemealSource
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.LevelReader
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.tags.CobblemonBlockTags
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
@@ -41,7 +43,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 @Suppress("OVERRIDE_DEPRECATION")
 class HeartyGrainsBlock(settings: Properties) : CropBlock(settings), SimpleWaterloggedBlock {
     companion object {
-        val CODEC = simpleCodec(::HeartyGrainsBlock)
         const val MATURE_AGE = 6
         const val AGE_AFTER_HARVEST = 3 // Last single block stage
         val AGE: IntegerProperty = IntegerProperty.create("age", 0, MATURE_AGE)
@@ -67,8 +68,6 @@ class HeartyGrainsBlock(settings: Properties) : CropBlock(settings), SimpleWater
             box(0.0, 0.0, 0.0, 16.0, 15.0, 16.0),  // Stage 6
         )
     }
-
-    override fun codec(): MapCodec<out CropBlock> = CODEC
 
     init {
         this.registerDefaultState(
@@ -122,16 +121,9 @@ class HeartyGrainsBlock(settings: Properties) : CropBlock(settings), SimpleWater
         return blockState.isAir || blockState.`is`(CobblemonBlocks.HEARTY_GRAINS)
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
         if (!state.canSurvive(world, pos)) return Blocks.AIR.defaultBlockState()
         val doubleBlockHalf = state.getValue(HALF)
@@ -141,7 +133,7 @@ class HeartyGrainsBlock(settings: Properties) : CropBlock(settings), SimpleWater
         return state
     }
 
-    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState): Boolean {
+    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         val posAndState = getLowerHalf(level, pos, state)
         return if (posAndState == null) false else this.canGrow(
             level,
@@ -150,7 +142,7 @@ class HeartyGrainsBlock(settings: Properties) : CropBlock(settings), SimpleWater
         )
     }
 
-    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
+    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         val posAndState = getLowerHalf(level, pos, state)
         if (posAndState != null) {
             grow(level, posAndState.first, posAndState.second, getBonemealAgeIncrease(level))
@@ -224,7 +216,7 @@ class HeartyGrainsBlock(settings: Properties) : CropBlock(settings), SimpleWater
     private fun isLower(state: BlockState): Boolean =
         state.`is`(CobblemonBlocks.HEARTY_GRAINS) && state.getValue(HALF) == DoubleBlockHalf.LOWER
 
-    override fun getSoundType(state: BlockState): SoundType? {
+    override fun getSoundType(state: BlockState): SoundType {
         return if (state.getValue(WATERLOGGED)) CobblemonSounds.HEARTY_GRAINS_WATER_SOUNDS else CobblemonSounds.HEARTY_GRAINS_SOUNDS
     }
 }

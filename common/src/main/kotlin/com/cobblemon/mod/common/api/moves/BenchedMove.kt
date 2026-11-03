@@ -149,10 +149,10 @@ data class BenchedMove(val moveTemplate: MoveTemplate, val ppRaisedStages: Int) 
 
     companion object {
         fun loadFromNBT(nbt: CompoundTag): BenchedMove {
-            val name = nbt.getString(DataKeys.POKEMON_MOVESET_MOVENAME)
+            val name = nbt.getStringOr(DataKeys.POKEMON_MOVESET_MOVENAME, "")
             return BenchedMove(
                 Moves.getByName(name) ?: MoveTemplate.dummy(name),
-                nbt.getByte(DataKeys.POKEMON_MOVESET_RAISED_PP_STAGES).toInt()
+                nbt.getByteOr(DataKeys.POKEMON_MOVESET_RAISED_PP_STAGES, 0).toInt()
             )
         }
 

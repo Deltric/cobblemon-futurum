@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.item.berry
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle
 import com.cobblemon.mod.common.api.battles.model.actor.BattleActor
 import com.cobblemon.mod.common.api.item.HealingSource
@@ -24,7 +26,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 
@@ -34,7 +36,7 @@ import net.minecraft.world.level.Level
  * @author Hiroku
  * @since August 4th, 2023
  */
-class HealingBerryItem(block: BerryBlock, val amount: () -> ExpressionLike): BerryItem(block), PokemonSelectingItem, HealingSource {
+class HealingBerryItem(properties: Properties, block: BerryBlock, val amount: () -> ExpressionLike): BerryItem(properties, block), PokemonSelectingItem, HealingSource {
     override val bagItem = object : BagItem {
         override val itemName: String get() = "item.cobblemon.${this@HealingBerryItem.berry()!!.identifier.path}"
         override val returnItem = Items.AIR
@@ -49,15 +51,15 @@ class HealingBerryItem(block: BerryBlock, val amount: () -> ExpressionLike): Ber
         player: ServerPlayer,
         stack: ItemStack,
         pokemon: Pokemon
-    ): InteractionResultHolder<ItemStack>? {
+    ): InteractionResult? {
         if (!canUseOnPokemon(stack, pokemon)) {
-            return InteractionResultHolder.fail(stack)
+            return InteractionResult.FAIL
         }
 
         pokemon.feedPokemon(1)
         pokemon.currentHealth = Integer.min(pokemon.currentHealth + genericRuntime.resolveInt(amount(), pokemon), pokemon.maxHealth)
         stack.consume(1, player)
-        return InteractionResultHolder.success(stack)
+        return InteractionResult.SUCCESS
     }
 
     override fun applyToBattlePokemon(player: ServerPlayer, stack: ItemStack, battlePokemon: BattlePokemon) {
@@ -65,7 +67,7 @@ class HealingBerryItem(block: BerryBlock, val amount: () -> ExpressionLike): Ber
         battlePokemon.originalPokemon.feedPokemon(1)
     }
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (world is ServerLevel && user is ServerPlayer) {
             return use(user, user.getItemInHand(hand))
         }

@@ -1,0 +1,156 @@
+{
+  "custom_model_data": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:custom_model_data": 42
+    }
+  },
+  "dyed_color": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:dyed_color": {
+        "rgb": 16711935,
+        "show_in_tooltip": false
+      }
+    }
+  },
+  "food": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:food": {
+        "eat_seconds": 0.7,
+        "using_converts_to": {
+          "id": "minecraft:glass_bottle",
+          "components": {
+            "minecraft:custom_model_data": 19
+          }
+        },
+        "effects": [
+          {
+            "effect": {
+              "id": "minecraft:speed",
+              "show_icon": true,
+              "amplifier": 1,
+              "duration": 200
+            },
+            "probability": 0.25
+          }
+        ],
+        "nutrition": 4,
+        "saturation": 0.8,
+        "can_always_eat": true
+      }
+    }
+  },
+  "custom_name": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:custom_name": "{\"color\":\"gold\",\"italic\":false,\"text\":\"Component witness\"}"
+    }
+  },
+  "attribute_modifiers": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:attribute_modifiers": {
+        "modifiers": [
+          {
+            "type": "minecraft:generic.attack_damage",
+            "id": "fixture:attack",
+            "amount": 3.25,
+            "operation": "add_value",
+            "slot": "mainhand"
+          }
+        ],
+        "show_in_tooltip": false
+      }
+    }
+  },
+  "custom_data": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:custom_data": {
+        "fixture:unknown": {
+          "nested": [
+            "one",
+            "two"
+          ],
+          "attributes": [
+            {
+              "id": "minecraft:generic.foo",
+              "base": 13.75
+            }
+          ],
+          "keep": 1
+        }
+      }
+    }
+  },
+  "combined": {
+    "id": "minecraft:leather_boots",
+    "count": 1,
+    "components": {
+      "minecraft:custom_model_data": 42,
+      "minecraft:dyed_color": {
+        "rgb": 16711935,
+        "show_in_tooltip": false
+      },
+      "minecraft:food": {
+        "eat_seconds": 0.7,
+        "using_converts_to": {
+          "id": "minecraft:glass_bottle",
+          "components": {
+            "minecraft:custom_model_data": 19
+          }
+        },
+        "effects": [
+          {
+            "effect": {
+              "id": "minecraft:speed",
+              "show_icon": true,
+              "amplifier": 1,
+              "duration": 200
+            },
+            "probability": 0.25
+          }
+        ],
+        "nutrition": 4,
+        "saturation": 0.8,
+        "can_always_eat": true
+      },
+      "minecraft:custom_name": "{\"color\":\"gold\",\"italic\":false,\"text\":\"Component witness\"}",
+      "minecraft:attribute_modifiers": {
+        "modifiers": [
+          {
+            "type": "minecraft:generic.attack_damage",
+            "id": "fixture:attack",
+            "amount": 3.25,
+            "operation": "add_value",
+            "slot": "mainhand"
+          }
+        ],
+        "show_in_tooltip": false
+      },
+      "minecraft:custom_data": {
+        "fixture:unknown": {
+          "nested": [
+            "one",
+            "two"
+          ],
+          "attributes": [
+            {
+              "id": "minecraft:generic.foo",
+              "base": 13.75
+            }
+          ],
+          "keep": 1
+        }
+      }
+    }
+  }
+}

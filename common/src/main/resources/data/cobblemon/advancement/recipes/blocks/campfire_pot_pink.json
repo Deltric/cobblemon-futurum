@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "criteria": {
-    "has_pink_apricorn": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:pink_apricorn"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "cobblemon:recipes/blocks",
+    "criteria": {
+        "has_pink_apricorn": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:pink_apricorn"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:campfire_pot_pink"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:campfire_pot_pink"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    "requirements": [
+        [
+            "has_pink_apricorn",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:campfire_pot_pink"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_pink_apricorn",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:campfire_pot_pink"
-    ]
-  }
 }

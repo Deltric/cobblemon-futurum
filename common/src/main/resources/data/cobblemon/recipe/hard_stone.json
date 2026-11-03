@@ -2,26 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "SSS",
-	"SGS",
+    "SGS",
     "SSS"
   ],
   "key": {
-    "G": {
-      "item": "cobblemon:rock_gem"
-    },
+    "G": "cobblemon:rock_gem",
     "S": [
-      {
-        "item": "minecraft:stone"
-      },
-      {
-        "item": "minecraft:deepslate"
-      },
-      {
-        "item": "minecraft:blackstone"
-      },
-      {
-        "item": "minecraft:tuff"
-      }
+      "minecraft:stone",
+      "minecraft:deepslate",
+      "minecraft:blackstone",
+      "minecraft:tuff"
     ]
   },
   "result": {

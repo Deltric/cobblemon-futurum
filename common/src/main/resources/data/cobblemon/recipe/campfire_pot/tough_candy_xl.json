@@ -3,15 +3,9 @@
   "group": "iv_candy",
   "category": "misc",
   "key": {
-    "Q": {
-      "item": "cobblemon:qualot_berry"
-    },
-    "H": {
-      "item": "minecraft:honeycomb"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_xl"
-    }
+    "Q": "cobblemon:qualot_berry",
+    "H": "minecraft:honeycomb",
+    "E": "cobblemon:exp_candy_xl"
   },
   "pattern": [
     "QHQ",

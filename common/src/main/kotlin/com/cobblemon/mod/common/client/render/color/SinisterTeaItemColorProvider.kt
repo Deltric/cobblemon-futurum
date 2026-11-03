@@ -13,11 +13,10 @@ import com.cobblemon.mod.common.api.cooking.getColourMixFromColors
 import com.cobblemon.mod.common.api.cooking.getColourMixFromFlavours
 import com.cobblemon.mod.common.client.pot.CookingQuality
 import net.minecraft.ChatFormatting
-import net.minecraft.client.color.item.ItemColor
-import net.minecraft.util.FastColor
+import net.minecraft.util.ARGB
 import net.minecraft.world.item.ItemStack
 
-object SinisterTeaItemColorProvider : ItemColor {
+object SinisterTeaItemColorProvider : CobblemonItemColorProvider {
 
     private const val TEA_INDEX = 1
 

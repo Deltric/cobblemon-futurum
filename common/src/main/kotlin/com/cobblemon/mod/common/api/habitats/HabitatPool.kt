@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.api.habitats
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.spawning.position.SpawnablePosition
@@ -18,7 +22,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * A pool of [HabitatSpawn]s. This is filled with [HabitatSpawn]s. The pool is responsible for converting
@@ -30,51 +34,42 @@ import net.minecraft.resources.ResourceLocation
 class HabitatPool {
     companion object {
         fun default() = HabitatPool().apply {
-            id = ResourceLocation("cobblemon", "custom__default_pool")
+            id = Identifier.fromNamespaceAndPath("cobblemon", "custom__default_pool")
             name = "Custom"
         }
 
-        fun writePoolToNBT(pool: HabitatPool, nbt: CompoundTag) {
-            nbt.putString(DataKeys.HABITAT_POOL_ID, pool.id.toString())
+        fun savePool(pool: HabitatPool, output: ValueOutput) {
+            output.putString(DataKeys.HABITAT_POOL_ID, pool.id.toString())
             if (pool.id.path.startsWith("custom__")) {
-                nbt.putString(DataKeys.HABITAT_POOL_NAME, pool.name)
-                val spawnsListNBT = ListTag()
-                for (spawn in pool.spawns) {
-                    val spawnTag = CompoundTag()
-                    spawn.writeToNBT(spawnTag)
-                    spawnsListNBT.add(spawnTag)
-                }
-                nbt.put(DataKeys.HABITAT_POOL_SPAWNS, spawnsListNBT)
+                output.putString(DataKeys.HABITAT_POOL_NAME, pool.name)
+                val spawns = output.childrenList(DataKeys.HABITAT_POOL_SPAWNS)
+                pool.spawns.forEach { it.save(spawns.addChild()) }
             }
         }
 
-        fun readPoolFromNBT(nbt: CompoundTag): HabitatPool {
-            val poolId = nbt.getString(DataKeys.HABITAT_POOL_ID).asIdentifierDefaultingNamespace()
-            if (nbt.contains(DataKeys.HABITAT_POOL_NAME)) {
-                // It's one that was stored on the block
+        fun loadPool(input: ValueInput): HabitatPool {
+            val poolId = input.getStringOr(DataKeys.HABITAT_POOL_ID, "").asIdentifierDefaultingNamespace()
+            val storedName = input.getString(DataKeys.HABITAT_POOL_NAME)
+            if (storedName.isPresent) {
                 val pool = HabitatPool()
                 pool.id = poolId
-                pool.name = nbt.getString(DataKeys.HABITAT_POOL_NAME)
-                val spawnsListNBT = nbt.getList(DataKeys.HABITAT_POOL_SPAWNS, Tag.TAG_COMPOUND.toInt())
+                pool.name = storedName.get()
                 val spawns = mutableListOf<HabitatSpawn>()
-                spawnsListNBT.forEach { spawnTag ->
+                for (stored in input.childrenListOrEmpty(DataKeys.HABITAT_POOL_SPAWNS)) {
                     try {
-                        val spawn = HabitatSpawn().apply { readFromNBT(spawnTag as CompoundTag) }
-                        spawns.add(spawn)
+                        spawns.add(HabitatSpawn().apply { load(stored) })
                     } catch (_: Exception) {
-                        // If there's an error reading a spawn, skip it and log the error.
                         Cobblemon.LOGGER.error("Error reading activated habitat spawn from NBT for habitat block, skipping.")
                     }
                 }
                 pool.spawns = spawns
                 return pool
-            } else {
-                return HabitatPools.habitatPoolsById[poolId] ?: default()
             }
+            return HabitatPools.habitatPoolsById[poolId] ?: default()
         }
     }
 
-    lateinit var id: ResourceLocation
+    lateinit var id: Identifier
     var name: String = ""
     var spawns: List<HabitatSpawn> = listOf()
 
@@ -103,13 +98,13 @@ class HabitatPool {
     }
 
     fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeResourceLocation(id)
+        buffer.writeIdentifier(id)
         buffer.writeUtf(name)
         buffer.writeCollection(spawns) { _, it -> it.encode(buffer) }
     }
 
     fun decode(buffer: RegistryFriendlyByteBuf) {
-        id = buffer.readResourceLocation()
+        id = buffer.readIdentifier()
         name = buffer.readUtf()
         spawns = buffer.readList { HabitatSpawn().apply { decode(buffer) } }
     }

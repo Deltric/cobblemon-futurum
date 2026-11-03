@@ -1,0 +1,103 @@
+{
+  "type": "minecraft:simple_random_selector",
+  "features": [
+    {
+      "feature": "cobblemon:black_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:black_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "feature": "cobblemon:blue_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:blue_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "feature": "cobblemon:green_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:green_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "feature": "cobblemon:pink_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:pink_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "feature": "cobblemon:red_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:red_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "feature": "cobblemon:white_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:white_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "feature": "cobblemon:yellow_apricorn_tree",
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:would_survive",
+            "state": {
+              "id": "cobblemon:yellow_apricorn_sapling"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

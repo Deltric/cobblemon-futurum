@@ -32,6 +32,7 @@ class ActivityChangeTaskConfig : SingleTaskConfig {
         behaviourConfigurationContext: BehaviourConfigurationContext
     ): BehaviorControl<in LivingEntity> {
         return object : OneShot<LivingEntity>() {
+            override fun getRequiredMemories() = emptySet<net.minecraft.world.entity.ai.memory.MemoryModuleType<*>>()
             override fun trigger(serverLevel: ServerLevel, livingEntity: LivingEntity, l: Long): Boolean {
                 mainThreadRuntime.withQueryValue("entity", livingEntity.asMostSpecificMoLangValue())
                 if (condition.resolveBoolean(mainThreadRuntime)) {

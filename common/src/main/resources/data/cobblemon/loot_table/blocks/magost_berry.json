@@ -1,10 +1,5 @@
 {
   "type": "minecraft:block",
-  "functions": [
-    {
-      "function": "minecraft:explosion_decay"
-    }
-  ],
   "pools": [
     {
       "bonus_rolls": 0,
@@ -15,15 +10,18 @@
         }
       ],
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "cobblemon:magost_berry",
-          "properties": {
-            "age": "0"
-          }
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "cobblemon:magost_berry",
+        "state": {
+          "age": "0"
         }
-      ]
+      }
+    }
+  ],
+  "modifier": [
+    {
+      "type": "minecraft:explosion_decay"
     }
   ]
 }

@@ -15,36 +15,30 @@
           "value": "cobblemon:fishing/pokerod_treasure",
           "weight": 17,
           "quality": 2,
-          "conditions": [
-            {
-              "condition": "minecraft:entity_properties",
-              "entity": "this",
-              "predicate": {
-                "type_specific": {
-                  "type": "cobblemon:poke_bobber",
-                  "in_open_water": true
-                }
+          "condition": {
+            "entity": "this",
+            "predicate": {
+              "cobblemon:poke_bobber": {
+                "in_open_water": true
               }
-            }
-          ]
+            },
+            "type": "minecraft:entity_properties"
+          }
         },
         {
           "type": "minecraft:loot_table",
           "value": "minecraft:gameplay/fishing/treasure",
           "weight": 17,
           "quality": 2,
-          "conditions": [
-            {
-              "condition": "minecraft:entity_properties",
-              "entity": "this",
-              "predicate": {
-                "type_specific": {
-                  "type": "cobblemon:poke_bobber",
-                  "in_open_water": true
-                }
+          "condition": {
+            "entity": "this",
+            "predicate": {
+              "cobblemon:poke_bobber": {
+                "in_open_water": true
               }
-            }
-          ]
+            },
+            "type": "minecraft:entity_properties"
+          }
         }
       ],
       "rolls": 1.0

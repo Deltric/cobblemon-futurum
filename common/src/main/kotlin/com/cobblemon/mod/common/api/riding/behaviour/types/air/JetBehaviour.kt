@@ -161,7 +161,7 @@ class JetBehaviour : RidingBehaviour<JetSettings, JetState> {
         input: Vec3
     ): Vec3 {
         val controller = (vehicle as? OrientationControllable)?.orientationController
-        if (controller == null || controller.orientation == null) return Vec3.ZERO
+        val orientation = controller?.orientation ?: return Vec3.ZERO
 
         //Calculate ride space velocity
         calculateRideSpaceVel(settings, state, vehicle, driver)
@@ -176,7 +176,7 @@ class JetBehaviour : RidingBehaviour<JetSettings, JetState> {
             (state.rideVelocity.get().y).toFloat(),
             state.rideVelocity.get().z.toFloat() * -1.0f // Flip the z axis to make this left handed? orr.. right handed? idk, flip it though
         )
-        var worldVelVec = localVelVec.mul(controller.orientation).toVec3d().yRot(vehicle.yRot.toRadians()) // Unrotate preemptively as this vector gets rotate later down the line in MC logic.
+        var worldVelVec = localVelVec.mul(orientation).toVec3d().yRot(vehicle.yRot.toRadians()) // Unrotate preemptively as this vector gets rotate later down the line in MC logic.
         worldVelVec =  Vec3(
             worldVelVec.x,
             worldVelVec.y * (1 - (state.noStamTickCnt.get() / penaltyDeccel).coerceIn(0.0f, 1.0f)), // Dampen the upwards movement depending on stamina depletion time
@@ -443,7 +443,7 @@ class JetBehaviour : RidingBehaviour<JetSettings, JetState> {
         impactVec: Vec3
     ): Boolean {
         val impactSpeed = impactVec.horizontalDistance().toFloat() * 10f
-        return vehicle.causeFallDamage(impactSpeed, 1f, vehicle.damageSources().flyIntoWall())
+        return vehicle.causeFallDamage(impactSpeed.toDouble(), 1f, vehicle.damageSources().flyIntoWall())
     }
 
     override fun asMoLangValue(

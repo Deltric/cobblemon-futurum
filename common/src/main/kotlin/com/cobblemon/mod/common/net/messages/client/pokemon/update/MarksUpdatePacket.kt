@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.net.messages.client.pokemon.update
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.api.mark.Mark
 import com.cobblemon.mod.common.api.mark.Marks
 import com.cobblemon.mod.common.pokemon.Pokemon

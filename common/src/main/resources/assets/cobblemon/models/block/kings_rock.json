@@ -1,8 +1,8 @@
 {
     "ambientocclusion": false,
 	"textures": {
-		"particle": "cobblemon:item/wearable/kings_rock",
-		"texture": "cobblemon:item/wearable/kings_rock"
+		"particle": "cobblemon:block/kings_rock",
+		"texture": "cobblemon:block/kings_rock"
 	},
 	"elements": [
 		{

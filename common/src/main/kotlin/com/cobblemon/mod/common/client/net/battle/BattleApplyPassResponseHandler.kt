@@ -20,7 +20,7 @@ object BattleApplyPassResponseHandler : ClientNetworkPacketHandler<BattleApplyPa
         val battle = CobblemonClient.battle ?: return
         val req = battle.pendingActionRequests.firstOrNull { it.response == null } ?: return
         val res = ForcePassActionResponse()
-        val gui = Minecraft.getInstance().screen
+        val gui = Minecraft.getInstance().gui.screen()
         if (gui is BattleGUI) {
             gui.selectAction(req, res)
         } else {

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.riding.behaviour
 
+import com.cobblemon.mod.common.util.readVec3
+import com.cobblemon.mod.common.util.writeVec3
 import com.cobblemon.mod.common.util.ifClient
 import com.cobblemon.mod.common.util.ifServer
 import net.minecraft.network.FriendlyByteBuf

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.mechanics
 
+import com.cobblemon.mod.common.util.readMap
+import com.cobblemon.mod.common.util.writeMap
 import com.bedrockk.molang.runtime.MoLangRuntime
 import com.cobblemon.mod.common.api.molang.ExpressionLike
 import com.cobblemon.mod.common.util.asExpressionLike

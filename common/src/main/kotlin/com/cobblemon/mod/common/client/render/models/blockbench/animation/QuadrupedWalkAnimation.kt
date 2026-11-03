@@ -54,9 +54,9 @@ class QuadrupedWalkAnimation(
         val foreRightLeg = legFrontRight ?: return
         val foreLeftLeg = legFrontLeft ?: return
 
-        hindRightLeg.addRotation(X_AXIS, Mth.cos(limbSwing * periodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
-        hindLeftLeg.addRotation(X_AXIS, Mth.cos(limbSwing * periodMultiplier + Math.PI.toFloat()) * limbSwingAmount * amplitudeMultiplier * intensity)
-        foreRightLeg.addRotation(X_AXIS, Mth.cos(limbSwing * periodMultiplier + Math.PI.toFloat()) * limbSwingAmount * amplitudeMultiplier * intensity)
-        foreLeftLeg.addRotation(X_AXIS, Mth.cos(limbSwing * periodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
+        hindRightLeg.addRotation(X_AXIS, kotlin.math.cos(limbSwing * periodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
+        hindLeftLeg.addRotation(X_AXIS, kotlin.math.cos(limbSwing * periodMultiplier + Math.PI.toFloat()) * limbSwingAmount * amplitudeMultiplier * intensity)
+        foreRightLeg.addRotation(X_AXIS, kotlin.math.cos(limbSwing * periodMultiplier + Math.PI.toFloat()) * limbSwingAmount * amplitudeMultiplier * intensity)
+        foreLeftLeg.addRotation(X_AXIS, kotlin.math.cos(limbSwing * periodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
     }
 }

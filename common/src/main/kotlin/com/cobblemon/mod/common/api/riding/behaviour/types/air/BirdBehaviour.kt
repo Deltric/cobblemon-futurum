@@ -27,7 +27,7 @@ import com.cobblemon.mod.common.util.*
 import com.cobblemon.mod.common.util.math.geometry.toRadians
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.util.SmoothDouble
 import net.minecraft.world.entity.LivingEntity
@@ -46,7 +46,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         private const val GLIDE_EXIT_SPEED = 0.13
     }
 
-    override val key: ResourceLocation = KEY
+    override val key: Identifier = KEY
 
     override fun getRidingStyle(settings: BirdSettings, state: BirdState): RidingStyle {
         return RidingStyle.AIR
@@ -156,7 +156,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         input: Vec3
     ): Vec3 {
         val controller = (vehicle as? OrientationControllable)?.orientationController
-        if (controller == null || controller.orientation == null) return Vec3.ZERO
+        val orientation = controller?.orientation ?: return Vec3.ZERO
 
         //Perform ride velocity update
         calculateRideSpaceVel(settings, state, vehicle, driver)
@@ -171,7 +171,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
             state.rideVelocity.get().z.toFloat() * -1.0f // Flip the z axis to make this left handed
         )
         // Unrotate preemptively as this vector gets rotatee later down the line in MC logic.
-        var worldVelVec = localVelVec.mul(controller.orientation).toVec3d().yRot(vehicle.yRot.toRadians())
+        var worldVelVec = localVelVec.mul(orientation).toVec3d().yRot(vehicle.yRot.toRadians())
         worldVelVec =  worldVelVec.add(0.0, extraDownwardForce, 0.0) // Add the stamina depletion force to bring the ride down.
 
         return worldVelVec
@@ -594,7 +594,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
     ): Boolean {
         if (!state.gliding.get()) return false
         val impactSpeed = impactVec.horizontalDistance().toFloat() * 10f
-        return vehicle.causeFallDamage(impactSpeed, 1f, vehicle.damageSources().flyIntoWall())
+        return vehicle.causeFallDamage(impactSpeed.toDouble(), 1f, vehicle.damageSources().flyIntoWall())
     }
 
     override fun getRideSounds(

@@ -13,7 +13,7 @@ import com.cobblemon.mod.common.entity.boat.CobblemonBoatType
 import com.cobblemon.mod.common.entity.boat.CobblemonChestBoatEntity
 import net.minecraft.stats.Stats
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntitySelector
 import net.minecraft.world.entity.player.Player
@@ -25,28 +25,28 @@ import net.minecraft.world.phys.HitResult
 
 class CobblemonBoatItem(val boatType: CobblemonBoatType, val hasChest: Boolean, settings: Properties) : CobblemonItem(settings) {
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         val stack = user.getItemInHand(hand)
         val hitResult = getPlayerPOVHitResult(world, user, ClipContext.Fluid.ANY)
         if (hitResult.type == HitResult.Type.MISS) {
-            return InteractionResultHolder.pass(stack)
+            return InteractionResult.PASS
         }
         val vec3d = user.getViewVector(1F)
         val eyePos = user.eyePosition
         world.getEntities(user, user.boundingBox.expandTowards(vec3d.scale(5.0)).inflate(1.0), RIDERS).forEach { entity ->
             val box = entity.boundingBox.inflate(entity.pickRadius.toDouble())
             if (box.contains(eyePos)) {
-                return InteractionResultHolder.pass(stack)
+                return InteractionResult.PASS
             }
         }
         if (hitResult.type != HitResult.Type.BLOCK) {
-            return InteractionResultHolder.pass(stack)
+            return InteractionResult.PASS
         }
         val boatEntity = this.createBoat(world, hitResult)
         boatEntity.boatType = this.boatType
         boatEntity.yRot = user.yRot
         if (!world.noCollision(boatEntity, boatEntity.boundingBox)) {
-            return InteractionResultHolder.fail(stack)
+            return InteractionResult.FAIL
         }
         if (!world.isClientSide) {
             world.addFreshEntity(boatEntity)
@@ -54,7 +54,7 @@ class CobblemonBoatItem(val boatType: CobblemonBoatType, val hasChest: Boolean, 
             stack.consume(1, user)
         }
         user.awardStat(Stats.ITEM_USED.get(this))
-        return InteractionResultHolder.sidedSuccess(stack, world.isClientSide)
+        return InteractionResult.SUCCESS
     }
 
     private fun createBoat(world: Level, hitResult: HitResult): CobblemonBoatEntity {

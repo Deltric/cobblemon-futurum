@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft
 
 object OpenHabitatBlockEditorHandler : ClientNetworkPacketHandler<OpenHabitatBlockEditorPacket> {
     override fun handle(packet: OpenHabitatBlockEditorPacket, client: Minecraft) {
-        client.setScreen(
+        client.gui.setScreen(
             HabitatEditGUI(
                 blockPos = packet.blockPos,
                 currentlySpawned = packet.currentlySpawned,

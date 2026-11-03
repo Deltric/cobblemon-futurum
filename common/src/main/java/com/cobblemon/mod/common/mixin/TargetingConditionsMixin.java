@@ -11,6 +11,7 @@ package com.cobblemon.mod.common.mixin;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.world.gamerules.CobblemonGameRules;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import org.jetbrains.annotations.Nullable;
@@ -23,9 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class TargetingConditionsMixin {
 
     @Inject(method = "test", at = @At("HEAD"), cancellable = true)
-    public void test(@Nullable LivingEntity baseEntity, LivingEntity targetEntity, CallbackInfoReturnable<Boolean> ci) {
+    public void test(ServerLevel level, @Nullable LivingEntity baseEntity, LivingEntity targetEntity, CallbackInfoReturnable<Boolean> ci) {
         if (targetEntity instanceof ServerPlayer player) {
-            if (player.level().getGameRules().getBoolean(CobblemonGameRules.MOB_TARGET_IN_BATTLE)) return;
+            if (player.level().getGameRules().get(CobblemonGameRules.MOB_TARGET_IN_BATTLE)) return;
             boolean targetInBattle = Cobblemon.INSTANCE.getBattleRegistry().getBattleByParticipatingPlayer(player) != null;
             if (targetInBattle) ci.setReturnValue(false);
         }

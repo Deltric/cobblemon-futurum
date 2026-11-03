@@ -8,20 +8,18 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:malicious_armor",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 1
+              "count": 1,
+              "type": "minecraft:set_count"
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.45
-        }
-      ]
+      "condition": {
+        "chance": 0.45,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
@@ -30,25 +28,22 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:technical_machine",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_components",
               "components": {
                 "cobblemon:tm_move": {
                   "move": "firepledge"
                 }
-              }
+              },
+              "type": "minecraft:set_components"
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.45
-        }
-      ]
+      "condition": {
+        "chance": 0.45,
+        "type": "minecraft:random_chance"
+      }
     }
   ]
 }
-

@@ -14,10 +14,10 @@ import com.cobblemon.mod.common.api.riding.stats.RidingStat
 import com.cobblemon.mod.common.api.storage.party.PartyPosition
 import com.cobblemon.mod.common.api.storage.pc.PCPosition
 import com.cobblemon.mod.common.net.IntSize
-import com.google.common.collect.Lists
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
+import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import net.minecraft.nbt.EndTag
 import net.minecraft.nbt.NbtAccounter
@@ -29,10 +29,12 @@ import net.minecraft.network.Utf8String
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.codec.StreamEncoder
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityDimensions
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 import java.io.IOException
@@ -67,12 +69,72 @@ fun ByteBuf.readEntityDimensions(): EntityDimensions {
 }
 
 
-fun <T> ByteBuf.writeCollection(collection: Collection<T> , writer: (ByteBuf, T) -> Unit) {
+fun <B : ByteBuf, T> B.writeCollection(collection: Collection<T>, writer: (B, T) -> Unit) {
     this.writeInt(collection.size)
     collection.forEach {
         writer(this, it)
     }
 }
+
+// The removed FriendlyByteBuf helpers used VarInt counts. Keep these overloads
+// separate from the raw ByteBuf helpers, whose existing format uses an Int.
+fun <B : FriendlyByteBuf, T> B.writeCollection(collection: Collection<T>, writer: (B, T) -> Unit) {
+    ByteBufCodecs.writeCount(this, collection.size, Int.MAX_VALUE)
+    collection.forEach { writer(this, it) }
+}
+
+fun <B : FriendlyByteBuf, T, C : MutableCollection<T>> B.readCollection(
+    factory: (Int) -> C,
+    reader: (B) -> T
+): C {
+    val size = readCollectionSize(Int.MAX_VALUE)
+    return factory(size).also { collection ->
+        repeat(size) { collection.add(reader(this)) }
+    }
+}
+
+fun <B : FriendlyByteBuf, T> B.readList(reader: (B) -> T): List<T> = readList(Int.MAX_VALUE, reader)
+
+fun <B : FriendlyByteBuf, T> B.readList(maxSize: Int, reader: (B) -> T): List<T> {
+    val size = readCollectionSize(maxSize)
+    // Do not reserve an attacker-controlled capacity before decoding any entries.
+    return ArrayList<T>(minOf(size, 65536)).also { list ->
+        repeat(size) { list.add(reader(this)) }
+    }
+}
+
+private fun FriendlyByteBuf.readCollectionSize(maxSize: Int): Int {
+    require(maxSize >= 0) { "Maximum collection size must be non-negative" }
+    val size = ByteBufCodecs.readCount(this, maxSize)
+    if (size < 0) throw DecoderException("Negative collection size: $size")
+    return size
+}
+
+fun <B : FriendlyByteBuf, K, V> B.writeMap(map: Map<K, V>, keyWriter: (B, K) -> Unit, valueWriter: (B, V) -> Unit) {
+    ByteBufCodecs.writeCount(this, map.size, Int.MAX_VALUE)
+    map.forEach { (key, value) ->
+        keyWriter(this, key)
+        valueWriter(this, value)
+    }
+}
+
+fun <B : FriendlyByteBuf, K, V> B.readMap(keyReader: (B) -> K, valueReader: (B) -> V): Map<K, V> =
+    readMap(Int.MAX_VALUE, keyReader, valueReader)
+
+fun <B : FriendlyByteBuf, K, V> B.readMap(maxSize: Int, keyReader: (B) -> K, valueReader: (B) -> V): Map<K, V> {
+    val size = readCollectionSize(maxSize)
+    return HashMap<K, V>(minOf(size, 65536)).also { map ->
+        repeat(size) {
+            val key = keyReader(this)
+            val value = valueReader(this)
+            map[key] = value
+        }
+    }
+}
+
+fun FriendlyByteBuf.readVec3(): Vec3 = Vec3.STREAM_CODEC.decode(this)
+
+fun FriendlyByteBuf.writeVec3(value: Vec3) = Vec3.STREAM_CODEC.encode(this, value)
 
 fun <T> ByteBuf.writeNullable(obj: T?, writer: (ByteBuf, T) -> Unit) {
     this.writeBoolean(obj != null)
@@ -81,7 +143,7 @@ fun <T> ByteBuf.writeNullable(obj: T?, writer: (ByteBuf, T) -> Unit) {
     }
 }
 
-fun <T> ByteBuf.writeNullable(obj: T?, writer: StreamEncoder<ByteBuf, T>) {
+fun <T : Any> ByteBuf.writeNullable(obj: T?, writer: StreamEncoder<ByteBuf, T>) {
     writeNullable(obj) { buf, otherObj ->
         writer.encode(buf, otherObj)
     }
@@ -91,8 +153,6 @@ fun ByteBuf.writeString(string: String): ByteBuf {
     Utf8String.write(this, string, 32767)
     return this
 }
-
-fun <T> RegistryFriendlyByteBuf.readList(reader: (FriendlyByteBuf) -> T): List<T> = readCollection(Lists::newArrayListWithCapacity, reader)
 
 fun ByteBuf.readString(): String {
     return Utf8String.read(this, 32767)
@@ -146,7 +206,7 @@ fun <T> ByteBuf.readNullable(reader: (ByteBuf) -> T): T? {
     return null
 }
 
-fun <K, V> ByteBuf.writeMap(map: Map<K, V>, keyWriter: (ByteBuf, K) -> Unit, valueWriter: (ByteBuf, V) -> Unit) {
+fun <B : ByteBuf, K, V> B.writeMap(map: Map<K, V>, keyWriter: (B, K) -> Unit, valueWriter: (B, V) -> Unit) {
     this.writeInt(map.size)
     map.forEach { (key, value) ->
         keyWriter(this, key)
@@ -154,7 +214,7 @@ fun <K, V> ByteBuf.writeMap(map: Map<K, V>, keyWriter: (ByteBuf, K) -> Unit, val
     }
 }
 
-fun <K, V> ByteBuf.readMap(keyReader: (ByteBuf) -> K, valueReader: (ByteBuf) -> V): Map<K, V> {
+fun <B : ByteBuf, K, V> B.readMap(keyReader: (B) -> K, valueReader: (B) -> V): Map<K, V> {
     val map = mutableMapOf<K, V>()
     val numElements = readInt()
     repeat(numElements) {
@@ -166,13 +226,13 @@ fun <K, V> ByteBuf.readMap(keyReader: (ByteBuf) -> K, valueReader: (ByteBuf) -> 
 }
 
 
-fun ByteBuf.readIdentifier(): ResourceLocation {
+fun ByteBuf.readIdentifier(): Identifier {
     val str = this.readString()
     //If this is null we should be using writeNullable anyway
-    return ResourceLocation.tryParse(str)!!
+    return Identifier.tryParse(str)!!
 }
 
-fun ByteBuf.writeIdentifier(id: ResourceLocation) {
+fun ByteBuf.writeIdentifier(id: Identifier) {
     writeString(id.toString())
 }
 
@@ -329,4 +389,3 @@ fun ByteBuf.readMatrix4f(): Matrix4f {
         readFloat(), readFloat(), readFloat(), readFloat(),
     )
 }
-

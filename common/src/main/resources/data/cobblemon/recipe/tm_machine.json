@@ -5,18 +5,10 @@
     "CRC"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "T": {
-      "item": "minecraft:tinted_glass"
-    },
-    "C": {
-      "item": "minecraft:copper_ingot"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    }
+    "I": "minecraft:iron_ingot",
+    "T": "minecraft:tinted_glass",
+    "C": "minecraft:copper_ingot",
+    "R": "minecraft:redstone"
   },
   "result": {
     "id": "cobblemon:tm_machine"

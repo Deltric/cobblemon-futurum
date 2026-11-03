@@ -169,7 +169,7 @@ abstract class PokemonStore<T : StorePosition> : Iterable<Pokemon> {
     }
 
     open fun handleInvalidSpeciesNBT(nbt: CompoundTag) {
-        Cobblemon.LOGGER.error("Failed to read unknown species: ${nbt.getString(DataKeys.POKEMON_SPECIES_IDENTIFIER)}")
+        Cobblemon.LOGGER.error("Failed to read unknown species: ${nbt.getStringOr(DataKeys.POKEMON_SPECIES_IDENTIFIER, "")}")
     }
     abstract fun saveToNBT(nbt: CompoundTag, registryAccess: RegistryAccess): CompoundTag
     abstract fun loadFromNBT(nbt: CompoundTag, registryAccess: RegistryAccess): PokemonStore<T>

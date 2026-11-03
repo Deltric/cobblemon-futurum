@@ -3,7 +3,7 @@ import utilities.writeVersion
 
 plugins {
     id("cobblemon.base-conventions")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 writeVersion(type = VersionType.FULL)
@@ -33,6 +33,10 @@ loom {
         sourceSet(project.sourceSets.main.get())
         sourceSet(project(":common").sourceSets.main.get())
     }
+
+    // The shaded archive is the distribution. Nest dependencies on that task so
+    // merged services, relocated classes and Multi-Release manifests survive.
+    nestJars(tasks.shadowJar, configurations.named("include"))
 }
 
 tasks {
@@ -43,23 +47,21 @@ tasks {
     }
 
     shadowJar {
-        archiveClassifier.set("dev-shadow")
-        archiveBaseName.set("Cobblemon-${project.name}")
-        configurations = listOf(bundle)
-        mergeServiceFiles()
-
-        relocate ("com.oracle", "com.cobblemon.mod.relocations.oracle")
-    }
-
-    remapJar {
-        dependsOn(shadowJar)
-        inputFile.set(shadowJar.flatMap { it.archiveFile })
+        archiveClassifier.set("")
         archiveBaseName.set("Cobblemon-${project.name}")
         archiveVersion.set("${rootProject.version}")
+        configurations = listOf(bundle)
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        filesMatching("META-INF/services/**") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        mergeServiceFiles()
+        manifest.attributes("Fabric-Mapping-Namespace" to "official")
+
     }
 
     val copyJar by registering(CopyFile::class) {
-        val productionJar = tasks.remapJar.flatMap { it.archiveFile }
+        val productionJar = tasks.shadowJar.flatMap { it.archiveFile }
         fileToCopy = productionJar
         destination = productionJar.flatMap {
             rootProject.layout.buildDirectory.file("libs/${it.asFile.name}")

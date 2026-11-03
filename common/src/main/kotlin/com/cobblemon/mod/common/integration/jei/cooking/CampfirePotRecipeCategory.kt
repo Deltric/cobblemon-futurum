@@ -32,24 +32,24 @@ import mezz.jei.api.recipe.RecipeType
 import mezz.jei.api.recipe.category.IRecipeCategory
 import mezz.jei.api.registration.IRecipeCategoryRegistration
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.crafting.Ingredient
 
 class CampfirePotRecipeCategory(registration: IRecipeCategoryRegistration) : IRecipeCategory<CookingPotRecipeBase> {
 
     companion object {
         val RECIPE_TYPE = RecipeType.create("cobblemon", "campfire_pot_recipe", CookingPotRecipeBase::class.java)!!
-        val CAMPFIRE_POT_TEXTURE: ResourceLocation = cobblemonResource("textures/gui/jei/campfire_pot.png")
+        val CAMPFIRE_POT_TEXTURE: Identifier = cobblemonResource("textures/gui/jei/campfire_pot.png")
 
         const val TEXTURE_WIDTH = 146
         const val TEXTURE_HEIGHT = 59
         const val WIDTH = 146
         const val HEIGHT = 59
 
-        val EXAMPLE_SEASONINGS = BuiltInRegistries.ITEM.map { it.defaultInstance }.filter { Seasonings.isSeasoning(it) }
+        val EXAMPLE_SEASONINGS get() = BuiltInRegistries.ITEM.map { it.defaultInstance }.filter { Seasonings.isSeasoning(it) }
     }
 
     val guiHelper: IGuiHelper = registration.jeiHelpers.guiHelper
@@ -62,9 +62,10 @@ class CampfirePotRecipeCategory(registration: IRecipeCategoryRegistration) : IRe
         .buildAnimated(CampfireBlockEntity.COOKING_TOTAL_TIME, IDrawableAnimated.StartDirection.LEFT, false)
     val campfirePotIcon: IDrawable = guiHelper.createDrawableItemStack(CobblemonItems.CAMPFIRE_POT_BLACK.defaultInstance)
 
-    override fun getRecipeType(): RecipeType<CookingPotRecipeBase?>? = RECIPE_TYPE
-    override fun getTitle(): Component? = lang("container.campfire_pot")
-    override fun getBackground(): IDrawable? = campfirePotBackground
+    override fun getRecipeType(): RecipeType<CookingPotRecipeBase> = RECIPE_TYPE
+    override fun getTitle(): Component = lang("container.campfire_pot")
+    override fun getWidth() = WIDTH
+    override fun getHeight() = HEIGHT
     override fun getIcon(): IDrawable? = campfirePotIcon
 
     override fun setRecipe(
@@ -79,7 +80,7 @@ class CampfirePotRecipeCategory(registration: IRecipeCategoryRegistration) : IRe
             val x = 16 + row * 18
             val y = 1 + column * 18
 
-            builder.addSlot(RecipeIngredientRole.INPUT, x, y).addIngredients(ingredient)
+            ingredient.ifPresent { builder.addSlot(RecipeIngredientRole.INPUT, x, y).addIngredients(it) }
         }
 
         if (recipe.seasoningProcessors.isNotEmpty()) {
@@ -105,17 +106,17 @@ class CampfirePotRecipeCategory(registration: IRecipeCategoryRegistration) : IRe
         }
 
         val registryAccess = Minecraft.getInstance().level?.registryAccess() ?: throw IllegalStateException("Registry access not found")
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 111, 38).addIngredients(Ingredient.of(recipe.getResultItem(registryAccess)))
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 111, 38).add(recipe.getResultItem(registryAccess))
     }
 
     override fun draw(
         recipe: CookingPotRecipeBase,
         recipeSlotsView: IRecipeSlotsView,
-        guiGraphics: GuiGraphics,
+        guiGraphics: GuiGraphicsExtractor,
         mouseX: Double,
         mouseY: Double
     ) {
-        super.draw(recipe, recipeSlotsView, guiGraphics, mouseX, mouseY)
+        campfirePotBackground.draw(guiGraphics, 0, 0)
 
         cookProgressSprite.draw(guiGraphics, 79, 22)
     }

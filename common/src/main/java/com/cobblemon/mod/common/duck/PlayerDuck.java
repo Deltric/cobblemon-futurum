@@ -9,8 +9,13 @@
 package com.cobblemon.mod.common.duck;
 
 import org.joml.Vector3f;
+import net.minecraft.nbt.CompoundTag;
 
 public interface PlayerDuck {
+    CompoundTag cobblemon$getShoulderEntityLeft();
+    CompoundTag cobblemon$getShoulderEntityRight();
+    void cobblemon$setShoulderEntityLeft(CompoundTag tag);
+    void cobblemon$setShoulderEntityRight(CompoundTag tag);
 	void setDriverInput(Vector3f driverInput);
 	Vector3f getDriverInput();
 	void setLastSentDriverInput(Vector3f driverInput);

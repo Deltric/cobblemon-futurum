@@ -54,7 +54,7 @@ object ClientMoLangFunctions {
             }
         },
         "is_time" to Function { params ->
-            val time = (Minecraft.getInstance().level?.dayTime() ?: 0) % 24000
+            val time = (Minecraft.getInstance().level?.overworldClockTime ?: 0) % 24000
             val min = params.getInt(0)
             val max = params.getInt(1)
             time in min..max

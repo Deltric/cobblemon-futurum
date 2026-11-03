@@ -8,13 +8,15 @@
 
 package com.cobblemon.mod.common.item.crafting.brewingstand
 
+import net.minecraft.world.item.crafting.RecipeBookCategories
+import net.minecraft.world.item.crafting.RecipeBookCategory
+import net.minecraft.world.item.crafting.PlacementInfo
+import net.minecraft.world.item.ItemStackTemplate
 import com.cobblemon.mod.common.CobblemonRecipeSerializers
 import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe
-import net.minecraft.client.Minecraft
 import net.minecraft.core.HolderLookup
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
@@ -24,19 +26,25 @@ import net.minecraft.world.item.crafting.Recipe
 import net.minecraft.world.item.crafting.RecipeManager
 import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.level.Level
+import net.minecraft.server.level.ServerLevel
+import com.cobblemon.mod.common.client.cooking.ClientCookingRecipes
 
 class BrewingStandRecipe(
     val groupName: String,
     val input: Ingredient,
     val bottle: Ingredient,
-    val result: ItemStack
+    val resultTemplate: ItemStackTemplate
 ) : Recipe<BrewingStandInput> {
 
     override fun getType() = CobblemonRecipeTypes.BREWING_STAND
-    override fun canCraftInDimensions(width: Int, height: Int) = true
     override fun getSerializer() = CobblemonRecipeSerializers.BREWING_STAND
-    override fun assemble(input: BrewingStandInput, registries: HolderLookup.Provider): ItemStack? = result.copy()
-    override fun getResultItem(registries: HolderLookup.Provider): ItemStack? = result.copy()
+    val result: ItemStack get() = resultTemplate.create()
+    override fun group() = groupName
+    override fun showNotification() = true
+    override fun placementInfo(): PlacementInfo = PlacementInfo.NOT_PLACEABLE
+    override fun recipeBookCategory(): RecipeBookCategory = RecipeBookCategories.CRAFTING_MISC
+    override fun assemble(input: BrewingStandInput): ItemStack = resultTemplate.create()
+    fun getResultItem(registries: HolderLookup.Provider): ItemStack = resultTemplate.create()
 
     override fun matches(input: BrewingStandInput, level: Level): Boolean {
         val ingredientMatches = this.input.test(input.getIngredient())
@@ -48,29 +56,36 @@ class BrewingStandRecipe(
     }
 
     companion object {
+        private fun recipes(level: Level) = if (level is ServerLevel) level.recipeAccess().recipes else ClientCookingRecipes.recipes
+
+        fun isBottle(itemStack: ItemStack, level: Level): Boolean =
+            recipes(level).any { (it.value as? BrewingStandRecipe)?.bottle?.test(itemStack) == true }
+
+        fun isInput(itemStack: ItemStack, level: Level): Boolean =
+            recipes(level).any { (it.value as? BrewingStandRecipe)?.input?.test(itemStack) == true }
+
         fun isBottle(itemStack: ItemStack, recipeManager: RecipeManager): Boolean {
-            val recipes = recipeManager.getAllRecipesFor(CobblemonRecipeTypes.BREWING_STAND)
+            val recipes = recipeManager.recipes.mapNotNull { it.value() as? BrewingStandRecipe }
             return recipes.any { recipe ->
-                recipe.value.bottle.test(itemStack)
+                recipe.bottle.test(itemStack)
             }
         }
 
         fun isInput(itemStack: ItemStack, recipeManager: RecipeManager): Boolean {
-            val recipes = recipeManager.getAllRecipesFor(CobblemonRecipeTypes.BREWING_STAND)
+            val recipes = recipeManager.recipes.mapNotNull { it.value() as? BrewingStandRecipe }
             return recipes.any { recipe ->
-                recipe.value.input.test(itemStack)
+                recipe.input.test(itemStack)
             }
         }
     }
 
-    class Serializer : RecipeSerializer<BrewingStandRecipe> {
-        companion object {
+    object Serializer {
             val CODEC: MapCodec<BrewingStandRecipe> = RecordCodecBuilder.mapCodec { instance ->
                 instance.group(
                     Codec.STRING.optionalFieldOf("group", "").forGetter { recipe -> recipe.groupName },
                     Ingredient.CODEC.fieldOf("input").forGetter { recipe -> recipe.input },
                     Ingredient.CODEC.fieldOf("bottle").forGetter { recipe -> recipe.bottle },
-                    ItemStack.STRICT_CODEC.fieldOf("result").forGetter { recipe -> recipe.result }
+                    ItemStackTemplate.CODEC.fieldOf("result").forGetter { recipe -> recipe.resultTemplate }
                 ).apply(instance, ::BrewingStandRecipe)
             }
 
@@ -81,7 +96,7 @@ class BrewingStandRecipe(
                 val group = buffer.readUtf(32767)
                 val input = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
                 val bottle = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
-                val result = ItemStack.STREAM_CODEC.decode(buffer)
+                val result = ItemStackTemplate.STREAM_CODEC.decode(buffer)
                 return BrewingStandRecipe(group, input, bottle, result)
             }
 
@@ -89,11 +104,9 @@ class BrewingStandRecipe(
                 buffer.writeUtf(recipe.groupName)
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.input)
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.bottle)
-                ItemStack.STREAM_CODEC.encode(buffer, recipe.result)
+                ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.resultTemplate)
             }
-        }
 
-        override fun codec() = CODEC
-        override fun streamCodec() = STREAM_CODEC
+        val INSTANCE = RecipeSerializer(CODEC, STREAM_CODEC)
     }
 }

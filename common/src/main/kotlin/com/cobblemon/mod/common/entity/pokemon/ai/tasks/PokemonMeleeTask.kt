@@ -29,8 +29,8 @@ object PokemonMeleeTask {
                     val livingEntity = context.get(attackTarget)
                     if (entity.isWithinMeleeAttackRange(livingEntity) && context.get(visibleMobs).contains(livingEntity)) {
                         lookTarget.set(EntityTracker(livingEntity, true))
-                        entity.swing(InteractionHand.MAIN_HAND)
-                        entity.doHurtTarget(livingEntity)
+                        entity.swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false)
+                        entity.doHurtTarget(world, livingEntity)
                         attackCooldown.setWithExpiry(true, cooldownBetweenAttacks.toLong())
                         return@Trigger true
                     } else {

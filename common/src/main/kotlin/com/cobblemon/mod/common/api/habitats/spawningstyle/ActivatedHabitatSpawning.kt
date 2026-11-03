@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.habitats.spawningstyle
 
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.events.CobblemonEvents
 import com.cobblemon.mod.common.api.events.habitats.HabitatSpawnActivatedEvent
@@ -67,7 +69,7 @@ class ActivatedHabitatSpawning(val habitatBlockEntity: HabitatBlockEntity) : Hab
 
     lateinit var spawner: FixedAreaSpawner
 
-    override fun writeToNBT(nbt: CompoundTag) {
+    override fun save(nbt: ValueOutput) {
         nbt.putString(DataKeys.HABITAT_SPAWNING_STYLE, type.toString())
         nbt.putFloat(DataKeys.HABITAT_ACTIVATED_CHANCE, chance)
         nbt.putString(DataKeys.HABITAT_ACTIVATED_TRIGGER, trigger.name)
@@ -77,13 +79,13 @@ class ActivatedHabitatSpawning(val habitatBlockEntity: HabitatBlockEntity) : Hab
         nbt.putInt(DataKeys.HABITAT_ACTIVATED_MAX_SPAWNS_PER_ACTIVATION, maxSpawnsPerActivation)
     }
 
-    override fun readFromNBT(nbt: CompoundTag) {
-        chance = nbt.getFloat(DataKeys.HABITAT_ACTIVATED_CHANCE)
-        trigger = Trigger.valueOf(nbt.getString(DataKeys.HABITAT_ACTIVATED_TRIGGER) ?: Trigger.REDSTONE.name)
-        cancelledNaturalSpawningRange = nbt.getInt(DataKeys.HABITAT_ACTIVATED_CANCEL_RANGE)
-        spawnRange = nbt.getInt(DataKeys.HABITAT_ACTIVATED_SPAWN_RANGE)
-        maxSpawns = nbt.getInt(DataKeys.HABITAT_ACTIVATED_MAX_SPAWNS)
-        maxSpawnsPerActivation = nbt.getInt(DataKeys.HABITAT_ACTIVATED_MAX_SPAWNS_PER_ACTIVATION)
+    override fun load(nbt: ValueInput) {
+        chance = nbt.getFloatOr(DataKeys.HABITAT_ACTIVATED_CHANCE, 0F)
+        trigger = Trigger.valueOf(nbt.getStringOr(DataKeys.HABITAT_ACTIVATED_TRIGGER, ""))
+        cancelledNaturalSpawningRange = nbt.getIntOr(DataKeys.HABITAT_ACTIVATED_CANCEL_RANGE, 0)
+        spawnRange = nbt.getIntOr(DataKeys.HABITAT_ACTIVATED_SPAWN_RANGE, 0)
+        maxSpawns = nbt.getIntOr(DataKeys.HABITAT_ACTIVATED_MAX_SPAWNS, 0)
+        maxSpawnsPerActivation = nbt.getIntOr(DataKeys.HABITAT_ACTIVATED_MAX_SPAWNS_PER_ACTIVATION, 0)
     }
 
     fun generateSpawnDetails(world: ServerLevel, pos: BlockPos) {

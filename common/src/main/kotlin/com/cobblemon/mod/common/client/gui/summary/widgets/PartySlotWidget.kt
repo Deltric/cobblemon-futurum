@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets
 
+import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
@@ -25,9 +27,9 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import com.cobblemon.mod.common.util.toAssetPath
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -53,7 +55,7 @@ class PartySlotWidget(
         val genderIconFemale = cobblemonResource("textures/gui/party/party_gender_female.png")
     }
 
-    private fun getSlotTexture(pokemon: Pokemon?): ResourceLocation {
+    private fun getSlotTexture(pokemon: Pokemon?): Identifier {
         if (pokemon != null) {
             if (pokemon.isFainted()) return slotFaintedResource
             return slotResource
@@ -72,7 +74,7 @@ class PartySlotWidget(
         return 0
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height
         val matrices = context.pose()
         val isDraggedSlot = partyWidget.swapEnabled && partyWidget.swapSource == index
@@ -81,57 +83,49 @@ class PartySlotWidget(
 
         state.currentAspects = slotPokemon?.aspects ?: emptySet()
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = getSlotTexture(slotPokemon),
             x = x,
             y = y,
             width = width,
             height = height,
             vOffset = getSlotVOffset(slotPokemon, isHovered, isSelected),
-            textureHeight = height * 2,
-        )
+            textureHeight = height * 2)
 
         if (slotPokemon != null) {
             val halfScale = 0.5F
 
             val stateIcon = slotPokemon.state.getIcon(slotPokemon)
             if (stateIcon != null) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = stateIcon,
-                    x = (x + 24.5) / halfScale,
-                    y = (y + 3) / halfScale,
-                    height = 17,
-                    width = 24,
-                    scale = halfScale
-                )
+                blitk(context = context,
+            texture = stateIcon,
+            x = (x + 24.5) / halfScale,
+            y = (y + 3) / halfScale,
+            height = 17,
+            width = 24,
+            scale = halfScale)
             }
 
             val ballIcon = slotPokemon.caughtBall.name.toAssetPath("textures/gui/ball/", ".png")
             val ballHeight = 22
-            blitk(
-                matrixStack = matrices,
-                texture = ballIcon,
-                x = (x - 2) / halfScale,
-                y = (y - 3) / halfScale,
-                height = ballHeight,
-                width = 18,
-                textureHeight = ballHeight * 2,
-                scale = halfScale
-            )
+            blitk(context = context,
+            texture = ballIcon,
+            x = (x - 2) / halfScale,
+            y = (y - 3) / halfScale,
+            height = ballHeight,
+            width = 18,
+            textureHeight = ballHeight * 2,
+            scale = halfScale)
 
             val status = slotPokemon.status?.status
             if (!slotPokemon.isFainted() && status != null) {
                 val statusName = status.showdownName
-                    blitk(
-                    matrixStack = matrices,
-                    texture = cobblemonResource("textures/gui/party/status_$statusName.png"),
-                    x = x + 42,
-                    y = y + 5,
-                    height = 14,
-                    width = 4
-                )
+                    blitk(context = context,
+            texture = cobblemonResource("textures/gui/party/status_$statusName.png"),
+            x = x + 42,
+            y = y + 5,
+            height = 14,
+            width = 4)
             }
 
             val hpRatio = slotPokemon.currentHealth / slotPokemon.maxHealth.toFloat()
@@ -139,24 +133,22 @@ class PartySlotWidget(
             val barWidth = hpRatio * barWidthMax
             val (red, green) = getDepletableRedGreen(hpRatio)
 
-            blitk(
-                matrixStack = matrices,
-                texture = CobblemonResources.WHITE,
-                x = x + 4,
-                y = y + 25,
-                width = barWidth,
-                height = 1,
-                textureWidth = barWidth / hpRatio,
-                uOffset = barWidthMax - barWidth,
-                red = red * 0.8F,
-                green = green * 0.8F,
-                blue = 0.27F
-            )
+            blitk(context = context,
+            texture = CobblemonResources.WHITE,
+            x = x + 4,
+            y = y + 25,
+            width = barWidth,
+            height = 1,
+            textureWidth = barWidth / hpRatio,
+            uOffset = barWidthMax - barWidth,
+            red = red * 0.8F,
+            green = green * 0.8F,
+            blue = 0.27F)
 
             // Render Pokémon
-            matrices.pushPose()
-            matrices.translate(x + (PORTRAIT_DIAMETER / 2.0), y - 3.0, 0.0)
-            matrices.scale(2.5F, 2.5F, 1F)
+            matrices.pushMatrix()
+            matrices.translate((x + (PORTRAIT_DIAMETER / 2.0)).toFloat(), (y - 3.0).toFloat())
+            matrices.scale((2.5F).toFloat(), (2.5F).toFloat())
 
             val shouldAnimate = when (Cobblemon.config.summaryProfileAnimations) {
                 PokemonGUIAnimationStyle.ALWAYS_ANIMATE -> true
@@ -164,15 +156,13 @@ class PartySlotWidget(
                 PokemonGUIAnimationStyle.ANIMATE_SELECTED -> isHovered || isSelected
             }
 
-            drawProfilePokemon(
-                species = slotPokemon.species.resourceIdentifier,
-                matrixStack = matrices,
+            drawProfilePokemon(species = slotPokemon.species.resourceIdentifier,
+                context = context,
                 rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                 state = state,
                 scale = 4.5F,
-                partialTicks = if (shouldAnimate) delta else 0F
-            )
-            matrices.popPose()
+                partialTicks = if (shouldAnimate) delta else 0F)
+            matrices.popMatrix()
 
             drawScaledText(
                 context = context,
@@ -183,15 +173,13 @@ class PartySlotWidget(
             )
 
             if (slotPokemon.gender != Gender.GENDERLESS) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = if (slotPokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
-                    x = (x + 40) / halfScale,
-                    y = (y + 20) / halfScale,
-                    height = 7,
-                    width = 5,
-                    scale = halfScale
-                )
+                blitk(context = context,
+            texture = if (slotPokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
+            x = (x + 40) / halfScale,
+            y = (y + 20) / halfScale,
+            height = 7,
+            width = 5,
+            scale = halfScale)
             }
 
             drawScaledText(
@@ -212,13 +200,16 @@ class PartySlotWidget(
                     x = x + 14.0,
                     y = y + 9.5,
                     scale = 0.5,
-                    matrixStack = matrices
+                    context = context
                 )
             }
         }
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val pMouseX = event.x()
+        val pMouseY = event.y()
+        val pButton = event.button()
         if (isValidClick(pMouseX, pMouseY, pButton)) {
             if (partyWidget.swapEnabled) {
                 toggleDrag(true)
@@ -230,15 +221,17 @@ class PartySlotWidget(
                 }
             }
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
         if (partyWidget.swapEnabled) toggleDrag(false)
-        return partyWidget.mouseReleased(pMouseX, pMouseY, pButton)
+        return partyWidget.mouseReleased(event)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, f: Double, g: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, f: Double, g: Double): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         if (partyWidget.swapEnabled && partyWidget.isWithinScreen(mouseX, mouseY) && index < 0) {
             repositionSlot(mouseX, mouseY)
         } else {
@@ -247,7 +240,7 @@ class PartySlotWidget(
             partyWidget.swapSource = null
             partyWidget.draggedSlot = null
         }
-        return super.mouseDragged(mouseX, mouseY, button, f, g)
+        return super.mouseDragged(event, f, g)
     }
 
     private fun toggleDrag(boolean: Boolean) {
@@ -261,7 +254,7 @@ class PartySlotWidget(
         y = (mouseY - (HEIGHT / 2)).toInt()
     }
 
-    private fun isValidClick(mouseX: Double, mouseY: Double, button: Int): Boolean = button == 0
+    private fun isValidClick(mouseX: Double, mouseY: Double, button: Int): Boolean = button == InputConstants.MOUSE_BUTTON_LEFT
         && mouseX.toInt() in x..(x + width)
         && mouseY.toInt() in y..(y + height)
 }

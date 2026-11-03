@@ -18,7 +18,7 @@ import com.mojang.serialization.Codec
 import net.minecraft.resources.ResourceKey
 import net.minecraft.util.StringRepresentable
 import net.minecraft.world.item.BlockItem
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature
+import net.minecraft.world.level.levelgen.feature.Feature
 import net.minecraft.world.level.material.MapColor
 
 /**
@@ -86,7 +86,7 @@ enum class Apricorn : StringRepresentable {
         YELLOW ->  MapColor.COLOR_YELLOW
     }
 
-    fun configuredFeature(): ResourceKey<ConfiguredFeature<*, *>> = when(this) {
+    fun configuredFeature(): ResourceKey<Feature> = when(this) {
         BLACK -> CobblemonConfiguredFeatures.BLACK_APRICORN_TREE_KEY
         BLUE -> CobblemonConfiguredFeatures.BLUE_APRICORN_TREE_KEY
         GREEN -> CobblemonConfiguredFeatures.GREEN_APRICORN_TREE_KEY

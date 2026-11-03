@@ -8,12 +8,13 @@
 
 package com.cobblemon.mod.common.client.gui.tmmachine
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
@@ -41,32 +42,28 @@ class StartButton(
     var processing = false
     var shouldRepeat = false
 
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double) = false
+    override fun mouseDragged(event: MouseButtonEvent, f: Double, g: Double) = false
     override fun defaultButtonNarrationText(builder: NarrationElementOutput) {}
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         val resource = if (disabled) baseDisabled
             else (if (processing) baseStop else base)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = resource,
             x = buttonX,
             y = buttonY,
             width = WIDTH,
             height = HEIGHT,
             vOffset = if (isMouseOver(mouseX.toDouble(), mouseY.toDouble())) HEIGHT else 0,
-            textureHeight = HEIGHT * 2,
-        )
+            textureHeight = HEIGHT * 2)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = if (processing) iconStop else (if (shouldRepeat) iconRepeat else iconStart),
             x = buttonX,
             y = buttonY,
             width = WIDTH,
-            height = HEIGHT
-        )
+            height = HEIGHT)
     }
 
     /*override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
@@ -76,9 +73,9 @@ class StartButton(
         return false
     }*/
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         if (!active || !visible || disabled) return false
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
     override fun playDownSound(soundManager: SoundManager) {

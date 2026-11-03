@@ -32,7 +32,8 @@ public abstract class OptionsMixin {
     )
     private void cobblemon$forceThirdPerson(CallbackInfoReturnable<CameraType> cir) {
         var mc = Minecraft.getInstance();
-        if(!(mc.player instanceof Player player)) return;
+        Player player = mc.player;
+        if (player == null) return;
         if(!(player.getVehicle() instanceof OrientationControllable vehicle)) return;
         if(vehicle.getOrientationController() == null) return;
 

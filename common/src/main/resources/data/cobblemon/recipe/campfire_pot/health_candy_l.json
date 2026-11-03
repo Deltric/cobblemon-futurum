@@ -3,15 +3,9 @@
   "group": "iv_candy",
   "category": "misc",
   "key": {
-    "P": {
-      "item": "cobblemon:pomeg_berry"
-    },
-    "H": {
-      "item": "minecraft:honeycomb"
-    },
-    "E": {
-      "item": "cobblemon:exp_candy_l"
-    }
+    "P": "cobblemon:pomeg_berry",
+    "H": "minecraft:honeycomb",
+    "E": "cobblemon:exp_candy_l"
   },
   "pattern": [
     "PHP",

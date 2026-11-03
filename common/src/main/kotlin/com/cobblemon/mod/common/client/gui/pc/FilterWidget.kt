@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.pc
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.bold
@@ -18,7 +19,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 
@@ -37,9 +38,8 @@ class FilterWidget(
         private val labelFilter = Component.translatable("cobblemon.ui.pc.filter")
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        blitk(
-            matrixStack = context.pose(),
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        blitk(context = context,
             x = (x - 9) / SCALE,
             y = (y + 3) / SCALE,
             texture = iconFilterResource,
@@ -47,8 +47,7 @@ class FilterWidget(
             height = ICON_SIZE,
             vOffset = if (isFocused || !value.isEmpty() || iconHovered(mouseX, mouseY)) ICON_SIZE else 0,
             textureHeight = ICON_SIZE * 2,
-            scale = SCALE
-        )
+            scale = SCALE)
 
         val input = applyTextCursor(value, labelFilter)
         val textWidth = Minecraft.getInstance().font.width((if (!isFocused && value.isEmpty()) labelFilter else value.text()).bold().font(CobblemonResources.DEFAULT_LARGE))
@@ -66,17 +65,26 @@ class FilterWidget(
         renderCursor(context, input)
 
         if (iconHovered(mouseX, mouseY)) {
-            context.renderTooltip(Minecraft.getInstance().font, lang("ui.pc.filter.tooltip"), mouseX, mouseY)
+            context.setTooltipForNextFrame(Minecraft.getInstance().font, lang("ui.pc.filter.tooltip"), mouseX, mouseY)
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
+        isActive && (super.isMouseOver(mouseX, mouseY) || iconHovered(mouseX.toInt(), mouseY.toInt()))
+
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         if (iconHovered(mouseX.toInt(), mouseY.toInt())) {
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(CobblemonSounds.PC_CLICK, 1.0F, 0.25F))
             // Simulate clicking on text area if icon is clicked
-            if (!isFocused) return super.mouseClicked(x + (width / 2.0), y + (height / 2.0), button)
+            if (!isFocused) return super.mouseClicked(MouseButtonEvent(x + (width / 2.0), y + (height / 2.0), event.buttonInfo()), doubleClick)
+            // The icon previously lay outside the EditBox hit rectangle, so a
+            // second click ended editing. Preserve that behavior explicitly.
+            unfocused()
+            return true
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
     fun iconHovered(mouseX: Int, mouseY: Int): Boolean = mouseX >= (x - 9) && mouseY >= (y + 3)

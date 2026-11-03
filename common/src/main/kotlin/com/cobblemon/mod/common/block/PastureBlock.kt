@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.phys.Vec3
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonNetwork
@@ -22,10 +25,9 @@ import com.cobblemon.mod.common.util.playSoundServer
 import com.cobblemon.mod.common.util.toVec3d
 import com.cobblemon.mod.common.util.voxelShape
 import com.cobblemon.mod.common.util.rotateShape
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.StringRepresentable
@@ -62,7 +64,6 @@ import java.util.function.BiConsumer
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWaterloggedBlock {
     companion object {
-        val CODEC = simpleCodec(::PastureBlock)
 
         val PART: EnumProperty<PasturePart> = EnumProperty.create("part", PasturePart::class.java)
         val ON: BooleanProperty = BooleanProperty.create("on")
@@ -130,7 +131,6 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
 
     override fun newBlockEntity(blockPos: BlockPos, blockState: BlockState) = if (blockState.getValue(PART) == PasturePart.BOTTOM) PokemonPastureBlockEntity(blockPos, blockState) else null
 
-
     init {
         registerDefaultState(stateDefinition.any()
             .setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH)
@@ -174,10 +174,6 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
 
     private fun isBase(state: BlockState): Boolean = state.hasProperty(PART) && state.getValue(PART) == PasturePart.BOTTOM
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
     override fun isPathfindable(
         blockState: BlockState,
         pathComputationType: PathComputationType
@@ -190,7 +186,7 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
         builder.add(WATERLOGGED)
     }
 
-    fun checkBreakEntity(world: LevelAccessor, state: BlockState, pos: BlockPos) {
+    fun checkBreakEntity(world: LevelReader, state: BlockState, pos: BlockPos) {
         if (state.getValue(PART) == PasturePart.TOP) {
             return
         }
@@ -218,10 +214,10 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
 
     override fun onExplosionHit(
         state: BlockState,
-        level: Level,
+        level: ServerLevel,
         pos: BlockPos,
         explosion: Explosion,
-        dropConsumer: BiConsumer<ItemStack?, BlockPos?>
+        dropConsumer: BiConsumer<ItemStack, BlockPos>
     ) {
         val interaction = explosion.blockInteraction
         if (interaction == Explosion.BlockInteraction.DESTROY || interaction == Explosion.BlockInteraction.DESTROY_WITH_DECAY) {
@@ -231,11 +227,11 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
         super.onExplosionHit(state, level, pos, explosion, dropConsumer)
     }
 
-    override fun <T : BlockEntity?> getTicker(world: Level, state: BlockState, type: BlockEntityType<T>): BlockEntityTicker<T>? {
+    override fun <T : BlockEntity> getTicker(world: Level, state: BlockState, type: BlockEntityType<T>): BlockEntityTicker<T>? {
         return createTickerHelper(type, CobblemonBlockEntities.PASTURE, PokemonPastureBlockEntity.TICKER::tick)
     }
 
-    override fun setPlacedBy(world: Level, pos: BlockPos, state: BlockState, placer: LivingEntity?, itemStack: ItemStack?) {
+    override fun setPlacedBy(world: Level, pos: BlockPos, state: BlockState, placer: LivingEntity?, itemStack: ItemStack) {
         world.setBlock(
             pos.above(),
             state
@@ -243,7 +239,7 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
                 .setValue(WATERLOGGED, world.getFluidState((pos.above())).type == Fluids.WATER),
             3
         )
-        world.blockUpdated(pos, Blocks.AIR)
+        world.updateNeighborsAt(pos, Blocks.AIR)
         state.updateNeighbourShapes(world, pos, 3)
 
         if (world is ServerLevel && placer is ServerPlayer) {
@@ -287,10 +283,10 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
                 )
             )
 
-            PastureLinkManager.createLink(player.uuid, PastureLink(linkId, pcId, ResourceLocation.tryParse(world.dimensionTypeRegistration().registeredName)!!, getBasePosition(state, pos), perms))
+            PastureLinkManager.createLink(player.uuid, PastureLink(linkId, pcId, Identifier.tryParse(world.dimensionTypeRegistration().registeredName)!!, getBasePosition(state, pos), perms))
 
             world.playSoundServer(
-                position = pos.bottomCenter,
+                position = Vec3.atBottomCenterOf(pos),
                 sound = CobblemonSounds.PC_ON,
                 volume = 0.5F,
                 pitch = 1F
@@ -333,9 +329,7 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
         return blockState.rotate(mirror.getRotation(blockState.getValue(HorizontalDirectionalBlock.FACING)))
     }
 
-    override fun onRemove(state: BlockState, world: Level, pos: BlockPos, newState: BlockState, moved: Boolean) {
-        if (!state.`is`(newState.block)) super.onRemove(state, world, pos, newState, moved)
-    }
+
 
     override fun getFluidState(state: BlockState): FluidState {
         return if (state.getValue(WATERLOGGED)) {
@@ -343,16 +337,9 @@ class PastureBlock(settings: Properties): BaseEntityBlock(settings), SimpleWater
         } else super.getFluidState(state)
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, ticks: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
 
         val isPasture = neighborState.`is`(this)

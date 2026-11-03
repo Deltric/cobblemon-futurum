@@ -13,7 +13,8 @@ import com.cobblemon.mod.common.block.entity.HealingMachineBlockEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.Direction
@@ -23,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 
 @Suppress("UNUSED_PARAMETER")
-class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Context): BlockEntityRenderer<T> {
+class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Context): GeometryBlockEntityRenderer<T>() {
     companion object {
         private val offsets = listOf(
             0.2 to 0.385,
@@ -35,7 +36,7 @@ class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Co
         )
     }
 
-    override fun render(blockEntity: T, tickDelta: Float, poseStack: PoseStack, multiBufferSource: MultiBufferSource, light: Int, overlay: Int) {
+    override fun extractGeometry(blockEntity: T, tickDelta: Float, poseStack: PoseStack, multiBufferSource: ModelGeometry.Builder, light: Int, overlay: Int) {
         if (blockEntity !is HealingMachineBlockEntity) return
 
         poseStack.pushPose()
@@ -47,14 +48,14 @@ class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Co
         // Position Poké Balls
         poseStack.translate(0.5, 0.5, 0.5)
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(-yRot))
+        poseStack.rotate(Axis.YP.rotationDegrees(-yRot))
         poseStack.scale(0.65F, 0.65F, 0.65F)
 
         blockEntity.pokeBalls().forEach { (index, pokeBall) ->
             poseStack.pushPose()
             val offset = offsets[index]
             poseStack.translate(offset.first, 0.4, offset.second)
-            Minecraft.getInstance().itemRenderer.renderStatic(pokeBall.stack(), ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.level, 0)
+            NativeModelGeometry.extractItem(pokeBall.stack(), ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.level, 0)
             poseStack.popPose()
         }
         poseStack.popPose()

@@ -9,15 +9,18 @@
           "name": "cobblemon:deepslate_crystal_core"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:match_tool",
-          "predicate": {}
-        },
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "predicate": {},
+            "type": "minecraft:match_tool"
+          },
+          {
+            "type": "minecraft:survives_explosion"
+          }
+        ]
+      }
     }
   ]
 }

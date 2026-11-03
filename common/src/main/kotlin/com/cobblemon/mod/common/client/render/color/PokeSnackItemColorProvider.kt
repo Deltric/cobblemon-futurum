@@ -10,10 +10,9 @@ package com.cobblemon.mod.common.client.render.color
 
 import com.cobblemon.mod.common.CobblemonItemComponents
 import com.cobblemon.mod.common.api.cooking.getColourMixFromColors
-import net.minecraft.client.color.item.ItemColor
 import net.minecraft.world.item.ItemStack
 
-object PokeSnackItemColorProvider : ItemColor {
+object PokeSnackItemColorProvider : CobblemonItemColorProvider {
     private const val BASE_LAYER_INDEX = 0
 
     override fun getColor(stack: ItemStack, layer: Int): Int {

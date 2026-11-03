@@ -42,7 +42,7 @@ public class RecipeBookTypeMixin {
     private static void cobblemon$addRecipeBookType(CallbackInfo ci) {
         ArrayList<RecipeBookType> types = new ArrayList<>(List.of($VALUES));
         // if you change or add any of these, neoforge uses a separate mechanism
-        // check enumextensions.json and `CobblemonEnumExtensions`
+        // check enumextensions.json
         types.add(cobblemon$createBookType(CobblemonRecipeBookTypes.COOKING_POT_NAME, $VALUES.length));
         $VALUES = types.toArray(RecipeBookType[]::new);
     }

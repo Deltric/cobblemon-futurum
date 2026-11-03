@@ -46,13 +46,13 @@ class BimanualSwingAnimation(
 
     override fun setupAnim(context: RenderContext, model: PosableModel, state: PosableState, limbSwing: Float, limbSwingAmount: Float, ageInTicks: Float, headYaw: Float, headPitch: Float, intensity: Float) {
         // Movement swing
-        rightArm?.addRotation(Y_AXIS, Mth.cos(limbSwing * swingPeriodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
-        leftArm?.addRotation(Y_AXIS, Mth.cos(limbSwing * swingPeriodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
+        rightArm?.addRotation(Y_AXIS, kotlin.math.cos(limbSwing * swingPeriodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
+        leftArm?.addRotation(Y_AXIS, kotlin.math.cos(limbSwing * swingPeriodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
 
         // Idle sway
-        rightArm?.addRotation(Z_AXIS, 1.0f * (Mth.cos(ageInTicks * 0.09f) * 0.05f + 0.05f) * intensity)
-        rightArm?.addRotation(Y_AXIS, Mth.sin(ageInTicks * 0.067f) * 0.05f * intensity)
-        leftArm?.addRotation(Z_AXIS, -1.0f * (Mth.cos(ageInTicks * 0.09f) * 0.05f + 0.05f) * intensity)
-        leftArm?.addRotation(Y_AXIS, -1.0f * Mth.sin(ageInTicks * 0.067f) * 0.05f * intensity)
+        rightArm?.addRotation(Z_AXIS, 1.0f * (kotlin.math.cos(ageInTicks * 0.09f) * 0.05f + 0.05f) * intensity)
+        rightArm?.addRotation(Y_AXIS, kotlin.math.sin(ageInTicks * 0.067f) * 0.05f * intensity)
+        leftArm?.addRotation(Z_AXIS, -1.0f * (kotlin.math.cos(ageInTicks * 0.09f) * 0.05f + 0.05f) * intensity)
+        leftArm?.addRotation(Y_AXIS, -1.0f * kotlin.math.sin(ageInTicks * 0.067f) * 0.05f * intensity)
     }
 }

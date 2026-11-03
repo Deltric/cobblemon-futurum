@@ -15,23 +15,21 @@
     "slather_honey": {
       "trigger": "minecraft:item_used_on_block",
       "conditions": {
-        "location": [
-          {
-            "condition": "minecraft:all_of",
-            "terms": [
-              {
-                "condition": "minecraft:match_tool",
-                "predicate": {
-                  "items": "minecraft:honey_bottle"
-                }
-              },
-              {
-                "condition": "minecraft:block_state_property",
-                "block": "cobblemon:saccharine_log_slathered"
+        "location": {
+          "type": "minecraft:all_of",
+          "terms": [
+            {
+              "type": "minecraft:match_tool",
+              "predicate": {
+                "items": "minecraft:honey_bottle"
               }
-            ]
-          }
-        ]
+            },
+            {
+              "type": "minecraft:match_block",
+              "blocks": "cobblemon:saccharine_log_slathered"
+            }
+          ]
+        }
       }
     }
   },

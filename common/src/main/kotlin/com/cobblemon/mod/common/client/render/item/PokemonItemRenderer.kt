@@ -14,13 +14,15 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Varyi
 import com.cobblemon.mod.common.entity.PoseType
 import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
-import com.mojang.blaze3d.platform.Lighting
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.special.SpecialModelRenderer
+import java.util.function.Consumer
+import org.joml.Vector3fc
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.blaze3d.vertex.VertexMultiConsumer
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.util.LightCoordsUtil
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemDisplayContext
@@ -28,15 +30,30 @@ import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
-class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
+class PokemonItemRenderer : SpecialModelRenderer<PokemonItemRenderer.Snapshot> {
+    data class Snapshot(val geometry: ModelGeometry, val gui: Boolean)
+
+    override fun submit(snapshot: Snapshot?, matrices: PoseStack, collector: SubmitNodeCollector,
+                        light: Int, overlay: Int, hasFoil: Boolean, outlineColor: Int) {
+        snapshot ?: return
+        snapshot.geometry.submitWithLight(matrices, collector,
+            if (snapshot.gui) LightCoordsUtil.pack(13, 13) else light, OverlayTexture.NO_OVERLAY, outlineColor)
+    }
+
+    // The custom ItemModel supplies per-species extents and the actual display context.
+    override fun extractArgument(stack: ItemStack): Snapshot? = extractGeometry(stack, ItemDisplayContext.NONE)
+    override fun getExtents(output: Consumer<Vector3fc>) { output.accept(Vector3f()) }
+
     val context = RenderContext().also {
         it.put(RenderContext.RENDER_STATE, RenderContext.RenderState.PROFILE)
         it.put(RenderContext.DO_QUIRKS, false)
     }
 
-    override fun render(stack: ItemStack, mode: ItemDisplayContext, matrices: PoseStack, vertexConsumers: MultiBufferSource, light: Int, overlay: Int) {
-        val pokemonItem = stack.item as? PokemonItem ?: return
-        val (species, aspects) = pokemonItem.getSpeciesAndAspects(stack) ?: return
+    fun extractGeometry(stack: ItemStack, mode: ItemDisplayContext): Snapshot? {
+        val matrices = PoseStack()
+        val vertexConsumers = ModelGeometry.Builder()
+        val pokemonItem = stack.item as? PokemonItem ?: return null
+        val (species, aspects) = pokemonItem.getSpeciesAndAspects(stack) ?: return null
         val state = FloatingState()
         state.currentAspects = aspects
         matrices.pushPose()
@@ -50,10 +67,6 @@ class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
 
         val transformations = positions[mode]!!
 
-        if (mode == ItemDisplayContext.GUI) {
-            Lighting.setupForFlatItems()
-        }
-
         matrices.scale(transformations.scale.x, transformations.scale.y, transformations.scale.z)
         matrices.translate(transformations.translation.x, transformations.translation.y, transformations.translation.z)
         state.setPoseToFirstSuitable(PoseType.PORTRAIT)
@@ -62,26 +75,18 @@ class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
         matrices.scale(model.profileScale, model.profileScale, 0.15F)
 
         val rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(transformations.rotation.x, transformations.rotation.y, transformations.rotation.z))
-        matrices.mulPose(rotation)
+        matrices.rotate(rotation)
         rotation.conjugate()
 
-        val renderLayer = RenderType.entityCutout(VaryingModelRepository.getTexture(species.resourceIdentifier, state))
-        val isEnchanted = stack.get(DataComponents.ENCHANTMENTS)?.isEmpty == false
-        val vertexConsumer: VertexConsumer =
-            if (isEnchanted) {
-                VertexMultiConsumer.create(
-                    vertexConsumers.getBuffer(RenderType.entityGlintDirect()),
-                    vertexConsumers.getBuffer(renderLayer),
-                )
-            } else {
-                vertexConsumers.getBuffer(renderLayer)
-            }
+        val texture = VaryingModelRepository.getTexture(species.resourceIdentifier, state)
+        val renderLayer = if (stack.hasFoil()) com.cobblemon.mod.common.client.render.PosableRenderLayers.itemGlint(texture) else RenderTypes.entityCutoutCull(texture)
+        val vertexConsumer = vertexConsumers.getBuffer(renderLayer)
 
         matrices.pushPose()
         val packedLight = if (mode == ItemDisplayContext.GUI) {
-            LightTexture.pack(13, 13)
+            LightCoordsUtil.pack(13, 13)
         } else {
-            light
+            0
         }
 
         // x = red, y = green, z = blue, w = alpha
@@ -99,9 +104,7 @@ class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
         matrices.popPose()
         matrices.popPose()
 
-        if (mode == ItemDisplayContext.GUI) {
-            Lighting.setupFor3DItems()
-        }
+        return Snapshot(vertexConsumers.build(), mode == ItemDisplayContext.GUI)
     }
 
     companion object {

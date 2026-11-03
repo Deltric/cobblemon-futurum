@@ -6,12 +6,8 @@
         "B  "
     ],
     "key": {
-        "B": {
-            "tag": "c:bones"
-        },
-        "G": {
-            "item": "cobblemon:flying_gem"
-        }
+        "B": "#c:bones",
+        "G": "cobblemon:flying_gem"
     },
     "result": {
         "id": "cobblemon:sharp_beak"

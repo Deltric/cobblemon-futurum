@@ -40,7 +40,7 @@ interface ObtainMethod {
                 "cobblemon:impossible" -> ImpossibleObtainMethod()
                 "cobblemon:default" -> DefaultObtainMethod()
                 "cobblemon:advancement" -> {
-                    val advancement = buffer.readResourceLocation()
+                    val advancement = buffer.readIdentifier()
                     PlayerHasAdvancementObtainMethod(advancement)
                 }
                 "cobblemon:y_level" -> {

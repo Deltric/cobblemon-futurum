@@ -18,7 +18,8 @@ import com.cobblemon.mod.common.item.PokedexItem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.Direction
@@ -27,18 +28,18 @@ import net.minecraft.world.item.*
 import net.minecraft.world.item.component.CustomModelData
 import net.minecraft.world.level.Level
 
-class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntityRenderer<DisplayCaseBlockEntity> {
+class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : GeometryBlockEntityRenderer<DisplayCaseBlockEntity>() {
     val context = RenderContext().also {
         it.put(RenderContext.RENDER_STATE, RenderContext.RenderState.WORLD)
     }
     val coinPouchStack: ItemStack by lazy { ItemStack(
         CobblemonItems.RELIC_COIN_POUCH
-    ).also { it.set(DataComponents.CUSTOM_MODEL_DATA, CustomModelData(1)) } }
-    override fun render(
+    ).also { it.set(DataComponents.CUSTOM_MODEL_DATA, CustomModelData(listOf(1f), emptyList(), emptyList(), emptyList())) } }
+    override fun extractGeometry(
         entity: DisplayCaseBlockEntity,
         tickDelta: Float,
         matrices: PoseStack,
-        vertexConsumers: MultiBufferSource,
+        vertexConsumers: ModelGeometry.Builder,
         light: Int,
         overlay: Int
     ) {
@@ -74,10 +75,10 @@ class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntit
         matrices.scale(posType.scaleX, posType.scaleY, posType.scaleZ)
         matrices.translate(posType.transX, posType.transY, posType.transZ)
 
-        matrices.mulPose(Axis.YP.rotationDegrees(-yRot))
-        matrices.mulPose(Axis.YP.rotationDegrees(posType.rotY))
+        matrices.rotate(Axis.YP.rotationDegrees(-yRot))
+        matrices.rotate(Axis.YP.rotationDegrees(posType.rotY))
 
-        Minecraft.getInstance().itemRenderer.renderStatic(
+        NativeModelGeometry.extractItem(
             stack,
             ItemDisplayContext.GROUND,
             light,
@@ -94,7 +95,7 @@ class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntit
     /*
     private fun renderPokemon(
         matrices: PoseStack,
-        vertexConsumers: MultiBufferSource,
+        vertexConsumers: ModelGeometry.Builder,
         light: Int,
         stack: ItemStack,
         yRot: Float
@@ -112,7 +113,7 @@ class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntit
         matrices.scale(1f, -1f, -1f)
         matrices.translate(0.5f, -0.69f, -0.5f)
         matrices.scale(scale, scale, scale)
-        matrices.mulPose(Axis.YP.rotationDegrees(yRot))
+        matrices.rotate(Axis.YP.rotationDegrees(yRot))
 
         val state = FloatingState()
         state.currentAspects = aspects
@@ -157,7 +158,7 @@ class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntit
 
         private fun getPositioningType(stack: ItemStack, world: Level) = when {
             mobHeads.contains(stack.item) -> PositioningType.MOB_HEAD
-            stack.item is BedItem -> PositioningType.BED
+            (stack.item as? BlockItem)?.block is net.minecraft.world.level.block.BedBlock -> PositioningType.BED
             stack.item is BannerItem -> PositioningType.BANNER
             stack.`is`(CobblemonItemTags.POKE_BALLS) -> PositioningType.POKE_BALL
             stack.`is`(CobblemonItemTags.PLAQUES) -> PositioningType.ITEM_MODEL
@@ -167,7 +168,7 @@ class DisplayCaseRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntit
             //stack.item == CobblemonItems.POKEMON_MODEL -> PositioningType.ITEM_MODEL
             stack.item == Items.SHIELD -> PositioningType.SHIELD
             stack.item == Items.DECORATED_POT -> PositioningType.MOB_HEAD
-            Minecraft.getInstance().itemRenderer.getModel(stack, world, null, 0).isGui3d -> PositioningType.BLOCK_MODEL
+            NativeModelGeometry.usesBlockLighting(stack, world) -> PositioningType.BLOCK_MODEL
             else -> PositioningType.ITEM_MODEL
         }
     }

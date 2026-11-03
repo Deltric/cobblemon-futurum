@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.pokemon.feature
 
+import com.cobblemon.mod.common.util.readList
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties
 import com.cobblemon.mod.common.api.pokemon.aspect.AspectProvider
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
@@ -42,7 +44,7 @@ open class FlagSpeciesFeature(override val name: String) : SynchronizedSpeciesFe
     }
 
     override fun loadFromNBT(pokemonNBT: CompoundTag): SpeciesFeature {
-        enabled = if (pokemonNBT.contains(name)) pokemonNBT.getBoolean(name) else enabled
+        enabled = if (pokemonNBT.contains(name)) pokemonNBT.getBooleanOr(name, false) else enabled
         return this
     }
 

@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.net.messages.client.data
 
+import com.cobblemon.mod.common.util.writeCollection
 import com.cobblemon.mod.common.api.net.NetworkPacket
 import io.netty.buffer.Unpooled
 import net.minecraft.network.RegistryFriendlyByteBuf

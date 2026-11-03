@@ -20,15 +20,16 @@ import com.cobblemon.mod.common.util.toVec3d
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
 
-class BerryBlockRenderer(private val context: BlockEntityRendererProvider.Context) : BlockEntityRenderer<BerryBlockEntity> {
+class BerryBlockRenderer(private val context: BlockEntityRendererProvider.Context) : GeometryBlockEntityRenderer<BerryBlockEntity>() {
 
     val mulchModels = mutableMapOf(
         MulchVariant.COARSE to CobblemonBakingOverrides.COARSE_MULCH,
@@ -45,75 +46,43 @@ class BerryBlockRenderer(private val context: BlockEntityRendererProvider.Contex
 
     override fun shouldRender(blockEntity: BerryBlockEntity, pos: Vec3): Boolean {
         return super.shouldRender(blockEntity, pos)
-                && Minecraft.getInstance().levelRenderer.cullingFrustum.isVisible(AABB.ofSize(pos, 2.0, 4.0, 2.0))
+                && Minecraft.getInstance().gameRenderer.mainCamera().cullFrustum.isVisible(AABB.ofSize(blockEntity.blockPos.toVec3d(), 2.0, 4.0, 2.0))
     }
 
-    override fun render(entity: BerryBlockEntity, tickDelta: Float, matrices: PoseStack, vertexConsumers: MultiBufferSource, light: Int, overlay: Int) {
+    override fun extractGeometry(entity: BerryBlockEntity, tickDelta: Float, matrices: PoseStack, vertexConsumers: ModelGeometry.Builder, light: Int, overlay: Int) {
         if (!shouldRender(entity, entity.blockPos.toVec3d())) return
         val blockState = entity.blockState
-        if (entity.renderState == null) {
-            entity.renderState = BerryBlockEntityRenderState()
-        }
-
-        // RenderType.entityCutoutNoCull for shading, as shading is absent in RenderType CobblemonRenderLayers.BERRY_LAYER
+        // RenderTypes.entityCutoutNoCull for shading, as shading is absent in RenderType CobblemonRenderLayers.BERRY_LAYER
         val buffer = vertexConsumers.getBuffer(
-            RenderType.entityCutoutNoCull(BERRY_SPRITE_ATLAS.textureAtlas.location())
+            RenderTypes.entityCutout(BERRY_SPRITE_ATLAS.textureAtlas.location())
         )
 
-        val renderState = entity.renderState as BerryBlockEntityRenderState
-//        if (renderState.needsRebuild || renderState.vboLightLevel != light) {
-            renderToBuffer(entity, matrices, light, overlay, renderState, buffer)
-//            renderState.vboLightLevel = light
-//            (entity.renderState as BerryBlockEntityRenderState).needsRebuild = false
-//        }
-//        if (renderState.drawVbo) {
-//            matrices.pushPose()
-//            val mtx = RenderSystem.getModelViewMatrix().get(Matrix4f())
-//            CobblemonRenderLayers.BERRY_LAYER.setupRenderState()
-//            renderState.vbo.bind()
-//            renderState.vbo.drawWithShader(
-//                mtx.mul(matrices.last().pose()),
-//                RenderSystem.getProjectionMatrix(),
-//                GameRenderer.getRendertypeCutoutShader()!!
-//            )
-//            VertexBuffer.unbind()
-//            CobblemonRenderLayers.BERRY_LAYER.clearRenderState()
-//            matrices.popPose()
-//        }
+        renderToBuffer(entity, matrices, light, overlay, buffer)
         drawMulch(matrices, vertexConsumers, entity, light, overlay)
     }
 
     private fun drawMulch(
         matrices: PoseStack,
-        vertexConsumers: MultiBufferSource,
+        vertexConsumers: ModelGeometry.Builder,
         entity: BerryBlockEntity,
         light: Int,
         overlay: Int
     ) {
         matrices.pushPose()
         //Mulch is rendered on a different layer than the actual berries so
-        val mulchBuf = vertexConsumers.getBuffer(RenderType.cutout())
-        val model = mulchModels[entity.mulchVariant]
-        model?.let {
-            it.getModel().getQuads(entity.blockState, null, entity.level?.random).forEach { quad ->
-                mulchBuf.putBulkData(matrices.last(), quad, 1F, 1F, 1F, 1F, light, overlay)
-            }
+        mulchModels[entity.mulchVariant]?.let {
+            NativeModelGeometry.extractQuads(it.getModel(), matrices, vertexConsumers, light, overlay)
         }
         matrices.popPose()
     }
 
 
-    fun renderToBuffer(entity: BerryBlockEntity, matrices: PoseStack, light: Int, overlay: Int, renderState: BerryBlockEntityRenderState, buffer: VertexConsumer) {
+    fun renderToBuffer(entity: BerryBlockEntity, matrices: PoseStack, light: Int, overlay: Int, buffer: VertexConsumer) {
         if (entity.blockState.getValue(BerryBlock.AGE) == 0) {
             renderBabyToBuffer(entity, matrices, light, overlay, buffer)
-            renderState.drawVbo = true
         }
         else if (entity.blockState.getValue(BerryBlock.AGE) > BerryBlock.MATURE_AGE){
             renderAdultToBuffer(entity, matrices, light, overlay, buffer)
-            renderState.drawVbo = true
-        }
-        else {
-            renderState.drawVbo = false
         }
     }
 

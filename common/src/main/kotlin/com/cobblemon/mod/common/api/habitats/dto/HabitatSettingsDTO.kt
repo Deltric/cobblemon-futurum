@@ -14,13 +14,13 @@ import com.cobblemon.mod.common.api.habitats.spawningstyle.ActivatedHabitatSpawn
 import com.cobblemon.mod.common.api.habitats.spawningstyle.NaturalHabitatSpawning
 import com.cobblemon.mod.common.block.habitat.HabitatBlockEntity
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class HabitatSettingsDTO() {
     var phaseOrder = HabitatPhaseOrder.SIMPLE
     lateinit var levelRange: IntRange
     var modifiers: String = ""
-    lateinit var mimicId: ResourceLocation
+    lateinit var mimicId: Identifier
     var isActivatedSpawning = false
     var pool: HabitatPoolSettingsDTO = HabitatPoolSettingsDTO(HabitatPool.default())
     var activatedSettings: ActivatedHabitatSettingsDTO? = null
@@ -46,7 +46,7 @@ class HabitatSettingsDTO() {
         buffer.writeInt(levelRange.first)
         buffer.writeInt(levelRange.last)
         buffer.writeUtf(modifiers)
-        buffer.writeResourceLocation(mimicId)
+        buffer.writeIdentifier(mimicId)
         pool.encode(buffer)
         buffer.writeBoolean(isActivatedSpawning)
         if (isActivatedSpawning) {
@@ -62,7 +62,7 @@ class HabitatSettingsDTO() {
         val levelRangeEnd = buffer.readInt()
         this.levelRange = levelRangeStart..levelRangeEnd
         this.modifiers = buffer.readUtf()
-        this.mimicId = buffer.readResourceLocation()
+        this.mimicId = buffer.readIdentifier()
         this.pool = HabitatPoolSettingsDTO()
         this.pool.decode(buffer)
         if (buffer.readBoolean()) {

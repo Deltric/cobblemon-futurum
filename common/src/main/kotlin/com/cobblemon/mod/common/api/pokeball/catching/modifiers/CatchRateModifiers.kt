@@ -79,9 +79,9 @@ object CatchRateModifiers {
      * 1× otherwise.
      */
     val MOON_PHASES: CatchRateModifier = WorldStateModifier { _, entity ->
-        if (entity.level().dayTime % 24000 < 12000)
+        if (entity.level().overworldClockTime % 24000 < 12000)
             return@WorldStateModifier 1F
-        when (entity.level().moonPhase) {
+        when (com.cobblemon.mod.common.api.spawning.condition.MoonPhase.ofWorld(entity.level()).ordinal) {
             2, 6 -> 1.5F
             1, 7 -> 2.5F
             0 -> 4F

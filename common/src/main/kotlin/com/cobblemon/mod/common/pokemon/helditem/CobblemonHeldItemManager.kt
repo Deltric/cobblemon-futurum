@@ -221,7 +221,7 @@ override fun handleStartInstruction(pokemon: BattlePokemon, battle: PokemonBattl
         // Check Remaps before defaulting to super
         for (remap in remaps) {
             if (remap.value == showdownId) {
-                return remap.key.description
+                return remap.key.defaultInstance.hoverName
             }
         }
         return super.nameOf(showdownId)

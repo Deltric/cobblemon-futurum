@@ -12,7 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
 
 /**
- * An extensions for Minecraft's [KeyBinding]
+ * An extension for Minecraft's [KeyMapping]
  * When creating a new [CobblemonKeyBinding] [onPress] will be called when the key is pressed.
  *
  * @author Qu
@@ -20,9 +20,9 @@ import net.minecraft.client.KeyMapping
  */
 abstract class CobblemonKeyBinding(
     name: String,
-    type: InputConstants.Type = InputConstants.Type.KEYSYM,
+    type: InputConstants.Type = InputConstants.Type.KEYBOARD,
     key: Int,
-    category: String
+    category: KeyMapping.Category
 ): KeyMapping(name, type, key, category) {
 
     abstract fun onPress()

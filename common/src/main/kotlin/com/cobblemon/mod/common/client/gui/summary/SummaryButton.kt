@@ -8,20 +8,21 @@
 
 package com.cobblemon.mod.common.client.gui.summary
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.client.CobblemonResources
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.drawScaledText
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class SummaryButton(
     var buttonX: Float,
@@ -30,8 +31,8 @@ class SummaryButton(
     val buttonHeight: Number,
     val clickAction: OnPress,
     private val text: MutableComponent = Component.empty(),
-    private val resource: ResourceLocation,
-    private val activeResource: ResourceLocation? = null,
+    private val resource: Identifier,
+    private val activeResource: Identifier? = null,
     private val renderRequirement: ((button: SummaryButton) -> Boolean) = { true },
     private val clickRequirement: ((button: SummaryButton) -> Boolean) = { true },
     private val hoverTexture: Boolean = true,
@@ -48,20 +49,19 @@ class SummaryButton(
 
     var buttonActive = false
 
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double) = false
+    override fun mouseDragged(event: MouseButtonEvent, f: Double, g: Double) = false
 
     override fun defaultButtonNarrationText(builder: NarrationElementOutput) {
     }
 
-    public override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    public override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         if (!this.renderRequirement.invoke(this)) {
             return
         }
         val matrices = context.pose()
 
         // Render Button
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = if (buttonActive && activeResource != null) activeResource else resource,
             x = buttonX / scale,
             y = buttonY / scale,
@@ -69,8 +69,7 @@ class SummaryButton(
             height = buttonHeight,
             vOffset = if (hoverTexture && isButtonHovered(pMouseX, pMouseY)) buttonHeight else 0,
             textureHeight = if (hoverTexture) (buttonHeight.toFloat() * 2) else buttonHeight,
-            scale = scale
-        )
+            scale = scale)
 
         // Render Text
         drawScaledText(
@@ -85,12 +84,8 @@ class SummaryButton(
         )
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (this.clickRequirement.invoke(this) && isButtonHovered(mouseX, mouseY)) {
-            super.mouseClicked(mouseX, mouseY, button)
-        }
-        return false
-    }
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
+        isActive && renderRequirement(this) && clickRequirement(this) && isButtonHovered(mouseX, mouseY)
 
     override fun playDownSound(soundManager: SoundManager) {
         if (!this.silent) {

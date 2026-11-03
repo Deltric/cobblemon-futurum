@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.api.stats
 
 import com.cobblemon.mod.common.Cobblemon
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.stats.StatFormatter
 
 object CobblemonStats {
@@ -86,9 +86,9 @@ object CobblemonStats {
     }
 
     @JvmStatic
-    fun getStat(cobblemonStat: CobblemonStat) : ResourceLocation {
+    fun getStat(cobblemonStat: CobblemonStat) : Identifier {
         val resourceLocation = cobblemonStat.resourceLocation
-        val stat = BuiltInRegistries.CUSTOM_STAT.get(resourceLocation)
+        val stat = BuiltInRegistries.CUSTOM_STAT.getValue(resourceLocation)
         if (stat == null) {
             Cobblemon.LOGGER.error("Could not find stat with id {}", resourceLocation)
         }
@@ -96,6 +96,6 @@ object CobblemonStats {
     }
 
     data class CobblemonStat(val path: String, val formatter: StatFormatter = StatFormatter.DEFAULT) {
-        val resourceLocation: ResourceLocation = ResourceLocation.fromNamespaceAndPath("cobblemon", path);
+        val resourceLocation: Identifier = Identifier.fromNamespaceAndPath("cobblemon", path);
     }
 }

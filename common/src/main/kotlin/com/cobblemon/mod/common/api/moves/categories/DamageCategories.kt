@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.api.moves.categories
 
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 object DamageCategories {
     private val allCategories = mutableListOf<DamageCategory>()
@@ -34,7 +34,7 @@ object DamageCategories {
     fun register(
         name: String,
         displayName: Component,
-        resourceLocation: ResourceLocation = cobblemonResource("textures/gui/categories.png"),
+        resourceLocation: Identifier = cobblemonResource("textures/gui/categories.png"),
         textureXMultiplier: Int
     ): DamageCategory {
         return DamageCategory(

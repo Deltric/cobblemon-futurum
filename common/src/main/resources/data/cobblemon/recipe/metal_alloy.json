@@ -6,12 +6,8 @@
         " I "
     ],
     "key": {
-        "I": {
-            "tag": "c:ingots/iron"
-        },
-        "S": {
-            "item": "cobblemon:thunder_stone"
-        }
+        "I": "#c:ingots/iron",
+        "S": "cobblemon:thunder_stone"
     },
     "result": {
         "id": "cobblemon:metal_alloy"

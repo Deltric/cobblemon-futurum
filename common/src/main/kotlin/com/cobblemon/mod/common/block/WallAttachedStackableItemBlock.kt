@@ -9,8 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.util.rotateShape
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.util.StringRepresentable
@@ -42,11 +40,6 @@ class WallAttachedStackableItemBlock(settings: Properties, val type: WallStackab
         val MAX_AMOUNT: Int = 8
         val AMOUNT: IntegerProperty = IntegerProperty.create("amount", 1, MAX_AMOUNT)
 
-        val CODEC: MapCodec<WallAttachedStackableItemBlock> = RecordCodecBuilder.mapCodec { it.group(
-            propertiesCodec(),
-            WallStackableItemBlockType.CODEC.fieldOf("type").forGetter(WallAttachedStackableItemBlock::type)
-        ).apply(it, ::WallAttachedStackableItemBlock) }
-
         val northShapeMap: Map<WallStackableItemBlockType, List<VoxelShape>> = mapOf(
             WallStackableItemBlockType.TAG to listOf(
                 Shapes.box(0.375, 0.25, 0.9375, 0.625, 0.6875, 1.0),
@@ -70,8 +63,6 @@ class WallAttachedStackableItemBlock(settings: Properties, val type: WallStackab
             .setValue(AMOUNT, 1)
             .setValue(WATERLOGGED, false))
     }
-
-    override fun codec(): MapCodec<WallAttachedStackableItemBlock> = CODEC
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         super.createBlockStateDefinition(builder)

@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.client.gui
 
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -28,27 +28,23 @@ class ExitButton(
         private val iconResource = cobblemonResource("textures/gui/common/back_button_icon.png")
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
-        blitk(
-            matrixStack = context.pose(),
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+        blitk(context = context,
             texture = buttonResource,
             x = x,
             y = y,
             width = WIDTH,
             height = HEIGHT,
             vOffset = if (isHovered(pMouseX.toDouble(), pMouseY.toDouble())) HEIGHT else 0,
-            textureHeight = HEIGHT * 2
-        )
+            textureHeight = HEIGHT * 2)
 
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = iconResource,
             x = (x + 7) / SCALE,
             y = (y + 4) / SCALE,
             width = 21,
             height = 11,
-            scale = SCALE
-        )
+            scale = SCALE)
     }
 
     override fun playDownSound(soundManager: SoundManager) {

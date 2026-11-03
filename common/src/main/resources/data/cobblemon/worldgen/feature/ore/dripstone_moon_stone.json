@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:ore",
+  "discard_chance_on_air_exposure": 0.0,
+  "size": 3,
+  "targets": [
+    {
+      "state": {
+        "id": "cobblemon:dripstone_moon_stone_ore"
+      },
+      "target": {
+        "predicate_type": "minecraft:tag_match",
+        "tag": "cobblemon:dripstone_replaceables"
+      }
+    }
+  ]
+}

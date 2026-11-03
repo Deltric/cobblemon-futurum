@@ -33,7 +33,7 @@ import com.cobblemon.mod.common.util.getDoubleOrNull
 import com.cobblemon.mod.common.util.getIntOrNull
 import com.cobblemon.mod.common.util.server
 import com.cobblemon.mod.common.util.toProperties
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import kotlin.random.Random
 
 object PokemonMoLangFunctions : AbstractMoLangFunctionHolder<Pokemon>() {
@@ -368,7 +368,7 @@ object PokemonMoLangFunctions : AbstractMoLangFunctionHolder<Pokemon>() {
             if (param is DoubleValue) {
                 pokemon.initializeMoveset(param == DoubleValue.ONE)
             } else {
-                val movesetBuilderId = ResourceLocation.parse(param.asString())
+                val movesetBuilderId = Identifier.parse(param.asString())
                 val movesetBuilder =
                     CobblemonMovesetBuilders.movesetBuilders[movesetBuilderId]
                         ?: run {

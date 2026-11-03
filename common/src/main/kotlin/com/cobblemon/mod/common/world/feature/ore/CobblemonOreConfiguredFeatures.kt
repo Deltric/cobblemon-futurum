@@ -11,7 +11,7 @@ package com.cobblemon.mod.common.world.feature.ore
 import com.cobblemon.mod.common.Cobblemon
 import net.minecraft.data.worldgen.features.FeatureUtils
 import net.minecraft.resources.ResourceKey
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature
+import net.minecraft.world.level.levelgen.feature.Feature
 
 object CobblemonOreConfiguredFeatures {
 
@@ -41,6 +41,6 @@ object CobblemonOreConfiguredFeatures {
     @JvmField
     val ORE_WATER_STONE = of("water_stone")
 
-    private fun of(id: String): ResourceKey<ConfiguredFeature<*, *>> = FeatureUtils.createKey("${Cobblemon.MODID}:ore/$id")
+    private fun of(id: String): ResourceKey<Feature> = FeatureUtils.createKey("${Cobblemon.MODID}:ore/$id")
 
 }

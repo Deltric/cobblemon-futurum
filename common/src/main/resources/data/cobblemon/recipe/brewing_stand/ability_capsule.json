@@ -1,11 +1,7 @@
 {
   "type": "cobblemon:brewing_stand",
-  "input": {
-    "item": "minecraft:dragon_breath"
-  },
-  "bottle": {
-    "item": "cobblemon:medicinal_brew"
-  },
+  "input": "minecraft:dragon_breath",
+  "bottle": "cobblemon:medicinal_brew",
   "result": {
     "id": "cobblemon:ability_capsule"
   }

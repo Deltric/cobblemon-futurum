@@ -8,13 +8,15 @@
 
 package com.cobblemon.mod.common.item
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.block.ApricornBlock
 import com.cobblemon.mod.common.block.ApricornSaplingBlock
-import net.minecraft.world.item.ItemNameBlockItem
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.block.state.BlockState
 
-class ApricornSeedItem(block: ApricornSaplingBlock, val apricornBlock: ApricornBlock) : ItemNameBlockItem(block, Properties()) {
+class ApricornSeedItem(properties: Properties, block: ApricornSaplingBlock, val apricornBlock: ApricornBlock) : BlockItem(block, properties) {
 
     // TODO (techdaan): ensure this is ported properly
     override fun getPlacementState(context: BlockPlaceContext): BlockState? {

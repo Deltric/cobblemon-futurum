@@ -10,19 +10,22 @@
           "name": "cobblemon:pc"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        },
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "cobblemon:pc",
-          "properties": {
-            "natural": "false",
-            "part": "bottom"
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:survives_explosion"
+          },
+          {
+            "type": "minecraft:match_block",
+            "blocks": "cobblemon:pc",
+            "state": {
+              "natural": "false",
+              "part": "bottom"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     {
       "rolls": 1.0,
@@ -31,27 +34,26 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 4
-              }
+              },
+              "type": "minecraft:set_count"
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "cobblemon:pc",
-          "properties": {
-            "natural": "true",
-            "part": "bottom"
-          }
+      "condition": {
+        "type": "minecraft:match_block",
+        "blocks": "cobblemon:pc",
+        "state": {
+          "natural": "true",
+          "part": "bottom"
         }
-      ]
+      }
     }
   ]
 }

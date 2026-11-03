@@ -8,13 +8,18 @@
 
 package com.cobblemon.mod.common.battles
 
-import com.cobblemon.mod.common.Cobblemon.LOGGER
 import com.cobblemon.mod.common.battles.runner.ShowdownService
-import net.minecraft.CrashReport
+import org.apache.logging.log4j.LogManager
 import java.util.*
 import java.util.concurrent.CountDownLatch
 
-class ShowdownThread : Thread("Cobblemon Showdown") {
+class ShowdownThread internal constructor(serviceProvider: () -> ShowdownService) : Thread("Cobblemon Showdown") {
+
+    constructor() : this({ ShowdownService.service })
+
+    private val logger = LogManager.getLogger("com.cobblemon.mod.common.Cobblemon")
+    private val service by lazy(serviceProvider)
+    @Volatile private var startupFailure: Throwable? = null
 
     private val latch = CountDownLatch(1)
 
@@ -23,23 +28,36 @@ class ShowdownThread : Thread("Cobblemon Showdown") {
     fun launch() {
         this.start()
         this.latch.await()
+        checkStartup()
         for (action in whenReady) {
-            action(ShowdownService.service)
+            action(service)
         }
     }
 
     fun queue(action: (ShowdownService) -> Unit) {
         if (this.latch.count == 0L) {
-            action(ShowdownService.service)
+            checkStartup()
+            action(service)
         } else {
             this.whenReady.add(action)
         }
     }
 
     override fun run() {
-        LOGGER.info("Starting showdown service...")
-        ShowdownService.service.openConnection()
-        LOGGER.info("Showdown has been started!")
-        this.latch.countDown()
+        try {
+            logger.info("Starting showdown service...")
+            service.openConnection()
+            logger.info("Showdown has been started!")
+        } catch (failure: Throwable) {
+            startupFailure = failure
+        } finally {
+            // Initialization errors must reach the launch thread instead of
+            // leaving Minecraft waiting forever for a dead worker.
+            this.latch.countDown()
+        }
+    }
+
+    private fun checkStartup() {
+        startupFailure?.let { throw IllegalStateException("Unable to start the Cobblemon Showdown service", it) }
     }
 }

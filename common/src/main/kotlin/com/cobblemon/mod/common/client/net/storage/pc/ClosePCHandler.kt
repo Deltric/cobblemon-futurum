@@ -21,11 +21,11 @@ import net.minecraft.client.Minecraft
  */
 object ClosePCHandler : ClientNetworkPacketHandler<ClosePCPacket> {
     override fun handle(packet: ClosePCPacket, client: Minecraft) {
-        if (client.screen !is PCGUI) {
+        if (client.gui.screen() !is PCGUI) {
             return
         }
 
-        val pc = client.screen as PCGUI
+        val pc = client.gui.screen() as PCGUI
         if (pc.pc.uuid != packet.storeID) {
             return
         }

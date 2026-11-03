@@ -19,13 +19,13 @@ import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import java.util.concurrent.CompletableFuture
 
 class TmArgumentType : ArgumentType<TechnicalMachine> {
 
     override fun parse(reader: StringReader): TechnicalMachine {
-        val resourceLocation = ResourceLocation.read(reader)
+        val resourceLocation = Identifier.read(reader)
         if (resourceLocation == null) {
             throw SimpleCommandExceptionType(INVALID_TM).createWithContext(reader)
         }

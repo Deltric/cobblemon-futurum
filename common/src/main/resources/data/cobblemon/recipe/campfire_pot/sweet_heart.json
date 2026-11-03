@@ -3,18 +3,10 @@
     "group": "sweet_heart",
     "category": "misc",
     "ingredients": [
-        {
-            "item": "cobblemon:eggant_berry"
-        },
-        {
-            "item": "minecraft:cocoa_beans"
-        },
-        {
-            "item": "minecraft:cocoa_beans"
-        },
-        {
-            "item": "minecraft:sugar"
-        }
+        "cobblemon:eggant_berry",
+        "minecraft:cocoa_beans",
+        "minecraft:cocoa_beans",
+        "minecraft:sugar"
     ],
     "result": {
         "id": "cobblemon:sweet_heart"

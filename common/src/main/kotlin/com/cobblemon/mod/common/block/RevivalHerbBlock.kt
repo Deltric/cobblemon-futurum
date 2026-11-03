@@ -23,7 +23,7 @@ import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.CropBlock
-import net.minecraft.world.level.block.FarmBlock
+import net.minecraft.world.level.block.FarmlandBlock
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BooleanProperty
@@ -55,7 +55,7 @@ class RevivalHerbBlock(settings: Properties) : CropBlock(settings), Mulchable {
         val floor = world.getBlockState(pos.below())
         val block = world.getBlockState(pos)
         // A bit of a copy pasta but we don't have access to the BlockState being attempted to be placed above on the canPlantOnTop
-        return (block.`is`(BlockTags.REPLACEABLE_BY_TREES) || block.`is`(BlockTags.AIR) || block.`is`(this)) && ((state.getValue(IS_WILD) && floor.`is`(BlockTags.DIRT)) || this.mayPlaceOn(floor, world, pos))
+        return (block.`is`(BlockTags.REPLACEABLE_BY_TREES) || block.`is`(BlockTags.AIR) || block.`is`(this)) && ((state.getValue(IS_WILD) && floor.`is`(BlockTags.SUBSTRATE_OVERWORLD)) || this.mayPlaceOn(floor, world, pos))
     }
 
     override fun getShape(
@@ -120,7 +120,7 @@ class RevivalHerbBlock(settings: Properties) : CropBlock(settings), Mulchable {
                 var blockState = level.getBlockState(ground.offset(x, 0, z))
                 if (blockState.`is`(Blocks.FARMLAND)) {
                     nearbyFarmLandBoost = 1.0F
-                    if (blockState.getValue(FarmBlock.MOISTURE) > 0) {
+                    if (blockState.getValue(FarmlandBlock.MOISTURE) > 0) {
                         nearbyFarmLandBoost = 3.0F
                     }
                 }
@@ -179,7 +179,6 @@ class RevivalHerbBlock(settings: Properties) : CropBlock(settings), Mulchable {
     }
 
     companion object {
-        val CODEC = simpleCodec(::RevivalHerbBlock)
 
         const val MIN_AGE = 0
         const val MAX_AGE = 8

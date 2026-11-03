@@ -19,16 +19,17 @@ import com.cobblemon.mod.common.client.render.models.blockbench.setPosition
 import com.cobblemon.mod.common.util.math.geometry.Axis
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING
 import net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT
 
-open class PokeSnackBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntityRenderer<PokeSnackBlockEntity> {
-    override fun render(blockEntity: PokeSnackBlockEntity, partialTick: Float, poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, packedOverlay: Int) {
+open class PokeSnackBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) : GeometryBlockEntityRenderer<PokeSnackBlockEntity>() {
+    override fun extractGeometry(blockEntity: PokeSnackBlockEntity, partialTick: Float, poseStack: PoseStack, bufferSource: ModelGeometry.Builder, packedLight: Int, packedOverlay: Int) {
         poseStack.pushPose()
 
         val facing = blockEntity.blockState.getValue(FACING)
@@ -41,7 +42,7 @@ open class PokeSnackBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context
         }
 
         poseStack.translate(0.5, 0.5, 0.5)
-        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(rotationAngle))
+        poseStack.rotate(com.mojang.math.Axis.YP.rotationDegrees(rotationAngle))
         poseStack.translate(-0.5, -0.5, -0.5)
 
         val hasCandle = renderCandle(blockEntity, poseStack, bufferSource, packedLight, packedOverlay)
@@ -50,7 +51,7 @@ open class PokeSnackBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context
         poseStack.popPose()
     }
 
-    fun renderCandle(blockEntity: PokeSnackBlockEntity, poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, packedOverlay: Int): Boolean {
+    fun renderCandle(blockEntity: PokeSnackBlockEntity, poseStack: PoseStack, bufferSource: ModelGeometry.Builder, packedLight: Int, packedOverlay: Int): Boolean {
         val candleId = blockEntity.blockState.getValue(CANDLE)
 
         if (candleId > 0) {
@@ -58,7 +59,7 @@ open class PokeSnackBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context
 
             poseStack.pushPose()
             poseStack.translate(0.0, PokeSnackBlock.CAKE_HEIGHT, 0.0)
-            Minecraft.getInstance().blockRenderer.renderSingleBlock(
+            NativeModelGeometry.extractBlock(
                 candleBlock.defaultBlockState().setValue(LIT, blockEntity.blockState.getValue(LIT)),
                 poseStack,
                 bufferSource,
@@ -71,10 +72,10 @@ open class PokeSnackBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context
         return false
     }
 
-    fun renderBerries(blockEntity: PokeSnackBlockEntity, poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, packedOverlay: Int, hasCandle: Boolean) {
-        // RenderType.entityCutoutNoCull for shading, as shading is absent in RenderType CobblemonRenderLayers.BERRY_LAYER
+    fun renderBerries(blockEntity: PokeSnackBlockEntity, poseStack: PoseStack, bufferSource: ModelGeometry.Builder, packedLight: Int, packedOverlay: Int, hasCandle: Boolean) {
+        // RenderTypes.entityCutoutNoCull for shading, as shading is absent in RenderType CobblemonRenderLayers.BERRY_LAYER
         val buffer = bufferSource.getBuffer(
-            RenderType.entityCutoutNoCull(BERRY_SPRITE_ATLAS.textureAtlas.location())
+            RenderTypes.entityCutout(BERRY_SPRITE_ATLAS.textureAtlas.location())
         )
 
         val berryIngredients = (blockEntity.ingredientComponent?.ingredientIds?.take(3) ?: listOf())

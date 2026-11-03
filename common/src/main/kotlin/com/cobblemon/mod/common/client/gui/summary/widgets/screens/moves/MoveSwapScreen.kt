@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.summary.widgets.screens.moves
 
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.CobblemonNetwork
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
@@ -26,7 +27,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.toRGB
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class MoveSwapScreen(
     x: Int,
@@ -56,45 +57,33 @@ class MoveSwapScreen(
     class MoveSlot(val pane: MoveSwapScreen, val move: MoveTemplate?, val ppRaisedStages: Int, pokemon: Pokemon) : Entry<MoveSlot>() {
         override fun getNarration() = move?.displayName ?: lang("ui.moves.forget")
         val elementalType = move?.getEffectiveElementalType(pokemon) ?: ElementalTypes.NORMAL
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            rowTop: Int,
-            rowLeft: Int,
-            rowWidth: Int,
-            rowHeight: Int,
-            mouseX: Int,
-            mouseY: Int,
-            isHovered: Boolean,
-            partialTicks: Float
-        ) {
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, isHovered: Boolean, partialTicks: Float) {
+            val rowTop = this.contentY
+            val rowLeft = this.contentX
+            val rowWidth = this.width
             val matrices = context.pose()
             val tweakedRowTop = rowTop - (SLOT_SPACING / 2) + 1
             if (move != null) {
                 val rgb = elementalType.hue.toRGB()
 
-                blitk(
-                        matrixStack = matrices,
-                        texture = moveResource,
-                        x = rowLeft,
-                        y = tweakedRowTop,
-                        height = SLOT_HEIGHT,
-                        width = rowWidth,
-                        vOffset = if (isHovered) SLOT_HEIGHT else 0,
-                        textureHeight = SLOT_HEIGHT * 2,
-                        red = rgb.first,
-                        green = rgb.second,
-                        blue = rgb.third
-                )
+                blitk(context = context,
+            texture = moveResource,
+            x = rowLeft,
+            y = tweakedRowTop,
+            height = SLOT_HEIGHT,
+            width = rowWidth,
+            vOffset = if (isHovered) SLOT_HEIGHT else 0,
+            textureHeight = SLOT_HEIGHT * 2,
+            red = rgb.first,
+            green = rgb.second,
+            blue = rgb.third)
 
-                blitk(
-                        matrixStack = matrices,
-                        texture = moveOverlayResource,
-                        x = rowLeft,
-                        y = tweakedRowTop,
-                        height = SLOT_HEIGHT,
-                        width = rowWidth
-                )
+                blitk(context = context,
+            texture = moveOverlayResource,
+            x = rowLeft,
+            y = tweakedRowTop,
+            height = SLOT_HEIGHT,
+            width = rowWidth)
 
                 // Type Icon
                 TypeIcon(
@@ -120,35 +109,29 @@ class MoveSwapScreen(
                 )
 
                 // Move icons
-                blitk(
-                        matrixStack = matrices,
-                        texture = MovesWidget.movesPowerIconResource,
-                        x= (rowLeft + 10) / MovesWidget.SCALE,
-                        y = (tweakedRowTop + 11) / MovesWidget.SCALE,
-                        width = MovesWidget.MOVE_ICON_SIZE,
-                        height = MovesWidget.MOVE_ICON_SIZE,
-                        scale = MovesWidget.SCALE
-                )
+                blitk(context = context,
+            texture = MovesWidget.movesPowerIconResource,
+            x= (rowLeft + 10) / MovesWidget.SCALE,
+            y = (tweakedRowTop + 11) / MovesWidget.SCALE,
+            width = MovesWidget.MOVE_ICON_SIZE,
+            height = MovesWidget.MOVE_ICON_SIZE,
+            scale = MovesWidget.SCALE)
 
-                blitk(
-                        matrixStack = matrices,
-                        texture = MovesWidget.movesAccuracyIconResource,
-                        x= (rowLeft + 30) / MovesWidget.SCALE,
-                        y = (tweakedRowTop + 11) / MovesWidget.SCALE,
-                        width = MovesWidget.MOVE_ICON_SIZE,
-                        height = MovesWidget.MOVE_ICON_SIZE,
-                        scale = MovesWidget.SCALE
-                )
+                blitk(context = context,
+            texture = MovesWidget.movesAccuracyIconResource,
+            x= (rowLeft + 30) / MovesWidget.SCALE,
+            y = (tweakedRowTop + 11) / MovesWidget.SCALE,
+            width = MovesWidget.MOVE_ICON_SIZE,
+            height = MovesWidget.MOVE_ICON_SIZE,
+            scale = MovesWidget.SCALE)
 
-                blitk(
-                        matrixStack = matrices,
-                        texture = MovesWidget.movesEffectIconResource,
-                        x= (rowLeft + 53.5) / MovesWidget.SCALE,
-                        y = (tweakedRowTop + 11) / MovesWidget.SCALE,
-                        width = MovesWidget.MOVE_ICON_SIZE,
-                        height = MovesWidget.MOVE_ICON_SIZE,
-                        scale = MovesWidget.SCALE
-                )
+                blitk(context = context,
+            texture = MovesWidget.movesEffectIconResource,
+            x= (rowLeft + 53.5) / MovesWidget.SCALE,
+            y = (tweakedRowTop + 11) / MovesWidget.SCALE,
+            width = MovesWidget.MOVE_ICON_SIZE,
+            height = MovesWidget.MOVE_ICON_SIZE,
+            scale = MovesWidget.SCALE)
 
                 val movePower = if (move.power.toInt() > 0) move.power.toInt().toString().text() else "—".text()
                 drawScaledText(
@@ -189,31 +172,29 @@ class MoveSwapScreen(
                 )
             } else {
                 // Forget move slot
-                blitk(
-                        matrixStack = matrices,
-                        texture = forgetMoveOverlayResource,
-                        x = rowLeft - 9,
-                        y = tweakedRowTop,
-                        height = SLOT_HEIGHT,
-                        width = 100,
-                        vOffset = if (isHovered) SLOT_HEIGHT else 0,
-                        textureHeight = SLOT_HEIGHT * 2,
-                )
-                blitk(
-                        matrixStack = matrices,
-                        texture = forgetMoveIconResource,
-                        x = rowLeft + rowWidth / 2 - 7,
-                        y = tweakedRowTop + SLOT_HEIGHT / 2 - 4,
-                        height = 7,
-                        width = 7,
-                        vOffset = if (isHovered) 7 else 0,
-                        textureHeight = 14,
-                )
+                blitk(context = context,
+            texture = forgetMoveOverlayResource,
+            x = rowLeft - 9,
+            y = tweakedRowTop,
+            height = SLOT_HEIGHT,
+            width = 100,
+            vOffset = if (isHovered) SLOT_HEIGHT else 0,
+            textureHeight = SLOT_HEIGHT * 2)
+                blitk(context = context,
+            texture = forgetMoveIconResource,
+            x = rowLeft + rowWidth / 2 - 7,
+            y = tweakedRowTop + SLOT_HEIGHT / 2 - 4,
+            height = 7,
+            width = 7,
+            vOffset = if (isHovered) 7 else 0,
+            textureHeight = 14)
             }
 
         }
 
-        override fun mouseClicked(d: Double, e: Double, i: Int): Boolean {
+        override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+            val d = event.x()
+            val e = event.y()
             if (isMouseOver(d, e)) {
                 val pokemon = pane.movesWidget.summary.selectedPokemon
                 val isParty = pokemon in CobblemonClient.storage.party

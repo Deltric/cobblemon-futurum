@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.util.adapters
 
 import com.google.gson.*
 import net.minecraft.core.Registry
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import java.lang.reflect.Type
 
 /**
@@ -22,14 +22,14 @@ import java.lang.reflect.Type
 class RegistryElementAdapter<T : Any>(val registryProvider: () -> Registry<T>) : JsonDeserializer<T>, JsonSerializer<T> {
 
     override fun deserialize(jElement: JsonElement, type: Type, context: JsonDeserializationContext): T {
-        val identifier = context.deserialize<ResourceLocation>(jElement, ResourceLocation::class.java)
+        val identifier = context.deserialize<Identifier>(jElement, Identifier::class.java)
         val registry = this.registryProvider()
-        return registry.get(identifier) ?: throw IllegalArgumentException("Cannot resolve element '$identifier' from ${registry.key().location()}")
+        return registry.getValue(identifier) ?: throw IllegalArgumentException("Cannot resolve element '$identifier' from ${registry.key().identifier()}")
     }
 
     override fun serialize(element: T, type: Type, context: JsonSerializationContext): JsonElement {
         val registry = this.registryProvider()
-        val identifier = registry.getKey(element) ?: throw IllegalArgumentException("Cannot resolve the identifier from the registry ${registry.key().location()} for $element")
+        val identifier = registry.getKey(element) ?: throw IllegalArgumentException("Cannot resolve the identifier from the registry ${registry.key().identifier()} for $element")
         return JsonPrimitive(identifier.toString())
     }
 

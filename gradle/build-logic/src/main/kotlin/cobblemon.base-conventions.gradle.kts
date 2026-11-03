@@ -16,8 +16,8 @@ plugins {
     id("java")
     id("java-library")
 
-    id("org.cadixdev.licenser")
-    id("dev.architectury.loom")
+    id("net.neoforged.licenser")
+    id("dev.architectury.loom-no-remap")
     id("architectury-plugin")
     kotlin("jvm")
 }
@@ -28,11 +28,19 @@ description = rootProject.description
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(rootProject.property("java_version").toString().toInt()))
     }
 }
 
 repositories {
+    // Temporary porting input until JEI publishes its 26.3 artifacts.
+    // Use actual built jars from the independently ported checkout, never 1.21.1 APIs.
+    providers.gradleProperty("jeiCheckout").orNull?.let { checkout ->
+        flatDir {
+            dirs("$checkout/Common/build/libs", "$checkout/Fabric/build/libs", "$checkout/NeoForge/build/libs")
+            content { includeGroup("mezz.jei") }
+        }
+    }
     mavenCentral()
     //JEI
     maven("https://maven.blamejared.com/")
@@ -40,7 +48,7 @@ repositories {
 }
 
 license {
-    header(rootProject.file("HEADER"))
+    header.set(resources.text.fromFile(rootProject.file("HEADER")))
 }
 
 architectury {
@@ -49,27 +57,22 @@ architectury {
 }
 
 loom {
-    silentMojangMappingsLicense()
     accessWidenerPath.set(project(":common").file(ACCESS_WIDENER))
 }
 
 dependencies {
     minecraft("net.minecraft:minecraft:${rootProject.property("mc_version")}")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21:${rootProject.property("parchment_version")}")
-    })
 }
 
 tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.release.set(21)
+        options.release.set(rootProject.property("java_version").toString().toInt())
         options.compilerArgs.add("-Xlint:-processing,-classfile,-serial")
     }
 
     withType<KotlinCompile> {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
+        compilerOptions.jvmTarget.set(JvmTarget.fromTarget(rootProject.property("java_version").toString()))
     }
 
     withType<Jar> {

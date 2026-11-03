@@ -2,7 +2,9 @@
   "fabric:load_conditions": [
     {
       "condition": "fabric:all_mods_loaded",
-      "values": ["botanypots"]
+      "values": [
+        "botanypots"
+      ]
     }
   ],
   "neoforge:conditions": [
@@ -19,7 +21,7 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:saccharine_log",
-          "functions": [
+          "modifier": [
             {
               "add": false,
               "count": {
@@ -27,7 +29,7 @@
                 "max": 4,
                 "min": 1
               },
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count"
             }
           ]
         }
@@ -39,13 +41,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ],
-          "name": "cobblemon:saccharine_sapling"
+          "name": "cobblemon:saccharine_sapling",
+          "condition": {
+            "chance": 0.05,
+            "type": "minecraft:random_chance"
+          }
         }
       ],
       "rolls": 1.0
@@ -55,13 +55,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ],
-          "name": "minecraft:apple"
+          "name": "minecraft:apple",
+          "condition": {
+            "chance": 0.05,
+            "type": "minecraft:random_chance"
+          }
         }
       ],
       "rolls": 1.0
@@ -71,15 +69,14 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "conditions": [
-            {
-              "condition": "minecraft:match_tool",
-              "predicate": {
-                "items": "minecraft:shears"
-              }
-            }
-          ],
-          "functions": [
+          "name": "cobblemon:saccharine_leaves",
+          "condition": {
+            "predicate": {
+              "items": "minecraft:shears"
+            },
+            "type": "minecraft:match_tool"
+          },
+          "modifier": [
             {
               "add": false,
               "count": {
@@ -87,10 +84,9 @@
                 "max": 3,
                 "min": 1
               },
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count"
             }
-          ],
-          "name": "cobblemon:saccharine_leaves"
+          ]
         }
       ],
       "rolls": 1.0

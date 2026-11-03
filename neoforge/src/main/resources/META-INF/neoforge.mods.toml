@@ -1,5 +1,5 @@
-modLoader="kotlinforforge" #mandatory
-loaderVersion="[5.10,)" # checked against the installed kotlin for forge version
+modLoader="javafml" # Kotlin entrypoint uses JavaFML constructor injection
+loaderVersion="[12,)" # NeoForge 26.3 uses FancyModLoader 12
 license="MPL2.0"
 issueTrackerURL="https://gitlab.com/cable-mc/cobblemon/-/issues"
 
@@ -26,13 +26,13 @@ config = "mixins.cobblemon-common.json"
 
 [[dependencies.cobblemon]]
 modId="minecraft"
-mandatory=true
+type="required"
 versionRange="[${minecraft_version}]"
 
 [[dependencies.cobblemon]]
 modId="neoforge" #mandatory
-mandatory=true #mandatory
-versionRange="[21,)" #mandatory
+type="required"
+versionRange="[${neoforge_version},)"
 
 # this is to lock cobblemon into whatever java version that minecraft uses
 # we do this as often graal crashes when running on newer versions

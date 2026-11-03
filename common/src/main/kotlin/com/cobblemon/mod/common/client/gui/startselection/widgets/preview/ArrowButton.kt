@@ -11,17 +11,17 @@ package com.cobblemon.mod.common.client.gui.startselection.widgets.preview
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class ArrowButton(
     pX: Int, pY: Int,
     pWidth: Int, pHeight: Int,
     right: Boolean,
-    private val texture: ResourceLocation = if (right) RIGHT_ARROW_BUTTON_RESOURCE else LEFT_ARROW_BUTTON_RESOURCE,
+    private val texture: Identifier = if (right) RIGHT_ARROW_BUTTON_RESOURCE else LEFT_ARROW_BUTTON_RESOURCE,
     onPress: OnPress
 ) : Button(pX, pY, pWidth, pHeight, Component.empty(), onPress, DEFAULT_NARRATION), CobblemonRenderable {
 
@@ -37,23 +37,25 @@ class ArrowButton(
         return
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height
         if (isHovered) {
-            blitk(
-                matrixStack = context.pose(),
-                x = x + 2.4F, y = y - 0.0F,
-                texture = texture,
-                width = ARROW_BUTTON_WIDTH, height = ARROW_BUTTON_HEIGHT,
-                red = 0.75f, green = 0.75f, blue = 0.75f
-            )
+            blitk(context = context,
+            x = x + 2.4F,
+            y = y - 0.0F,
+            texture = texture,
+            width = ARROW_BUTTON_WIDTH,
+            height = ARROW_BUTTON_HEIGHT,
+            red = 0.75f,
+            green = 0.75f,
+            blue = 0.75f)
         } else {
-            blitk(
-                matrixStack = context.pose(),
-                x = x + 2.4F, y = y - 0.0F,
-                texture = texture,
-                width = ARROW_BUTTON_WIDTH, height = ARROW_BUTTON_HEIGHT
-            )
+            blitk(context = context,
+            x = x + 2.4F,
+            y = y - 0.0F,
+            texture = texture,
+            width = ARROW_BUTTON_WIDTH,
+            height = ARROW_BUTTON_HEIGHT)
         }
     }
 }

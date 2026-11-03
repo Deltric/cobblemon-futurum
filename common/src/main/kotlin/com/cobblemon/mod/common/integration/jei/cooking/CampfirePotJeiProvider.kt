@@ -9,26 +9,34 @@
 package com.cobblemon.mod.common.integration.jei.cooking
 
 import com.cobblemon.mod.common.CobblemonItems
-import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.cobblemon.mod.common.integration.jei.CobblemonJeiProvider
 import mezz.jei.api.registration.IRecipeCatalystRegistration
 import mezz.jei.api.registration.IRecipeCategoryRegistration
 import mezz.jei.api.registration.IRecipeRegistration
-import net.minecraft.client.Minecraft
+import com.cobblemon.mod.common.client.cooking.ClientCookingRecipes
+import com.cobblemon.mod.common.item.crafting.CookingPotRecipeBase
+import mezz.jei.api.recipe.IRecipeManager
 
 class CampfirePotJeiProvider : CobblemonJeiProvider {
     override fun registerCategory(registration: IRecipeCategoryRegistration) {
         registration.addRecipeCategories(CampfirePotRecipeCategory(registration))
     }
 
+    private var displayedRecipes: List<CookingPotRecipeBase> = emptyList()
+
+    private fun currentRecipes() = ClientCookingRecipes.recipes.mapNotNull { it.value as? CookingPotRecipeBase }
+
     override fun registerRecipes(registration: IRecipeRegistration) {
-        val recipeManger = Minecraft.getInstance().level?.recipeManager ?: throw IllegalStateException("Recipe manager not found")
+        displayedRecipes = currentRecipes()
+        registration.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, displayedRecipes)
+    }
 
-        val shapelessRecipes = recipeManger.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_SHAPELESS).map { it.value }
-        val cookingRecipes = recipeManger.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_COOKING).map { it.value }
-
-        registration.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, shapelessRecipes)
-        registration.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, cookingRecipes)
+    override fun refreshRecipes(manager: IRecipeManager) {
+        val updated = currentRecipes()
+        if (updated == displayedRecipes) return
+        manager.hideRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, displayedRecipes)
+        displayedRecipes = updated
+        manager.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, displayedRecipes)
     }
 
     override fun registerRecipeCatalsysts(registration: IRecipeCatalystRegistration) {

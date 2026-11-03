@@ -1,47 +1,49 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "criteria": {
-    "has_glass": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:glass"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "cobblemon:recipes/blocks",
+    "criteria": {
+        "has_glass": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:glass"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_iron_ingot": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:iron_ingot"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:pc"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_iron_ingot": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:iron_ingot"
-            ]
-          }
+    "requirements": [
+        [
+            "has_glass",
+            "has_iron_ingot",
+            "has_the_recipe"
         ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:pc"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:pc"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_glass",
-      "has_iron_ingot",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:pc"
-    ]
-  }
 }

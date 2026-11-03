@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.client.gui.habitat
 
+import com.cobblemon.mod.common.api.gui.textColour
+import net.minecraft.client.input.MouseButtonEvent
 import com.cobblemon.mod.common.api.habitats.HabitatPool
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
@@ -15,20 +17,20 @@ import com.cobblemon.mod.common.util.asTranslated
 import com.cobblemon.mod.common.util.lang
 import java.awt.Color
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class HabitatPoolSelectionGUI(
     private val isActivated: Boolean,
-    private val pools: Map<ResourceLocation, HabitatPool>,
-    private val selectedPoolId: ResourceLocation?,
+    private val pools: Map<Identifier, HabitatPool>,
+    private val selectedPoolId: Identifier?,
     private val parentScreen: Screen,
-    private val onSelect: (ResourceLocation?) -> Unit
+    private val onSelect: (Identifier?) -> Unit
 ) : Screen(lang("ui.edit.habitat.pool.select")), CobblemonRenderable {
     private val headerHeight = 24
     private val footerHeight = 44
@@ -55,32 +57,32 @@ class HabitatPoolSelectionGUI(
                 selectedPoolId = selectedPoolId,
                 onSelect = { poolId ->
                     onSelect(poolId)
-                    Minecraft.getInstance().setScreen(parentScreen)
+                    Minecraft.getInstance().gui.setScreen(parentScreen)
                 }
             )
         )
 
         addRenderableWidget(
             Button.builder(lang("ui.edit.habitat.pool.back")) {
-                Minecraft.getInstance().setScreen(parentScreen)
+                Minecraft.getInstance().gui.setScreen(parentScreen)
             }.bounds(10, height - (backButtonHeight + backButtonBottomMargin), listWidth, backButtonHeight).build()
         )
     }
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(0, 0, width, height, Color(0, 0, 0, 100).rgb)
         guiGraphics.fill(0, 0, width, headerHeight, Color(0, 0, 0, 150).rgb)
         guiGraphics.fill(0, getFooterTop(), width, height, Color(0, 0, 0, 150).rgb)
-        super.render(guiGraphics, mouseX, mouseY, partialTick)
-        guiGraphics.drawCenteredString(font, title, width / 2, 8, 0xFFFFFF)
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
+        guiGraphics.centeredText(font, title, width / 2, 8, textColour(0xFFFFFF))
     }
 
     private fun getFooterTop(): Int {
         return height - footerHeight
     }
 
-    private fun getOptions(): List<Pair<ResourceLocation?, String>> {
-        val options = mutableListOf<Pair<ResourceLocation?, String>>()
+    private fun getOptions(): List<Pair<Identifier?, String>> {
+        val options = mutableListOf<Pair<Identifier?, String>>()
         options.add(null to I18n.get("cobblemon.ui.edit.habitat.pool.custom"))
         val pools = pools.entries.map { it.key to I18n.get(it.value.name) }.sortedBy { it.second.lowercase() }
         options.addAll(pools)
@@ -92,9 +94,9 @@ class HabitatPoolSelectionGUI(
         private val top: Int,
         private val listWidth: Int,
         private val listHeight: Int,
-        options: List<Pair<ResourceLocation?, String>>,
-        selectedPoolId: ResourceLocation?,
-        private val onSelect: (ResourceLocation?) -> Unit
+        options: List<Pair<Identifier?, String>>,
+        selectedPoolId: Identifier?,
+        private val onSelect: (Identifier?) -> Unit
     ) : ObjectSelectionList<PoolList.PoolEntry>(
         Minecraft.getInstance(),
         listWidth,
@@ -112,37 +114,30 @@ class HabitatPoolSelectionGUI(
             setSelected(children().firstOrNull { it.poolId == selectedPoolId })
         }
 
-        override fun renderListBackground(guiGraphics: GuiGraphics) {}
+        override fun extractListBackground(guiGraphics: GuiGraphicsExtractor) {}
 
         override fun getRowWidth(): Int {
             return listWidth - 8
         }
 
-        override fun getScrollbarPosition(): Int {
+        override fun scrollBarX(): Int {
             return left + listWidth - 6
         }
 
         private class PoolEntry(
-            val poolId: ResourceLocation?,
+            val poolId: Identifier?,
             private val poolName: String,
-            private val onSelect: (ResourceLocation?) -> Unit
+            private val onSelect: (Identifier?) -> Unit
         ) : ObjectSelectionList.Entry<PoolEntry>() {
-            override fun render(
-                guiGraphics: GuiGraphics,
-                index: Int,
-                rowTop: Int,
-                rowLeft: Int,
-                rowWidth: Int,
-                rowHeight: Int,
-                mouseX: Int,
-                mouseY: Int,
-                hovered: Boolean,
-                partialTick: Float
-            ) {
-                guiGraphics.drawString(Minecraft.getInstance().font, poolName.asTranslated(), rowLeft + 4, rowTop + 6, 0xFFFFFF)
+            override fun extractContent(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, hovered: Boolean, partialTick: Float) {
+                val rowTop = this.contentY
+                val rowLeft = this.contentX
+                guiGraphics.text(Minecraft.getInstance().font, poolName.asTranslated(), rowLeft + 4, rowTop + 6, textColour(0xFFFFFF))
             }
 
-            override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+            override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+                val mouseX = event.x()
+                val mouseY = event.y()
                 if (!isMouseOver(mouseX, mouseY)) {
                     return false
                 }

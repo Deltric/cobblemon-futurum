@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "entries": [
+      {
+        "threshold": 2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/shalour_sable"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "cobblemon:item/lumiose_galette"
+    }
+  }
+}

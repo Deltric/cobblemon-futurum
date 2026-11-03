@@ -8,11 +8,9 @@
 
 package com.cobblemon.mod.common.block.entity
 
-import com.cobblemon.mod.common.CobblemonBlockEntities
+import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 
-class SweetIncenseBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(
-    null // CobblemonBlockEntities.INCENSE_SWEET // TODO after 1.7
-    , pos, state)
+class SweetIncenseBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: BlockState) : BlockEntity(type, pos, state)

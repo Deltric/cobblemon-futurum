@@ -19,7 +19,7 @@ object OpenBehaviourEditorHandler : ClientNetworkPacketHandler<OpenBehaviourEdit
     override fun handle(packet: OpenBehaviourEditorPacket, client: Minecraft) {
         val entity = client.level?.getEntity(packet.entityId) as? MoLangScriptingEntity
         if (entity != null && entity is LivingEntity) {
-            client.setScreen(BehaviourEditorScreen(entity, packet.appliedPresets.toMutableSet()))
+            client.gui.setScreen(BehaviourEditorScreen(entity, packet.appliedPresets.toMutableSet()))
         }
     }
 }

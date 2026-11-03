@@ -45,7 +45,7 @@ class BipedWalkAnimation(
     )
 
     override fun setupAnim(context: RenderContext, model: PosableModel, state: PosableState, limbSwing: Float, limbSwingAmount: Float, ageInTicks: Float, headYaw: Float, headPitch: Float, intensity: Float) {
-        rightLeg?.addRotation(X_AXIS, Mth.cos(limbSwing * periodMultiplier + Math.PI.toFloat()) * limbSwingAmount * amplitudeMultiplier * intensity)
-        leftLeg?.addRotation(X_AXIS, Mth.cos(limbSwing * periodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
+        rightLeg?.addRotation(X_AXIS, kotlin.math.cos(limbSwing * periodMultiplier + Math.PI.toFloat()) * limbSwingAmount * amplitudeMultiplier * intensity)
+        leftLeg?.addRotation(X_AXIS, kotlin.math.cos(limbSwing * periodMultiplier) * limbSwingAmount * amplitudeMultiplier * intensity)
     }
 }

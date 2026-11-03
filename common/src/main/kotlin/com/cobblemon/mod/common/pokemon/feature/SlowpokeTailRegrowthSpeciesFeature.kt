@@ -37,7 +37,7 @@ class SlowpokeTailRegrowthSpeciesFeature(var regrowthSeconds: Int = 0) : Species
     }
 
     override fun loadFromNBT(pokemonNBT: CompoundTag): SpeciesFeature {
-        regrowthSeconds = pokemonNBT.getInt(DataKeys.TAIL_REGROWTH_SECONDS)
+        regrowthSeconds = pokemonNBT.getIntOr(DataKeys.TAIL_REGROWTH_SECONDS, 0)
         return this
     }
 
@@ -71,7 +71,7 @@ class SlowpokeTailRegrowthSpeciesFeature(var regrowthSeconds: Int = 0) : Species
 
     fun onShear(pokemonEntity: PokemonEntity) {
         this.regrowthSeconds = CobblemonMechanics.slowpokeTails.regrowthSeconds
-        val itemEntity = pokemonEntity.spawnAtLocation(CobblemonItems.TASTY_TAIL) ?: return
+        val itemEntity = pokemonEntity.spawnAtLocation(pokemonEntity.level() as? ServerLevel ?: return, CobblemonItems.TASTY_TAIL) ?: return
         pokemonEntity.pokemon.updateAspects()
         pokemonEntity.pokemon.markFeatureDirty(this)
         pokemonEntity.jitterDropItem(itemEntity)

@@ -6,110 +6,96 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "name": "cobblemon:spell_tag",
+          "modifier": [
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "2"
-                  }
-                }
-              ],
               "count": 2.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "2"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "3"
-                  }
-                }
-              ],
               "count": 3.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "3"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "4"
-                  }
-                }
-              ],
               "count": 4.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "4"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "5"
-                  }
-                }
-              ],
               "count": 5.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "5"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "6"
-                  }
-                }
-              ],
               "count": 6.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "6"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "7"
-                  }
-                }
-              ],
               "count": 7.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "7"
+                }
+              }
             },
             {
               "add": false,
-              "conditions": [
-                {
-                  "block": "cobblemon:spell_tag",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "amount": "8"
-                  }
-                }
-              ],
               "count": 8.0,
-              "function": "minecraft:set_count"
+              "type": "minecraft:set_count",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "cobblemon:spell_tag",
+                "state": {
+                  "amount": "8"
+                }
+              }
             },
             {
-              "function": "minecraft:explosion_decay"
+              "type": "minecraft:explosion_decay"
             }
-          ],
-          "name": "cobblemon:spell_tag"
+          ]
         }
       ],
       "rolls": 1.0

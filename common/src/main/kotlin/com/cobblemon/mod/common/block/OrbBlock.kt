@@ -9,8 +9,6 @@
 package com.cobblemon.mod.common.block
 
 import com.cobblemon.mod.common.util.rotateShape
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.BlockGetter
@@ -24,9 +22,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 
 class OrbBlock(properties: Properties) : SixFaceRotationalBlock(properties) {
     companion object {
-        val CODEC: MapCodec<OrbBlock> = RecordCodecBuilder.mapCodec {
-            it.group(propertiesCodec()).apply(it, ::OrbBlock)
-        }
 
         val FLOOR_NORTH = Shapes.box(0.3125, 0.0, 0.3125, 0.6875, 0.375, 0.6875)
         val WALL_NORTH = Shapes.box(0.3125, 0.3125, 0.625, 0.6875, 0.6875, 1.0)
@@ -40,8 +35,6 @@ class OrbBlock(properties: Properties) : SixFaceRotationalBlock(properties) {
             .setValue(WATERLOGGED, false)
         )
     }
-
-    override fun codec(): MapCodec<OrbBlock> = CODEC
 
     override fun getShape(state: BlockState, blockGetter: BlockGetter, pos: BlockPos, collisionContext: CollisionContext): VoxelShape {
         val direction = state.getValue(FACING)

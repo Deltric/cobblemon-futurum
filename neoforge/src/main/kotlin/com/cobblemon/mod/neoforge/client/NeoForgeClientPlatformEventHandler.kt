@@ -15,18 +15,15 @@ import com.cobblemon.mod.common.platform.events.PlatformEvents
 import com.cobblemon.mod.common.platform.events.RenderEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
-import net.neoforged.api.distmarker.Dist
-import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent
 
 
-@OnlyIn(Dist.CLIENT)
 object NeoForgeClientPlatformEventHandler {
 
     fun register() {
@@ -71,22 +68,12 @@ object NeoForgeClientPlatformEventHandler {
     }
 
     @SubscribeEvent
-    fun onRenderLevelStageEvent(event: RenderLevelStageEvent) {
-        val stage = when (event.stage) {
-            RenderLevelStageEvent.Stage.AFTER_PARTICLES -> RenderEvent.Stage.TRANSLUCENT
-            else -> return
-        }
-
-        PlatformEvents.RENDER.post(
-            RenderEvent(
-                stage = stage,
-                levelRenderer = event.levelRenderer,
-                poseStack = event.poseStack,
-                modelViewMatrix = event.modelViewMatrix,
-                projectionMatrix = event.projectionMatrix,
-                tickCounter = event.partialTick,
-                camera = event.camera
-            )
-        )
+    fun onSubmitCustomGeometry(event: SubmitCustomGeometryEvent) {
+        PlatformEvents.RENDER.post(RenderEvent(
+            stage = RenderEvent.Stage.SUBMIT,
+            poseStack = event.poseStack,
+            collector = event.submitNodeCollector,
+            levelState = event.levelRenderState
+        ))
     }
 }

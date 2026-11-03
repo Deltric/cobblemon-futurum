@@ -536,7 +536,9 @@ open class ErroredBattleStart(
     }
 
     fun sendTo(entity: Entity, transformer: (MutableComponent) -> (MutableComponent) = { it }) {
-        errors.forEach { entity.sendSystemMessage(transformer(it.getMessageFor(entity))) }
+        if (entity is net.minecraft.world.entity.player.Player) {
+            errors.forEach { entity.sendSystemMessage(transformer(it.getMessageFor(entity))) }
+        }
     }
 
     inline fun <reified T : BattleStartError> ifHasError(action: () -> Unit): ErroredBattleStart {

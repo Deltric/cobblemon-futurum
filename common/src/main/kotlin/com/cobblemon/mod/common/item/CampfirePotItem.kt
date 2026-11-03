@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.item
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.block.campfirepot.CampfirePotColor
 import com.cobblemon.mod.common.CobblemonSounds
@@ -23,7 +25,7 @@ import net.minecraft.world.level.block.CampfireBlock
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.entity.CampfireBlockEntity
 
-class CampfirePotItem(block: Block, val color: CampfirePotColor): BlockItem(block, Properties()) {
+class CampfirePotItem(properties: Properties, block: Block, val color: CampfirePotColor): BlockItem(block, properties.useBlockDescriptionPrefix().overrideDescription(block.descriptionId)) {
 
     override fun useOn(context: UseOnContext): InteractionResult {
         val world = context.level

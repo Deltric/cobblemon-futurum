@@ -8,20 +8,20 @@
 
 package com.cobblemon.mod.common.item.interactive
 
+import net.minecraft.world.item.Item.Properties
+
 import com.cobblemon.mod.common.CobblemonItemComponents
 import net.minecraft.network.chat.Component
-import net.minecraft.sounds.SoundEvent
-import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.food.FoodProperties
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.UseAnim
+import net.minecraft.world.item.ItemUseAnimation
 import net.minecraft.world.level.Level
 
-class PonigiriItem : Item(
-        Properties().stacksTo(64)
+class PonigiriItem(properties: Properties) : Item(
+        properties.stacksTo(64)
                 .food(FoodProperties.Builder()
                         .nutrition(2)
                         .saturationModifier(0.55f)
@@ -54,9 +54,6 @@ class PonigiriItem : Item(
         return super.finishUsingItem(stack, world, user)
     }
 
-    override fun getUseAnimation(stack: ItemStack) = UseAnim.EAT
+    override fun getUseAnimation(stack: ItemStack) = ItemUseAnimation.EAT
 
-    override fun getEatingSound(): SoundEvent {
-        return SoundEvents.GENERIC_EAT
-    }
 }

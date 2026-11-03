@@ -23,6 +23,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
+import java.util.Collection;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -55,8 +56,8 @@ public abstract class LivingEntityMixin extends Entity implements OrientationCon
         return cobblemon$orientationController;
     }
 
-    @Inject(method = "onEffectRemoved", at = @At(value = "TAIL"))
-    private void cobblemon$onEffectRemoved(MobEffectInstance effect, CallbackInfo ci) {
+    @Inject(method = "onEffectsRemoved", at = @At(value = "TAIL"))
+    private void cobblemon$onEffectsRemoved(Collection<MobEffectInstance> effects, CallbackInfo ci) {
         final LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof ServerPlayer) {
             ShoulderEffectRegistry.INSTANCE.onEffectEnd((ServerPlayer) entity);
@@ -119,16 +120,16 @@ public abstract class LivingEntityMixin extends Entity implements OrientationCon
     }
 
     @Override
-    public void absMoveTo(double x, double y, double z, float yaw, float pitch) {
+    public void absSnapTo(double x, double y, double z, float yaw, float pitch) {
         if (cobblemon$orientationController.getActive()) {
-            this.absMoveTo(x, y, z);
+            this.absSnapTo(x, y, z);
             this.setYRot(yaw % 360.0f);
             this.setXRot(pitch % 360.0f);
             this.yRotO = this.getYRot();
             this.xRotO = this.getXRot();
         } else {
-            this.absMoveTo(x, y, z);
-            this.absRotateTo(yaw, pitch);
+            this.absSnapTo(x, y, z);
+            this.absSnapRotationTo(yaw, pitch);
         }
     }
 

@@ -30,11 +30,11 @@ interface SleepDepth {
 
         val normal = object : SleepDepth {
             override fun canSleep(pokemonEntity: PokemonEntity): Boolean {
-                return pokemonEntity.level().getNearbyPlayers(TargetingConditions.forNonCombat(), pokemonEntity, AABB.ofSize(pokemonEntity.position(), 16.0, 16.0, 16.0)).isEmpty()
+                return (pokemonEntity.level() as net.minecraft.server.level.ServerLevel).getNearbyPlayers(TargetingConditions.forNonCombat(), pokemonEntity, AABB.ofSize(pokemonEntity.position(), 16.0, 16.0, 16.0)).isEmpty()
             }
 
             override fun shouldWake(pokemonEntity: PokemonEntity): Boolean {
-                val nearbyPlayers = pokemonEntity.level().getNearbyPlayers(TargetingConditions.forNonCombat(), pokemonEntity, AABB.ofSize(pokemonEntity.position(), 16.0, 16.0, 16.0))
+                val nearbyPlayers = (pokemonEntity.level() as net.minecraft.server.level.ServerLevel).getNearbyPlayers(TargetingConditions.forNonCombat(), pokemonEntity, AABB.ofSize(pokemonEntity.position(), 16.0, 16.0, 16.0))
                 return nearbyPlayers.any { !it.isShiftKeyDown }
             }
         }

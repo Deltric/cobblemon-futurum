@@ -65,7 +65,7 @@ class SaccharineLogSlatheredInfluence(val pos: BlockPos? = null) : SpawningInflu
                     if (blockState.block == CobblemonBlocks.SACCHARINE_LOG_SLATHERED) {
                         val direction = blockState.getValue(HorizontalDirectionalBlock.FACING)
                         val safePos = attemptSafeMove(level, entity, logPos, direction)
-                        if (safePos != null) entity.moveTo(safePos.toVec3d())
+                        if (safePos != null) entity.snapTo(safePos.toVec3d())
 
                         SaccharineLogBlockParticlesPacket(logPos, safePos).sendToPlayersAround(
                             logPos.x.toDouble(),

@@ -8,9 +8,9 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.world.level.block.BonemealSource
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.tags.CobblemonBlockTags
-import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.tags.FluidTags
@@ -54,7 +54,7 @@ class MedicinalLeekBlock(settings: Properties) : CropBlock(settings) {
 
     // These 3 are still around for the sake of compatibility, vanilla won't trigger it but some mods might
     // We implement applyGrowth & getGrowthAmount for them
-    override fun isValidBonemealTarget(world: LevelReader, pos: BlockPos, state: BlockState): Boolean = !this.isMaxAge(state)
+    override fun isValidBonemealTarget(world: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean = !this.isMaxAge(state)
 
     override fun growCrops(world: Level, pos: BlockPos, state: BlockState) {
         world.setBlock(pos, state.setValue(this.ageProperty, (this.getAge(state) + 1).coerceAtMost(this.maxAge)), UPDATE_CLIENTS)
@@ -74,12 +74,7 @@ class MedicinalLeekBlock(settings: Properties) : CropBlock(settings) {
         return floor.`is`(CobblemonBlockTags.MEDICINAL_LEEK_PLANTABLE) && fluidState.amount == 8 && fluidState.`is`(FluidTags.WATER)
     }
 
-    override fun codec(): MapCodec<out CropBlock> {
-        return CODEC
-    }
-
     companion object {
-        val CODEC = simpleCodec(::MedicinalLeekBlock)
 
         const val MATURE_AGE = 3
         val AGE: IntegerProperty= BlockStateProperties.AGE_3

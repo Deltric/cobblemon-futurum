@@ -3,6 +3,7 @@
   "pools": [
     {
       "rolls": {
+        "type": "minecraft:uniform",
         "min": 1,
         "max": 2
       },
@@ -10,80 +11,64 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:red_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:blue_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:green_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:pink_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:yellow_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:white_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         },
         {
           "type": "minecraft:item",
           "name": "cobblemon:black_apricorn_seed",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
+          "condition": {
+            "chance": 0.25,
+            "type": "minecraft:random_chance"
+          }
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.185
-        }
-      ]
+      "condition": {
+        "chance": 0.185,
+        "type": "minecraft:random_chance"
+      }
     },
     {
       "rolls": 1,
@@ -92,10 +77,10 @@
           "type": "minecraft:item",
           "weight": 3,
           "name": "cobblemon:poke_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -103,10 +88,10 @@
           "type": "minecraft:item",
           "weight": 2,
           "name": "cobblemon:citrine_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -114,10 +99,10 @@
           "type": "minecraft:item",
           "weight": 2,
           "name": "cobblemon:verdant_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -125,10 +110,10 @@
           "type": "minecraft:item",
           "weight": 2,
           "name": "cobblemon:azure_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -136,10 +121,10 @@
           "type": "minecraft:item",
           "weight": 2,
           "name": "cobblemon:slate_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -147,10 +132,10 @@
           "type": "minecraft:item",
           "weight": 2,
           "name": "cobblemon:roseate_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         },
@@ -158,10 +143,10 @@
           "type": "minecraft:item",
           "weight": 1,
           "name": "cobblemon:premier_ball",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "count": 5,
+              "type": "minecraft:set_count"
             }
           ]
         }

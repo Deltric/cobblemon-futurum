@@ -13,7 +13,7 @@ import com.cobblemon.mod.common.api.data.ShowdownIdentifiable
 import com.cobblemon.mod.common.util.codec.CodecUtils
 import com.mojang.serialization.Codec
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Class representing a type of a Pokemon or Move
@@ -31,9 +31,9 @@ class ElementalType(
     val textureXMultiplier: Int,
     val primaryColor: Int,
     val secondaryColor: Int,
-    val resourceLocation: ResourceLocation = ResourceLocation.fromNamespaceAndPath(Cobblemon.MODID, "ui/types.png"),
+    val resourceLocation: Identifier = Identifier.fromNamespaceAndPath(Cobblemon.MODID, "ui/types.png"),
     val showdownId: String = ShowdownIdentifiable.REGEX.replace(name.lowercase(), ""),
-    val typeGem: ResourceLocation = ResourceLocation.fromNamespaceAndPath(Cobblemon.MODID, showdownId + "_gem"),
+    val typeGem: Identifier = Identifier.fromNamespaceAndPath(Cobblemon.MODID, showdownId + "_gem"),
     ) : ShowdownIdentifiable {
 
     override fun showdownId(): String {

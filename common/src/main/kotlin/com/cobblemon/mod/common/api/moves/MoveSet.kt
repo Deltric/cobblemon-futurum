@@ -15,6 +15,7 @@ import com.cobblemon.mod.common.util.DataKeys
 import com.cobblemon.mod.common.util.readSizedInt
 import com.cobblemon.mod.common.util.writeSizedInt
 import com.google.gson.JsonObject
+import com.cobblemon.mod.common.util.getList
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.Tag

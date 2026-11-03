@@ -13,14 +13,15 @@ import com.mojang.brigadier.arguments.ArgumentType
 import kotlin.reflect.KClass
 import net.minecraft.commands.synchronization.ArgumentTypeInfo
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.PackType
 import net.minecraft.server.packs.resources.PreparableReloadListener
 import net.minecraft.tags.TagKey
 import net.minecraft.world.inventory.MenuType
-import net.minecraft.world.level.GameRules
+import net.minecraft.world.level.gamerules.GameRule
+import net.minecraft.world.level.gamerules.GameRuleCategory
 import net.minecraft.world.level.ItemLike
 import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.levelgen.GenerationStep
@@ -142,18 +143,10 @@ interface CobblemonImplementation {
      * @param argumentClass
      * @param serializer
      */
-    fun <A : ArgumentType<*>, T : ArgumentTypeInfo.Template<A>> registerCommandArgument(identifier: ResourceLocation, argumentClass: KClass<A>, serializer: ArgumentTypeInfo<A, T>)
+    fun <A : ArgumentType<*>, T : ArgumentTypeInfo.Template<A>> registerCommandArgument(identifier: Identifier, argumentClass: KClass<A>, serializer: ArgumentTypeInfo<A, T>)
 
-    /**
-     * TODO
-     *
-     * @param T
-     * @param name
-     * @param category
-     * @param type
-     * @return
-     */
-    fun <T : GameRules.Value<T>> registerGameRule(name: String, category: GameRules.Category, type: GameRules.Type<T>): GameRules.Key<T>
+    /** Registers a boolean rule under its stable, namespaced identifier. */
+    fun registerGameRule(identifier: Identifier, category: GameRuleCategory, defaultValue: Boolean): GameRule<Boolean>
 
     /**
      * TODO
@@ -172,7 +165,7 @@ interface CobblemonImplementation {
      * @param type
      * @param dependencies
      */
-    fun registerResourceReloader(identifier: ResourceLocation, reloader: PreparableReloadListener, type: PackType, dependencies: Collection<ResourceLocation>)
+    fun registerResourceReloader(identifier: Identifier, reloader: PreparableReloadListener, type: PackType, dependencies: Collection<Identifier>)
 
     /**
      * TODO

@@ -30,7 +30,7 @@ object NbtMoLangDataStoreFactory : MoLangDataStoreFactory {
     var saveTicks = 20 * 5 // Every 5 seconds. It's really not going to end up being that much dirty data nor take long.
 
     init {
-        PlatformEvents.SERVER_STARTED.subscribe { event -> savePath = event.server.getWorldPath(LevelResource.PLAYER_DATA_DIR).parent }
+        PlatformEvents.SERVER_STARTED.subscribe { event -> savePath = event.server.getWorldPath(LevelResource.ROOT) }
         PlatformEvents.SERVER_PLAYER_LOGOUT.subscribe { event ->
             val uuid = event.player.uuid
             if (uuid in dirty) {

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.integration.jei
 
+import com.cobblemon.mod.common.api.reactive.ObservableSubscription
+import com.cobblemon.mod.common.client.cooking.ClientCookingRecipes
 import com.cobblemon.mod.common.integration.jei.berry.BerryMutationProvider
 import com.cobblemon.mod.common.integration.jei.brewing.BrewingStandJeiProvider
 import com.cobblemon.mod.common.integration.jei.cooking.CampfirePotJeiProvider
@@ -18,7 +20,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration
 import mezz.jei.api.registration.IRecipeCategoryRegistration
 import mezz.jei.api.registration.IRecipeRegistration
 import mezz.jei.api.runtime.IJeiRuntime
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 @JeiPlugin
 class CobblemonJeiPlugin : IModPlugin {
@@ -28,7 +30,7 @@ class CobblemonJeiPlugin : IModPlugin {
         BrewingStandJeiProvider()
     )
 
-    override fun getPluginUid(): ResourceLocation {
+    override fun getPluginUid(): Identifier {
         return ID
     }
 
@@ -50,8 +52,21 @@ class CobblemonJeiPlugin : IModPlugin {
         }
     }
 
+    private var recipeSubscription: ObservableSubscription<Unit>? = null
+
     override fun onRuntimeAvailable(jeiRuntime: IJeiRuntime) {
         CobblemonJeiPlugin.jeiRuntime = jeiRuntime
+        recipeSubscription?.unsubscribe()
+        recipeSubscription = ClientCookingRecipes.changed.subscribe {
+            jeiProviders.forEach { it.refreshRecipes(jeiRuntime.recipeManager) }
+        }
+        jeiProviders.forEach { it.refreshRecipes(jeiRuntime.recipeManager) }
+    }
+
+    override fun onRuntimeUnavailable() {
+        recipeSubscription?.unsubscribe()
+        recipeSubscription = null
+        jeiRuntime = null
     }
 
     companion object {

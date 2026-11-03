@@ -1,11 +1,7 @@
 {
   "type": "cobblemon:brewing_stand",
-  "input": {
-    "item": "cobblemon:rawst_berry"
-  },
-  "bottle": {
-    "item": "minecraft:glass_bottle"
-  },
+  "input": "cobblemon:rawst_berry",
+  "bottle": "minecraft:glass_bottle",
   "result": {
     "id": "cobblemon:burn_heal"
   }

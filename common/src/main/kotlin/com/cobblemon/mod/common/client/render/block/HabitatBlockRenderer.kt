@@ -23,18 +23,18 @@ import kotlin.math.pow
 import kotlin.math.sin
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.LevelRenderer
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import com.cobblemon.mod.common.client.render.ModelGeometry
+import com.cobblemon.mod.common.client.render.NativeModelGeometry
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.level.block.state.BlockState
 
-class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntityRenderer<HabitatBlockEntity> {
+class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : GeometryBlockEntityRenderer<HabitatBlockEntity>() {
     private companion object {
         const val SPECIES_CYCLE_TICKS = 60L
         const val VISUAL_Y_OFFSET = 0.22
@@ -55,7 +55,7 @@ class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEnti
 
     private data class CachedDisplayPokemon(
         val level: ClientLevel,
-        val speciesId: ResourceLocation,
+        val speciesId: Identifier,
         val pokemonEntity: PokemonEntity
     )
 
@@ -75,11 +75,11 @@ class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEnti
         return (chunkRenderDistance + 1) * 16
     }
 
-    override fun render(
+    override fun extractGeometry(
         entity: HabitatBlockEntity,
         partialTicks: Float,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
+        bufferSource: ModelGeometry.Builder,
         packedLight: Int,
         packedOverlay: Int
     ) {
@@ -87,25 +87,9 @@ class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEnti
         val viewerHoldingHabitatBlock = (player?.mainHandItem ?: player?.offhandItem)?.item == CobblemonItems.HABITAT_BLOCK
         val stateToRender: BlockState = if (viewerHoldingHabitatBlock) entity.blockState else entity.mimickedState
         val level = entity.level ?: return
-        val isSolidRender = if (viewerHoldingHabitatBlock) false else stateToRender.isSolidRender(level, entity.blockPos)
-        val renderType = if (viewerHoldingHabitatBlock) {
-            RenderType.cutout()
-        } else {
-            runCatching { ItemBlockRenderTypes.getChunkRenderType(stateToRender) }
-                .getOrElse { if (isSolidRender) RenderType.solid() else RenderType.translucent() }
+        if (level is ClientLevel) {
+            NativeModelGeometry.extractWorldBlock(stateToRender, level, entity.blockPos, poseStack, bufferSource)
         }
-
-        poseStack.pushPose()
-        Minecraft.getInstance().blockRenderer.renderBatched(
-            stateToRender,
-            entity.blockPos,
-            level,
-            poseStack,
-            bufferSource.getBuffer(renderType),
-            false,
-            level.random
-        )
-        poseStack.popPose()
 
         if (viewerHoldingHabitatBlock) {
             renderSpawnerVisuals(entity, partialTicks, poseStack, bufferSource, packedLight)
@@ -116,7 +100,7 @@ class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEnti
         habitatEntity: HabitatBlockEntity,
         partialTicks: Float,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
+        bufferSource: ModelGeometry.Builder,
         packedLight: Int
     ) {
         val level = habitatEntity.level as? ClientLevel ?: return
@@ -142,27 +126,27 @@ class HabitatBlockRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEnti
             habitatEntity.blockPos.y + VISUAL_Y_OFFSET + MODEL_Y_ADJUST + 0.4,
             habitatEntity.blockPos.z + 0.5
         )
-        val entityLight = LevelRenderer.getLightColor(level, habitatEntity.blockPos.above())
+        val entityLight = net.minecraft.util.LightCoordsUtil.getLightCoords(level, habitatEntity.blockPos.above())
 
         poseStack.pushPose()
         poseStack.translate(0.5, VISUAL_Y_OFFSET + MODEL_Y_ADJUST, 0.5)
         val scale = computeFittedModelScale(pokemonEntity)
         poseStack.translate(0.0, 0.4, 0.0)
-        poseStack.mulPose(Axis.YP.rotationDegrees(interpolatedSpin))
+        poseStack.rotate(Axis.YP.rotationDegrees(interpolatedSpin))
         poseStack.translate(0.0, -0.2, 0.0)
-        poseStack.mulPose(Axis.XP.rotationDegrees(SPAWNER_X_TILT_DEGREES))
+        poseStack.rotate(Axis.XP.rotationDegrees(SPAWNER_X_TILT_DEGREES))
         poseStack.scale(scale, scale, scale)
 
         val dispatcher = Minecraft.getInstance().entityRenderDispatcher
-        dispatcher.setRenderShadow(false)
-        dispatcher.render(pokemonEntity, 0.0, 0.0, 0.0, 0F, partialTicks, poseStack, bufferSource, entityLight)
-        dispatcher.setRenderShadow(true)
+        val renderer = dispatcher.getRenderer(pokemonEntity)
+        val state = renderer.createRenderState(pokemonEntity, partialTicks) as com.cobblemon.mod.common.client.render.models.blockbench.PosableLivingRenderState
+        state.geometry?.let { bufferSource.addGeometry(it, poseStack) }
         poseStack.popPose()
 
         emitSpawnerParticles(level, posKey, habitatEntity.blockPos.x, habitatEntity.blockPos.y, habitatEntity.blockPos.z)
     }
 
-    private fun getOrCreateDisplayPokemon(level: ClientLevel, posKey: Long, speciesId: ResourceLocation): PokemonEntity? {
+    private fun getOrCreateDisplayPokemon(level: ClientLevel, posKey: Long, speciesId: Identifier): PokemonEntity? {
         val cached = cachedDisplayPokemon[posKey]
         if (cached != null && cached.level === level && cached.speciesId == speciesId) {
             return cached.pokemonEntity

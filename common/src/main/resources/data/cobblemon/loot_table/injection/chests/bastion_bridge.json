@@ -7,21 +7,18 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:auspicious_armor",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
-              "count": 1
+              "count": 1,
+              "type": "minecraft:set_count"
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.35
-        }
-      ]
+      "condition": {
+        "chance": 0.35,
+        "type": "minecraft:random_chance"
+      }
     }
   ]
 }
-

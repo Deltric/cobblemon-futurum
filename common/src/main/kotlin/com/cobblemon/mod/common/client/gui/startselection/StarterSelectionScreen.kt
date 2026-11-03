@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.startselection
 
+import net.minecraft.client.input.KeyEvent
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonNetwork
 import com.cobblemon.mod.common.CobblemonSounds
@@ -37,11 +38,11 @@ import com.cobblemon.mod.common.util.asTranslated
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import java.io.FileNotFoundException
 
@@ -78,9 +79,9 @@ class StarterSelectionScreen(private val categories: List<RenderableStarterCateg
     var ticksElapsed = 0
     var currentBallBackgroundFrame = 0
 
-    override fun renderBlurredBackground(delta: Float) {}
+    override fun extractBlurredBackground(context: GuiGraphicsExtractor) {}
 
-    override fun renderMenuBackground(context: GuiGraphics) {}
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) {}
 
     override fun init() {
         super.init()
@@ -155,83 +156,69 @@ class StarterSelectionScreen(private val categories: List<RenderableStarterCateg
         ))
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
         val x = (width - BASE_WIDTH) / 2
         val y = (height - BASE_HEIGHT) / 2
 
         //Background
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = backgroundResource,
             x = x + 6,
             y = y + 17,
             width = 118,
-            height = 100
-        )
+            height = 100)
 
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = backgroundBallResource,
             x = x + 10.5,
             y = y + 12.5,
             width = 109,
             height = 109,
             textureHeight = 1744,
-            vOffset = currentBallBackgroundFrame * 109
-        )
+            vOffset = currentBallBackgroundFrame * 109)
 
         //Platform
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = platformResource,
             x = x + 8.5,
             y = y + 88,
             width = 113,
-            height = 32
-        )
+            height = 32)
         val typePlatform = currentPokemon?.let { getPlatformResource(it.form.primaryType) }
         if (typePlatform != null) {
-            blitk(
-                matrixStack = matrices,
-                texture = typePlatform,
-                x = x + 8.5,
-                y = y + 82,
-                width = 113,
-                height = 30
-            )
+            blitk(context = context,
+            texture = typePlatform,
+            x = x + 8.5,
+            y = y + 82,
+            width = 113,
+            height = 30)
         }
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = platformShadow,
             x = (x + 43) / 0.5F,
             y = (y + 93.5) / 0.5F,
             width = 90,
             height = 20,
-            scale = 0.5F
-        )
+            scale = 0.5F)
 
         if (currentPokemon == null) { // Model widget won't render
-            blitk(
-                matrixStack = matrices,
-                texture = unknownResource,
-                x = (x + 36) / 0.15f,
-                y = (y + 36) / 0.15f,
-                width = 390,
-                height = 444,
-                scale = 0.15f
-            )
+            blitk(context = context,
+            texture = unknownResource,
+            x = (x + 36) / 0.15f,
+            y = (y + 36) / 0.15f,
+            width = 390,
+            height = 444,
+            scale = 0.15f)
         }
 
         //Base
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = baseResource,
             x = x,
             y = y,
             width = BASE_WIDTH,
-            height = BASE_HEIGHT
-        )
+            height = BASE_HEIGHT)
 
         //Type Icon
         if (currentPokemon != null) {
@@ -244,27 +231,23 @@ class StarterSelectionScreen(private val categories: List<RenderableStarterCateg
             ).render(context)
 
             if (currentPokemon!!.form.secondaryType == null) {
-                blitk(
-                    matrixStack = matrices,
-                    texture = typeSpacerResource,
-                    x = x + 47,
-                    y = y + 123,
-                    width = 36,
-                    height = 12
-                )
+                blitk(context = context,
+            texture = typeSpacerResource,
+            x = x + 47,
+            y = y + 123,
+            width = 36,
+            height = 12)
             }
         }
 
         //Name
-        blitk(
-            matrixStack = matrices,
+        blitk(context = context,
             texture = ballResource,
             x = (x + 4) / 0.5F,
             y = (y + 3) / 0.5F,
             width = 16,
             height = 16,
-            scale = 0.5F
-        )
+            scale = 0.5F)
 
         drawScaledText(
             context = context,
@@ -310,8 +293,8 @@ class StarterSelectionScreen(private val categories: List<RenderableStarterCateg
 
         val textEntry = currentPokemon?.form?.pokedex?.first()?.asTranslated() ?: lang("ui.starter.random_description")
 
-        matrices.pushPose()
-        matrices.scale(smallTextScale, smallTextScale, 1F)
+        matrices.pushMatrix()
+        matrices.scale((smallTextScale).toFloat(), (smallTextScale).toFloat())
         MultiLineLabelK.create(
             component = textEntry,
             width = 114 / smallTextScale,
@@ -324,12 +307,12 @@ class StarterSelectionScreen(private val categories: List<RenderableStarterCateg
             colour = ColourLibrary.WHITE,
             shadow = true
         )
-        matrices.popPose()
+        matrices.popMatrix()
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
     }
 
-    fun getPlatformResource(type: ElementalType): ResourceLocation? {
+    fun getPlatformResource(type: ElementalType): Identifier? {
         return try {
             cobblemonResource("textures/gui/starterselection/starter_platform_base_${type.showdownId}.png")
         } catch (error: FileNotFoundException) {
@@ -359,13 +342,13 @@ class StarterSelectionScreen(private val categories: List<RenderableStarterCateg
         if (currentBallBackgroundFrame == 16) currentBallBackgroundFrame = 0
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (minecraft?.options?.keyInventory?.matches(keyCode, scanCode) == true || SummaryBinding.matches(keyCode, scanCode)) {
-            Minecraft.getInstance().setScreen(null)
+    override fun keyPressed(event: KeyEvent): Boolean {
+        if (minecraft?.options?.keyInventory?.matches(event) == true || SummaryBinding.matches(event)) {
+            Minecraft.getInstance().gui.setScreen(null)
             return true
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 
     override fun isPauseScreen() = true

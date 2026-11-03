@@ -9,29 +9,18 @@
 package com.cobblemon.mod.common.platform.events
 
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.Camera
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.renderer.LevelRenderer
-import org.joml.Matrix4f
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.state.level.LevelRenderState
 
 /**
- * Event fired during the various [Stage]s of the [LevelRenderer].
- *
- * @author Segfault Guy
- * @since September 11th, 2024
+ * Native geometry submission. Consumers must use independently extracted state;
+ * material pipelines determine the eventual solid/translucent/OIT draw phase.
  */
 data class RenderEvent(
     val stage: Stage,
-    val levelRenderer: LevelRenderer,
     val poseStack: PoseStack,
-    val modelViewMatrix: Matrix4f,
-    val projectionMatrix: Matrix4f,
-    val tickCounter: DeltaTracker,
-    val camera: Camera
+    val collector: SubmitNodeCollector,
+    val levelState: LevelRenderState
 ) {
-
-    /** Represents when a layer is rendered by [LevelRenderer.renderLevel]. Ordinal corresponds with its render order. */
-    enum class Stage {
-        TRANSLUCENT
-    }
+    enum class Stage { SUBMIT }
 }

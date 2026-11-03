@@ -78,9 +78,9 @@ open class OrientationController(val entity: LivingEntity) {
     }
 
     fun tick() {
-        if (!active || orientation == null) return
+        if (!active) return
+        val current = orientation ?: return
         renderOrientationO = renderOrientation
-        val current = orientation
         val renderMatrix = this.renderOrientation ?: current
         val renderQuat = Quaternionf().setFromUnnormalized(renderMatrix)
         val targetQuat  = Quaternionf().setFromUnnormalized(current)

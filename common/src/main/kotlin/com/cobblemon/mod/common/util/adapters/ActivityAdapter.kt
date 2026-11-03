@@ -19,7 +19,7 @@ import net.minecraft.world.entity.schedule.Activity
 object ActivityAdapter : JsonDeserializer<Activity> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Activity {
         val identifier = json.asString.asIdentifierDefaultingNamespace("minecraft")
-        return BuiltInRegistries.ACTIVITY.get(identifier)
+        return BuiltInRegistries.ACTIVITY.getValue(identifier)
             ?: throw IllegalArgumentException("Unknown activity: $identifier")
     }
 }

@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "rewards": {
-    "recipes": [
-      "cobblemon:stripped_apricorn_wood"
-    ]
-  },
-  "criteria": {
-    "has_log": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:stripped_apricorn_log"
-            ]
-          }
+    "parent": "cobblemon:recipes/blocks",
+    "rewards": {
+        "recipes": [
+            "cobblemon:stripped_apricorn_wood"
         ]
-      }
     },
-    "has_the_recipe": {
-      "trigger": "minecraft:recipe_unlocked",
-      "conditions": {
-        "recipe": "cobblemon:stripped_apricorn_wood"
-      }
-    }
-  },
-  "requirements": [
-    [
-      "has_log",
-      "has_the_recipe"
+    "criteria": {
+        "has_log": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:stripped_apricorn_log"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipes": [
+                    "cobblemon:stripped_apricorn_wood"
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_log",
+            "has_the_recipe"
+        ]
     ]
-  ]
 }

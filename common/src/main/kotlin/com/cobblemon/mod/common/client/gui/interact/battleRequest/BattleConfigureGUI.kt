@@ -25,11 +25,11 @@ import com.cobblemon.mod.common.net.messages.server.battle.BattleTeamResponsePac
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import java.util.*
 
 class BattleConfigureGUI(
@@ -166,8 +166,8 @@ class BattleConfigureGUI(
     class BattleTypeTile(
         val option: PlayerInteractOptionsPacket.Options,
         val battleFormat: BattleFormat,
-        val tileTexture: ResourceLocation?,
-        val overlayTexture: ResourceLocation?,
+        val tileTexture: Identifier?,
+        val overlayTexture: Identifier?,
         val title: MutableComponent,
         val subTitle: MutableComponent,
         val buttonText: MutableComponent,
@@ -200,8 +200,8 @@ class BattleConfigureGUI(
     private var hasRequest = false
     private var ticksPassed = 0F
 
-    override fun renderBlurredBackground(delta: Float) { }
-    override fun renderMenuBackground(context: GuiGraphics) { }
+    override fun extractBlurredBackground(context: GuiGraphicsExtractor) { }
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) { }
 
 
     override fun init() {
@@ -295,7 +295,7 @@ class BattleConfigureGUI(
                     backwardIcon = cobblemonResource("textures/gui/interact/request/label_arrow_left.png"),
                     forward = false
                 ) { levelRulesetOptionIndex -= 1 }
-                this.addRenderableWidget(autoLevelNavButtonLeft)
+                autoLevelNavButtonLeft?.let { this.addRenderableWidget(it) }
 
                 autoLevelNavButtonRight = BattleRequestNavigationButton(
                     pX = x + 94,
@@ -303,7 +303,7 @@ class BattleConfigureGUI(
                     forwardIcon = cobblemonResource("textures/gui/interact/request/label_arrow_right.png"),
                     forward = true
                 ) {levelRulesetOptionIndex += 1 }
-                this.addRenderableWidget(autoLevelNavButtonRight)
+                autoLevelNavButtonRight?.let { this.addRenderableWidget(it) }
             }
         }
     }
@@ -316,19 +316,17 @@ class BattleConfigureGUI(
         }
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         ticksPassed += delta
         val battleTypeData = battleRequestMap[options[currentPage]] ?: return
         // Render background panel
         val (x, y) = getDimensions()
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = backgroundResource,
             x = x,
             y = y,
             width = 113,
-            height = 126
-        )
+            height = 126)
 
         // Render Screen title
         drawScaledText(
@@ -342,26 +340,23 @@ class BattleConfigureGUI(
         )
 
         // Render battle type icon
-        blitk(
-            matrixStack = context.pose(),
-            texture = battleTypeData.tileTexture,
+        battleTypeData.tileTexture?.let { texture -> blitk(context = context,
+            texture = texture,
             x = 2*(x + 113 / 2 - 190 / 4),
             y = 2*(y + 126 / 2 - 120 / 4 - 10),
             width = 190,
             height = 120,
-            scale = 0.5F,
-        )
+            scale = 0.5F) }
         // Render battle type overlay
-        if(ticksPassed % blinkRate < blinkRate / 2) {
-            blitk(
-                matrixStack = context.pose(),
-                texture = battleTypeData.overlayTexture,
-                x = 2*(x + 113 / 2 - 190 / 4),
-                y = 2*(y + 126 / 2 - 120 / 4 - 10),
-                width = 190,
-                height = 120,
-                scale = 0.5F,
-            )
+        val overlayTexture = battleTypeData.overlayTexture
+        if(ticksPassed % blinkRate < blinkRate / 2 && overlayTexture != null) {
+            blitk(context = context,
+            texture = overlayTexture,
+            x = 2*(x + 113 / 2 - 190 / 4),
+            y = 2*(y + 126 / 2 - 120 / 4 - 10),
+            width = 190,
+            height = 120,
+            scale = 0.5F)
         }
 
 
@@ -424,8 +419,7 @@ class BattleConfigureGUI(
         )
 
         // Draw colored decor arrows
-        blitk(
-            matrixStack = context.pose(),
+        blitk(context = context,
             texture = battleArrowsResource,
             x = x + 1,
             y = y + 106,
@@ -434,10 +428,9 @@ class BattleConfigureGUI(
             scale = 1F,
             red = ((battleTypeData.color shr 16) and 0b11111111) / 255F,
             green = ((battleTypeData.color shr 8) and 0b11111111) / 255F,
-            blue = (battleTypeData.color and 0b11111111) / 255F,
-        )
+            blue = (battleTypeData.color and 0b11111111) / 255F)
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
     }
 
     private fun getDimensions(): Pair<Int, Int> {
@@ -451,7 +444,7 @@ class BattleConfigureGUI(
     override fun isPauseScreen() = false
 
     private fun closeGUI() {
-        Minecraft.getInstance().setScreen(null)
+        Minecraft.getInstance().gui.setScreen(null)
     }
 
 }

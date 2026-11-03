@@ -1,0 +1,68 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "cobblemon:aprijuice_quality",
+    "entries": [
+      {
+        "threshold": 0.1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/aprijuice_blue_leaf",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      },
+      {
+        "threshold": 0.2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "cobblemon:item/aprijuice_blue_umbrella",
+          "tints": [
+            {
+              "type": "cobblemon:item",
+              "layer": 0
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 1
+            },
+            {
+              "type": "cobblemon:item",
+              "layer": 2
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "cobblemon:item/aprijuice_blue",
+      "tints": [
+        {
+          "type": "cobblemon:item",
+          "layer": 0
+        },
+        {
+          "type": "cobblemon:item",
+          "layer": 1
+        },
+        {
+          "type": "cobblemon:item",
+          "layer": 2
+        }
+      ]
+    }
+  }
+}

@@ -468,7 +468,7 @@ class RocketBehaviour : RidingBehaviour<RocketSettings, RocketState> {
     ): Boolean {
         if (!state.boosting.get()) return false
         val impactSpeed = impactVec.horizontalDistance().toFloat() * 10f
-        return vehicle.causeFallDamage(impactSpeed, 1f, vehicle.damageSources().flyIntoWall())
+        return vehicle.causeFallDamage(impactSpeed.toDouble(), 1f, vehicle.damageSources().flyIntoWall())
     }
 
     override fun getRideSounds(

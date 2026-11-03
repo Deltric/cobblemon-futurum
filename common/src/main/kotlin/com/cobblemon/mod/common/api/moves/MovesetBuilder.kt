@@ -10,7 +10,7 @@ package com.cobblemon.mod.common.api.moves
 
 import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Builders a moveset for a particular [FormData] and level. Probably only really need [DefaultMovesetBuilder] though.
@@ -20,9 +20,9 @@ import net.minecraft.resources.ResourceLocation
  */
 interface MovesetBuilder {
     /** The ID of this builder. It's autofilled from the registry loader. */
-    var id: ResourceLocation
+    var id: Identifier
     /** The subtype designation for this moveset builder. Generally unused once read from JSON. */
-    val type: ResourceLocation
+    val type: Identifier
 
     /** Builds a brand new moveset for the [form] and [level]. */
     fun build(form: FormData, level: Int): MoveSet
@@ -31,7 +31,7 @@ interface MovesetBuilder {
         /** Weight multiplier for moves that are in the form's signatureMoves list. Makes them way more likely to be chosen. */
         var signatureMoveWeightMultiplier = 5F
         /** Subtypes of MovesetBuilder. I personally doubt you'll need any other subtypes, but hey. */
-        val movesetBuilderTypes = mutableMapOf<ResourceLocation, Class<out MovesetBuilder>>(
+        val movesetBuilderTypes = mutableMapOf<Identifier, Class<out MovesetBuilder>>(
             cobblemonResource("default") to DefaultMovesetBuilder::class.java
         )
     }

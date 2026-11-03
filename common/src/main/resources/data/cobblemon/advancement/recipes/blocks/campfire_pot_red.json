@@ -1,34 +1,36 @@
 {
-  "parent": "cobblemon:recipes/blocks",
-  "criteria": {
-    "has_red_apricorn": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "cobblemon:red_apricorn"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "cobblemon:recipes/blocks",
+    "criteria": {
+        "has_red_apricorn": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:red_apricorn"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:campfire_pot_red"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:campfire_pot_red"
-      },
-      "trigger": "minecraft:recipe_unlocked"
+    "requirements": [
+        [
+            "has_red_apricorn",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "cobblemon:campfire_pot_red"
+        ]
     }
-  },
-  "requirements": [
-    [
-      "has_red_apricorn",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "cobblemon:campfire_pot_red"
-    ]
-  }
 }

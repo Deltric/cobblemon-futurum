@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.habitat
 
+import com.cobblemon.mod.common.api.gui.textColour
 import com.cobblemon.mod.common.api.habitats.HabitatSpawn
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
@@ -20,7 +21,7 @@ import com.cobblemon.mod.common.util.adapters.IntRangesAdapter
 import com.cobblemon.mod.common.util.lang
 import java.awt.Color
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
@@ -258,7 +259,7 @@ class HabitatSpawnEditorGUI(
 
         addFooterWidget(
             Button.builder(lang("ui.edit.habitat.spawn.back")) {
-                Minecraft.getInstance().setScreen(parentScreen)
+                Minecraft.getInstance().gui.setScreen(parentScreen)
             }.bounds(10, getScaledHeight() - (actionButtonHeight + actionButtonBottomMargin), buttonWidth, actionButtonHeight).build()
         )
         validationMessageY = getFooterTop() + 6
@@ -274,30 +275,30 @@ class HabitatSpawnEditorGUI(
         return true
     }
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(0, 0, width, height, Color(0, 0, 0, 100).rgb)
         guiGraphics.fill(0, 0, width, headerHeight, Color(0, 0, 0, 150).rgb)
         guiGraphics.fill(0, getFooterTop(), width, height, Color(0, 0, 0, 150).rgb)
-        guiGraphics.drawCenteredString(font, title, width / 2, 8, 0xFFFFFF)
+        guiGraphics.centeredText(font, title, width / 2, 8, textColour(0xFFFFFF))
 
         guiGraphics.enableScissor(0, getOptionsTop(), width, getOptionsBottom())
         optionWidgets.forEach { widget ->
-            widget.render(guiGraphics, mouseX, mouseY, partialTick)
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         }
 
         labels.forEach { (label, pos) ->
             if (pos.second >= getOptionsTop() && pos.second + font.lineHeight <= getOptionsBottom()) {
-                guiGraphics.drawString(font, label, pos.first, pos.second, 0xFFFFFF)
+                guiGraphics.text(font, label, pos.first, pos.second, textColour(0xFFFFFF))
             }
         }
         guiGraphics.disableScissor()
 
         footerWidgets.forEach { widget ->
-            widget.render(guiGraphics, mouseX, mouseY, partialTick)
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         }
 
         validationErrors.values.firstOrNull()?.let { errorKey ->
-            guiGraphics.drawString(font, lang(errorKey), 10, validationMessageY, invalidTextColor)
+            guiGraphics.text(font, lang(errorKey), 10, validationMessageY, textColour(invalidTextColor))
         }
     }
 

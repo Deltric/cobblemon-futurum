@@ -1,34 +1,36 @@
 {
     "parent": "cobblemon:recipes/balls",
     "criteria": {
-      "has_tumblestone": {
-        "conditions": {
-          "items": [
-            {
-              "items": [
-                "cobblemon:tumblestone"
-              ]
-            }
-          ]
+        "has_tumblestone": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "cobblemon:tumblestone"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
         },
-        "trigger": "minecraft:inventory_changed"
-      },
-      "has_the_recipe": {
-        "conditions": {
-          "recipe": "cobblemon:ancient_great_ball"
-        },
-        "trigger": "minecraft:recipe_unlocked"
-      }
+        "has_the_recipe": {
+            "conditions": {
+                "recipes": [
+                    "cobblemon:ancient_great_ball"
+                ]
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
     "requirements": [
-      [
-        "has_tumblestone",
-        "has_the_recipe"
-      ]
+        [
+            "has_tumblestone",
+            "has_the_recipe"
+        ]
     ],
     "rewards": {
-      "recipes": [
-        "cobblemon:ancient_great_ball"
-      ]
+        "recipes": [
+            "cobblemon:ancient_great_ball"
+        ]
     }
-  }
+}

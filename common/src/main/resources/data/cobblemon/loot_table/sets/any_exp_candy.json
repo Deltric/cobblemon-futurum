@@ -1,58 +1,61 @@
 {
-    "type": "minecraft:chest",
-    "pools": [
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 2.0,
+        "min": 1.0
+      },
+      "bonus_rolls": 0.0,
+      "entries": [
         {
-            "rolls": {
+          "type": "minecraft:item",
+          "name": "cobblemon:exp_candy_xs",
+          "weight": 24,
+          "modifier": [
+            {
+              "count": {
                 "type": "minecraft:uniform",
-                "max": 2.0,
-                "min": 1.0
-            },
-            "bonus_rolls": 0.0,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "cobblemon:exp_candy_xs",
-                    "weight": 24,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": {
-                                "min": 1,
-                                "max": 5
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "minecraft:item",
-                    "name": "cobblemon:exp_candy_s",
-                    "weight": 15,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": {
-                                "min": 1,
-                                "max": 3
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "minecraft:item",
-                    "name": "cobblemon:exp_candy_m",
-                    "weight": 1,
-                    "functions": [
-                        {
-                            "function": "set_count",
-                            "count": {
-                                "min": 1,
-                                "max": 1
-                            }
-                        }
-                    ]
-                }
-            ]
+                "min": 1,
+                "max": 5
+              },
+              "type": "set_count"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "cobblemon:exp_candy_s",
+          "weight": 15,
+          "modifier": [
+            {
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              },
+              "type": "set_count"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "cobblemon:exp_candy_m",
+          "weight": 1,
+          "modifier": [
+            {
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 1
+              },
+              "type": "set_count"
+            }
+          ]
         }
-    ],
-    "random_sequence": "cobblemon:sets/any_exp_candy"
+      ]
+    }
+  ],
+  "random_sequence": "cobblemon:sets/any_exp_candy"
 }

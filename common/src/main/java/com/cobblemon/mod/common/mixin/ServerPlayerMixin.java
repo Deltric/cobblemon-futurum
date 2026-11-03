@@ -9,6 +9,12 @@
 package com.cobblemon.mod.common.mixin;
 
 import com.cobblemon.mod.common.Cobblemon;
+import com.cobblemon.mod.common.api.storage.party.PartyStore;
+import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.cobblemon.mod.common.util.CompoundTagExtensionsKt;
+import com.cobblemon.mod.common.util.CompoundTagUtilities;
+import net.minecraft.nbt.CompoundTag;
+import java.util.UUID;
 import com.cobblemon.mod.common.OrientationControllable;
 import com.cobblemon.mod.common.PlayerSpawnerAccessor;
 import com.cobblemon.mod.common.api.riding.RidingStyle;
@@ -22,11 +28,9 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,13 +42,58 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerPlayerMixin implements PlayerSpawnerAccessor {
 
     @Shadow
-    public abstract ServerLevel serverLevel();
+    public abstract ServerLevel level();
 
     @Shadow
-    @Final
-    public MinecraftServer server;
+    private long timeEntitySatOnShoulder;
+
     @Unique
     public PlayerSpawner cobblemon$spawner;
+
+    @Inject(method = "respawnEntityOnShoulder", at = @At("HEAD"), cancellable = true)
+    private void cobblemon$removePokemon(CompoundTag nbt, CallbackInfo ci) {
+        if (!CompoundTagExtensionsKt.isPokemonEntity(nbt)) return;
+        ServerPlayer player = (ServerPlayer) (Object) this;
+        UUID uuid = CompoundTagUtilities.getPokemonID(nbt);
+        if (CompoundTagUtilities.isShoulderPokemon(player.getShoulderEntityRight())
+                && uuid.equals(CompoundTagUtilities.getPokemonID(player.getShoulderEntityRight()))) {
+            cobblemon$recallPokemon(uuid);
+            player.setShoulderEntityRight(new CompoundTag());
+        }
+        if (CompoundTagUtilities.isShoulderPokemon(player.getShoulderEntityLeft())
+                && uuid.equals(CompoundTagUtilities.getPokemonID(player.getShoulderEntityLeft()))) {
+            cobblemon$recallPokemon(uuid);
+            player.setShoulderEntityLeft(new CompoundTag());
+        }
+        ci.cancel();
+    }
+
+    @Inject(method = "removeEntitiesOnShoulder", at = @At("HEAD"), cancellable = true)
+    private void cobblemon$preventPokemonDropping(CallbackInfo ci) {
+        ServerPlayer player = (ServerPlayer) (Object) this;
+        // Death and spectator transitions still recall Pokémon through the hook above.
+        if (player.isSpectator() || player.isDeadOrDying()) return;
+        if (timeEntitySatOnShoulder + 20L < level().getGameTime()) {
+            if (!CompoundTagUtilities.isShoulderPokemon(player.getShoulderEntityLeft())) {
+                player.respawnEntityOnShoulder(player.getShoulderEntityLeft());
+                player.setShoulderEntityLeft(new CompoundTag());
+            }
+            if (!CompoundTagUtilities.isShoulderPokemon(player.getShoulderEntityRight())) {
+                player.respawnEntityOnShoulder(player.getShoulderEntityRight());
+                player.setShoulderEntityRight(new CompoundTag());
+            }
+        }
+        ci.cancel();
+    }
+
+    @Unique
+    private void cobblemon$recallPokemon(UUID uuid) {
+        ServerPlayer player = (ServerPlayer) (Object) this;
+        PartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player.getUUID(), player.registryAccess());
+        for (Pokemon pokemon : party) {
+            if (pokemon.getUuid().equals(uuid)) pokemon.recall();
+        }
+    }
 
     @Override
     public PlayerSpawner getPlayerSpawner() {
@@ -85,7 +134,7 @@ public abstract class ServerPlayerMixin implements PlayerSpawnerAccessor {
         });
     }
 
-    @Inject(method = "stopRiding", at = @At("HEAD"))
+    @Inject(method = "removeVehicle", at = @At("HEAD"))
     public void cobblemon$resetOrientationOnDismount(CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
         if (!(player.getVehicle() instanceof OrientationControllable controllableVehicle)) return;
@@ -93,9 +142,9 @@ public abstract class ServerPlayerMixin implements PlayerSpawnerAccessor {
     }
 
     //TODO: Switch to sending out on load instead of preventing saving
-    @ModifyExpressionValue(method = "addAdditionalSaveData", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hasExactlyOnePlayerPassenger()Z"))
-    private boolean cobblemon$cancelSavingPokemonMounts(boolean original, @Local(ordinal=0) Entity entity) {
-        return original && !(entity instanceof PokemonEntity);
+    @WrapOperation(method = "saveParentVehicle", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hasExactlyOnePlayerPassenger()Z"))
+    private boolean cobblemon$cancelSavingPokemonMounts(Entity rootVehicle, Operation<Boolean> original) {
+        return !(rootVehicle instanceof PokemonEntity) && original.call(rootVehicle);
     }
 
     @WrapOperation(method = "checkRidingStatistics", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getVehicle()Lnet/minecraft/world/entity/Entity;"))
@@ -136,10 +185,10 @@ public abstract class ServerPlayerMixin implements PlayerSpawnerAccessor {
     @Unique
     private boolean cobblemon$canSpawn() {
         return Cobblemon.config.getEnableSpawning() &&
-                this.serverLevel().getGameRules().getBoolean(CobblemonGameRules.DO_POKEMON_SPAWNING) &&
+                this.level().getGameRules().get(CobblemonGameRules.DO_POKEMON_SPAWNING) &&
                 // intentionally last as this is a more expensive check, even with all the caching
                 !Cobblemon.config.getWorldSpawningBlocklist().contains(
-                        ((ServerLevelDuck) this.serverLevel()).cobblemon$getLevelResourceLocation()
+                        ((ServerLevelDuck) this.level()).cobblemon$getLevelResourceLocation()
                 );
     }
 }
