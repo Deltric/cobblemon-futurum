@@ -111,14 +111,19 @@ public final class ModelGeometry {
     }
 
     private void submit(PoseStack pose, SubmitNodeCollector collector, int outlineColor, int light, int overlay) {
-        for (Batch batch : batches) {
+        for (int index = 0; index < batches.size(); index++) {
+            Batch batch = batches.get(index);
+            // Layers redraw the base model's vertices at equal depth, so they must draw after it. Batches that
+            // share an order draw in the hash order of their render types, which can change every frame, so each
+            // later batch gets its own order, as vanilla's EyesLayer does.
+            OrderedSubmitNodeCollector target = index == 0 ? collector : collector.order(index);
             if (!batch.type.isOutline()) {
-                collector.submitCustomGeometry(pose, batch.type, (matrix, buffer) -> batch.emit(matrix, buffer, 0, light, overlay));
+                target.submitCustomGeometry(pose, batch.type, (matrix, buffer) -> batch.emit(matrix, buffer, 0, light, overlay));
             }
             if (outlineColor != 0) {
                 RenderType outline = batch.type.isOutline() ? batch.type : batch.type.outline().orElse(null);
                 if (outline != null) {
-                    collector.submitCustomGeometry(pose, outline, (matrix, buffer) -> batch.emit(matrix, buffer,
+                    target.submitCustomGeometry(pose, outline, (matrix, buffer) -> batch.emit(matrix, buffer,
                         outlineColor, 15728880, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY));
                 }
             }

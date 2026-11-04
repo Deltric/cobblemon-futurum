@@ -35,6 +35,7 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo
 import net.minecraft.commands.synchronization.ArgumentTypeInfos
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.RegistryAccess
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.core.component.DataComponents
 import com.cobblemon.mod.common.api.item.CobblemonComposting
@@ -303,16 +304,14 @@ class CobblemonNeoForge(
             }
         }
 
-        MOD_BUS.addListener<RegisterEvent>(EventPriority.LOW) { event ->
+        modEventBus.addListener<RegisterEvent>(EventPriority.LOW) { event ->
             // Register the pots after registering main blocks to solve race condition when pottable blocks are still not registered
             event.register(CobblemonBlocks.resourceKey) { helper ->
                 CobblemonBlocks.register { identifier, block ->
                     if (block is FlowerPotBlock) {
                         helper.register(identifier, block)
 
-                        val pottedIdentifier = RegistryAccessResolver.getAccess()
-                            .registryOrThrow(Registries.BLOCK)
-                            .getKeyOrNull(block.potted)!!
+                        val pottedIdentifier = BuiltInRegistries.BLOCK.getResourceKey(block.potted).orElseThrow().identifier()
 
                         (Blocks.FLOWER_POT as FlowerPotBlock).addPlant(pottedIdentifier) { block }
                     }

@@ -143,6 +143,20 @@ class ModelGeometryTest {
         assertEquals(List.of(0xff123456, 0xffaabbcc), colors);
     }
 
+    @Test void layerBatchesDrawAfterTheBaseModelInsteadOfSharingItsHashOrderedPhase() {
+        var base = RenderTypes.entityCutout(Identifier.withDefaultNamespace("base.png"));
+        var layer = RenderTypes.entityCutoutCull(Identifier.withDefaultNamespace("alpha_eyes.png"));
+        var builder = new ModelGeometry.Builder();
+        for (var type : List.of(base, layer)) {
+            builder.getBuffer(type).addVertex(1, 2, 3).setColor(-1).setNormal(0, 1, 0)
+                .setUv(0, 0).setLight(0).setOverlay(0);
+        }
+        var storage = new SubmitNodeStorage();
+        builder.build().submit(new PoseStack(), storage);
+        assertSame(base, customType(drain(storage.order(0).solid)));
+        assertSame(layer, customType(drain(storage.order(1).solid)));
+    }
+
     @Test void invisibleGlowingGeometryUsesOnlyTheNativeOutlinePhaseAndCurrentTeamColor() {
         var builder = new ModelGeometry.Builder();
         var outline = RenderTypes.outline(Identifier.withDefaultNamespace("test.png"));
@@ -252,6 +266,12 @@ class ModelGeometryTest {
         return nodes;
     }
 
+    private static RenderType customType(List<SubmitNode> nodes) {
+        var custom = nodes.stream().filter(net.minecraft.client.renderer.feature.CustomFeatureRenderer.Submit.class::isInstance).toList();
+        assertEquals(1, custom.size());
+        return ((net.minecraft.client.renderer.feature.CustomFeatureRenderer.Submit) custom.getFirst()).renderType();
+    }
+
     private static List<ModelFeatureRenderer.Submit<?>> models(List<SubmitNode> nodes) {
         return nodes.stream().filter(ModelFeatureRenderer.Submit.class::isInstance)
             .<ModelFeatureRenderer.Submit<?>>map(node -> (ModelFeatureRenderer.Submit<?>) node).toList();
@@ -323,9 +343,10 @@ class ModelGeometryTest {
                 builder.build().submitWithCrumbling(pose, storage, new ModelFeatureRenderer.CrumblingOverlay(7, camera.last()));
                 camera.translate(100, 100, 100);
                 pose.translate(100, 100, 100);
+                // Batches take orders 0..2 in recording order; each batch's cracks follow every normal order.
                 var normalSolid = drain(storage.order(0).solid);
-                var opaqueCracks = models(drain(storage.order(1).solid));
-                var translucentNodes = drain(storage.order(1).breakingOverlay);
+                var opaqueCracks = models(drain(storage.order(3).solid));
+                var translucentNodes = drain(storage.order(4).breakingOverlay);
                 var translucentCracks = models(translucentNodes);
                 assertEquals(1, opaqueCracks.size());
                 assertEquals(1, translucentCracks.size());
@@ -339,10 +360,11 @@ class ModelGeometryTest {
                     assertArrayEquals(new Object[] {0x78, 0x12}, named(calls, "setUv1").getFirst().args);
                     assertFalse(named(calls, "setUv").stream().anyMatch(call -> java.util.Arrays.equals(call.args, new Object[] {0.25F, 0.75F})));
                 }
-                // Normal geometry still occupies the engine's original custom-geometry phases.
-                var normals = new ArrayList<SubmitNode>(normalSolid);
-                normals.addAll(drain(storage.order(0).translucentCustomGeometry));
-                assertEquals(3, normals.stream().filter(net.minecraft.client.renderer.feature.CustomFeatureRenderer.Submit.class::isInstance).count());
+                // Normal geometry still occupies the engine's original custom-geometry phases, one order per batch.
+                assertSame(opaque, customType(normalSolid));
+                assertTrue(drain(storage.order(0).translucentCustomGeometry).isEmpty());
+                assertSame(translucent, customType(drain(storage.order(1).translucentCustomGeometry)));
+                assertSame(nonBreaking, customType(drain(storage.order(2).translucentCustomGeometry)));
             }
         }
     }

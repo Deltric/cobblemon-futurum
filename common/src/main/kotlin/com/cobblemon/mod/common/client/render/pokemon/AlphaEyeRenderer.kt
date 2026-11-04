@@ -21,7 +21,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import net.minecraft.client.Minecraft
 import com.cobblemon.mod.common.client.render.ModelGeometry
-import net.minecraft.client.renderer.rendertype.RenderTypes
+import com.cobblemon.mod.common.client.render.PosableRenderLayers
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
 
@@ -122,7 +122,7 @@ fun renderAlphaEyeBloom(
 
         // Render bloom using concentric "rings" (its all just triangle pizza in the end)
         val rings = 5 //TODO: is this too many?
-        val consumer = bufferSource.getBuffer(RenderTypes.dragonRays()) // rgba flat color triangle rendering
+        val consumer = bufferSource.getBuffer(PosableRenderLayers.alphaEyeBloom()) // rgba flat color triangle rendering
 
         for (ring in 0 until rings) {
             val t0 = ring.toFloat() / rings
@@ -186,7 +186,7 @@ fun renderEyeTrail(
 ) {
     if (positions.size < 2) return
 
-    val consumer = bufferSource.getBuffer(RenderTypes.lightning())
+    val consumer = bufferSource.getBuffer(PosableRenderLayers.alphaEyeTrail())
     val entityPos = entity.getPosition(partialTicks)
     val matrix = poseStack.last().pose()
     val n = positions.size

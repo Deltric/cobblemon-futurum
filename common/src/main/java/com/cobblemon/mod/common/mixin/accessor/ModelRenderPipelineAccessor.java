@@ -27,4 +27,10 @@ public interface ModelRenderPipelineAccessor {
 
     @Accessor("BLOCK_SNIPPET")
     static RenderPipeline.Snippet cobblemon$blockSnippet() { throw new AssertionError(); }
+
+    @Accessor("LIGHTNING_SNIPPET")
+    static RenderPipeline.Snippet cobblemon$lightningSnippet() { throw new AssertionError(); }
+
+    @Accessor("DRAGON_RAYS_SNIPPET")
+    static RenderPipeline.Snippet cobblemon$dragonRaysSnippet() { throw new AssertionError(); }
 }

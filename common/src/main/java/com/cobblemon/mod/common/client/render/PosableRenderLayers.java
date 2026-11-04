@@ -12,6 +12,7 @@ import com.cobblemon.mod.common.mixin.accessor.ModelRenderPipelineAccessor;
 import com.cobblemon.mod.common.mixin.accessor.RenderTypeAccessor;
 import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -39,6 +40,31 @@ public final class PosableRenderLayers {
                 .setTextureTransform(TextureTransform.ENTITY_GLINT_TEXTURING).useLightmap().useOverlay()
                 .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE).createRenderSetup());
     }
+
+    // Additive glows must not write depth: their faded edges would hide water and other translucent terrain drawn
+    // behind them. 1.21.1's dragon rays (the bloom) were colour-only, but the 26.3 pipeline writes depth; lightning
+    // (the trail) wrote depth in both versions.
+    private static final RenderType ALPHA_EYE_TRAIL = glow("alpha_eye_trail",
+        ModelRenderPipelineAccessor.cobblemon$lightningSnippet(), RenderPipelines.OIT_LIGHTNING, true);
+    private static final RenderType ALPHA_EYE_BLOOM = glow("alpha_eye_bloom",
+        ModelRenderPipelineAccessor.cobblemon$dragonRaysSnippet(), RenderPipelines.OIT_DRAGON_RAYS, false);
+
+    private static RenderType glow(String name, RenderPipeline.Snippet snippet, OitPipelineSet oit, boolean sortOnUpload) {
+        RenderPipeline pipeline = RenderPipeline.builder(snippet)
+            .withLocation(Identifier.fromNamespaceAndPath("cobblemon", "pipeline/" + name))
+            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+            .withDepthStencilState(new DepthStencilState(DepthStencilState.DEFAULT.depthTest(), false))
+            .build();
+        RenderSetup.RenderSetupBuilder setup = RenderSetup.builder(pipeline).setOitPipelines(oit);
+        if (sortOnUpload) setup.sortOnUpload();
+        return RenderTypeAccessor.cobblemon$create("cobblemon_" + name, setup.createRenderSetup());
+    }
+
+    /** Additive quads for the alpha eye trail, like vanilla lightning but without depth writes. */
+    public static RenderType alphaEyeTrail() { return ALPHA_EYE_TRAIL; }
+
+    /** Additive triangles for the alpha eye bloom, like vanilla dragon rays but without depth writes. */
+    public static RenderType alphaEyeBloom() { return ALPHA_EYE_BLOOM; }
 
     private static final RenderPipeline EMISSIVE_OPAQUE = emissivePipeline(false);
     private static final RenderPipeline EMISSIVE_TRANSLUCENT = emissivePipeline(true);

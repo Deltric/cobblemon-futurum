@@ -59,7 +59,8 @@ object DexEntries : JsonDataRegistry<PokedexEntry> {
                 }
             }
         }
-        computeEvolutionDisplays()
+        // Evolution displays read item tags, which are only bound once the reload finishes,
+        // so they are computed when the server starts instead.
         observable.emit(this)
     }
 

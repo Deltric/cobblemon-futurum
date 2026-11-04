@@ -33,14 +33,6 @@ java {
 }
 
 repositories {
-    // Temporary porting input until JEI publishes its 26.3 artifacts.
-    // Use actual built jars from the independently ported checkout, never 1.21.1 APIs.
-    providers.gradleProperty("jeiCheckout").orNull?.let { checkout ->
-        flatDir {
-            dirs("$checkout/Common/build/libs", "$checkout/Fabric/build/libs", "$checkout/NeoForge/build/libs")
-            content { includeGroup("mezz.jei") }
-        }
-    }
     mavenCentral()
     //JEI
     maven("https://maven.blamejared.com/")
